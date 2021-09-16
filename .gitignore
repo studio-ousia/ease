@@ -6,6 +6,8 @@ utils/.ipynb_checkpoints
 saved_models/
 const.py
 results/
+ease/__pycache__
+*.txt
 
 
 # mlflow
