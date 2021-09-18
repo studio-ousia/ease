@@ -116,7 +116,8 @@ def cl_forward(cls,
     return_dict=None,
     mlm_input_ids=None,
     mlm_labels=None,
-    title_id=None
+    title_id=None,
+    hn_title_id=None
 ):
     return_dict = return_dict if return_dict is not None else cls.config.use_return_dict
     ori_input_ids = input_ids
@@ -210,6 +211,27 @@ def cl_forward(cls,
     ease_cos_sim = cls.ease_sim(
         z1.unsqueeze(1), entity_embedding.transpose(0, 1)
     )
+
+    # ea hard negative
+    if cls.model_args.hard_negative_num > 0 and hn_title_id != None:
+
+        # hard negativeのweight
+        z3_weight = cls.model_args.hard_negative_weight
+        hn_entity_embedding = cls.entity_embedding(hn_title_id)
+        if cls.model_args.use_entity_transformation:
+            hn_entity_embedding = cls.entity_transformation(hn_entity_embedding)
+
+        # ea hn cossim
+        ease_hn_cos_sim = cls.ease_sim(z1.unsqueeze(1), hn_entity_embedding.transpose(0, 1))
+                        
+        # weightを作成
+        weights = torch.eye(ease_hn_cos_sim.size(0)).to(cls.device) * z3_weight
+
+        # weightを足す
+        ease_hn_cos_sim = ease_hn_cos_sim + weights
+        # 今までのcos_simに追加する
+        ease_cos_sim = torch.cat([ease_cos_sim, ease_hn_cos_sim], 1)
+
     cos_sim = cls.simcse_sim(z1.unsqueeze(1), z2.unsqueeze(0))
 
     # Hard negative
@@ -330,6 +352,7 @@ class BertForEACL(BertPreTrainedModel):
         mlm_input_ids=None,
         mlm_labels=None,
         title_id=None,
+        hn_title_id=None,
     ):
         if sent_emb:
             return sentemb_forward(self, self.bert,
@@ -358,7 +381,8 @@ class BertForEACL(BertPreTrainedModel):
                 return_dict=return_dict,
                 mlm_input_ids=mlm_input_ids,
                 mlm_labels=mlm_labels,
-                title_id=title_id
+                title_id=title_id,
+                hn_title_id=hn_title_id
             )
 
 

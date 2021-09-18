@@ -89,11 +89,10 @@ def cl_init(cls, config):
     """
     cls.pooler_type = cls.model_args.pooler_type
     cls.pooler = Pooler(cls.model_args.pooler_type)
-    cls.mlp = MLPLayer(config)
+    if cls.model_args.pooler_type == "cls":
+        cls.mlp = MLPLayer(config)
     cls.sim = Similarity(temp=cls.model_args.temp)
     cls.init_weights()
-
-## contrastive learning学習
 
 def cl_forward(cls,
     encoder,
@@ -198,14 +197,12 @@ def cl_forward(cls,
         z1_z3_cos = cls.sim(z1.unsqueeze(1), z3.unsqueeze(0))
         cos_sim = torch.cat([cos_sim, z1_z3_cos], 1)
 
-    # labels: 0, 1?
     labels = torch.arange(cos_sim.size(0)).long().to(cls.device)
     loss_fct = nn.CrossEntropyLoss()
 
     # Calculate loss with hard negatives
     if num_sent == 3:
         # Note that weights are actually logits of weights
-        ## ????
         z3_weight = cls.model_args.hard_negative_weight
         weights = torch.tensor(
             [[0.0] * (cos_sim.size(-1) - z1_z3_cos.size(-1)) + [0.0] * i + [z3_weight] + [0.0] * (z1_z3_cos.size(-1) - i - 1) for i in range(z1_z3_cos.size(-1))]
@@ -231,7 +228,7 @@ def cl_forward(cls,
         attentions=outputs.attentions,
     )
 
-## Sentence embedding出力用
+
 def sentemb_forward(
     cls,
     encoder,
@@ -281,7 +278,7 @@ class BertForCL(BertPreTrainedModel):
     def __init__(self, config, *model_args, **model_kargs):
         super().__init__(config)
         self.model_args = model_kargs["model_args"]
-        self.bert = BertModel(config)
+        self.bert = BertModel(config, add_pooling_layer=False)
 
         if self.model_args.do_mlm:
             self.lm_head = BertLMPredictionHead(config)
@@ -340,7 +337,7 @@ class RobertaForCL(RobertaPreTrainedModel):
     def __init__(self, config, *model_args, **model_kargs):
         super().__init__(config)
         self.model_args = model_kargs["model_args"]
-        self.roberta = RobertaModel(config)
+        self.roberta = RobertaModel(config, add_pooling_layer=False)
 
         if self.model_args.do_mlm:
             self.lm_head = RobertaLMHead(config)
