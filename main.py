@@ -117,7 +117,10 @@ def build_entity_vocab(data):
         entities.append(title)
         entities.extend(hn_titles)
     entities = set(entities)
-    return {title: i for i, title in enumerate(entities)}
+    entity_vocab = {"PAD":0}
+    entity_vocab.update({title: i + 1 for i, title in enumerate(entities)})
+    return entity_vocab
+
 
 def update_args(base_args, input_args):
     for key, value in dict(input_args).items():
@@ -152,7 +155,7 @@ def get_dataset(data, max_seq_length, tokenizer, entity_vocab):
             cnt += 1
             hn_title_ids.append(entity_vocab[hn_titles[0]])
         else:
-            hn_title_ids.append(None)
+            hn_title_ids.append(0)
         input_ids.append(features["input_ids"])
         attention_masks.append(features["attention_mask"])
         token_type_ids.append(features["token_type_ids"])
@@ -249,7 +252,6 @@ def main(cfg : DictConfig):
     vector_path = "/home/fmg/nishikawa/multilingual_classification_using_language_link/data/enwiki.768.vec"
     embedding = Wikipedia2Vec.load(vector_path)
 
-
     dim_size = 768
     OmegaConf.set_struct(model_args, True)
     with open_dict(model_args):
@@ -258,6 +260,8 @@ def main(cfg : DictConfig):
     entity_embeddings = np.random.uniform(
         low=-0.05, high=0.05, size=model_args.entity_emb_shape
     )
+    # for pad
+    entity_embeddings[0] = np.zeros(dim_size)
     cnt = 0
     for entity, index in tqdm(entity_vocab.items()):
         try:
