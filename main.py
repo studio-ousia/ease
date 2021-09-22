@@ -418,6 +418,8 @@ def main(cfg : DictConfig):
 
         # MLflowに記録
         mlflow_writer.log_metric("eval_stsb_spearman", results["eval_stsb_spearman"])
+        mlflow_writer.log_metric("eval_sickr_spearman", results["eval_sickr_spearman"])
+        mlflow_writer.log_metric("eval_avg_sts", results["eval_avg_sts"])
 
     # Hydraの成果物をArtifactに保存
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), '.hydra/config.yaml'))
