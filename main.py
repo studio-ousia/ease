@@ -49,6 +49,8 @@ from transformers import (
     TrainingArguments,
 )
 
+import gc
+
 
 from transformers.file_utils import cached_property, torch_required, is_torch_available, is_torch_tpu_available
 from transformers.tokenization_utils_base import BatchEncoding, PaddingStrategy, PreTrainedTokenizerBase
@@ -117,7 +119,10 @@ def build_entity_vocab(data):
         entities.append(title)
         entities.extend(hn_titles)
     entities = set(entities)
-    return {title: i for i, title in enumerate(entities)}
+    entity_vocab = {"PAD":0}
+    entity_vocab.update({title: i + 1 for i, title in enumerate(entities)})
+    return entity_vocab
+
 
 def update_args(base_args, input_args):
     for key, value in dict(input_args).items():
@@ -131,10 +136,10 @@ def get_dataset(data, max_seq_length, tokenizer, entity_vocab):
     attention_masks = []
     token_type_ids = []
     title_ids = []
+    hn_title_ids = []
+    cnt = 0
 
     for title, sentence, hn_titles in tqdm(data):
-        
-        total = len(sentence)
 
         sent_features = tokenizer(
             sentence,
@@ -145,22 +150,31 @@ def get_dataset(data, max_seq_length, tokenizer, entity_vocab):
         
         features = {}
         for key in sent_features:
-            if key != "title_id":
-                features[key] = [sent_features[key], sent_features[key]]
+            features[key] = [sent_features[key], sent_features[key]]
         
         title_ids.append(entity_vocab[title])
+        if len(hn_titles) > 0:
+            cnt += 1
+            hn_title_ids.append(entity_vocab[hn_titles[0]])
+        else:
+            hn_title_ids.append(0)
         input_ids.append(features["input_ids"])
         attention_masks.append(features["attention_mask"])
         token_type_ids.append(features["token_type_ids"])
+
+
+    print("all data", len(data))
+    print("hn_title", cnt)
         
-    return input_ids, attention_masks, token_type_ids, title_ids
+    return input_ids, attention_masks, token_type_ids, title_ids, hn_title_ids
 
 class MyDataset(torch.utils.data.Dataset):
-    def __init__(self, input_ids, attention_mask, token_type_ids, title_id):
+    def __init__(self, input_ids, attention_mask, token_type_ids, title_id, hn_title_id):
         self.input_ids = input_ids
         self.attention_mask = attention_mask
         self.token_type_ids = token_type_ids
         self.title_id = title_id
+        self.hn_title_id = hn_title_id
 
     def __getitem__(self, idx):
         item = dict()
@@ -168,6 +182,7 @@ class MyDataset(torch.utils.data.Dataset):
         item['attention_mask'] = self.attention_mask[idx]
         item['token_type_ids'] = self.token_type_ids[idx]
         item['title_id'] = self.title_id[idx]
+        item['hn_title_id'] = self.hn_title_id[idx]
         return item
 
     def __len__(self):
@@ -199,7 +214,7 @@ def main(cfg : DictConfig):
 
     # トークナイザ
     tokenizer_kwargs = {
-        "cache_dir": None,
+        "cache_dir": model_args.cache_dir,
         "use_fast": True,
         "revision": "main",
         "use_auth_token": True if False else None,
@@ -215,39 +230,53 @@ def main(cfg : DictConfig):
         "wiki_first-sentence":"data/first_sentences_with_hardnegatives.pkl",
         "wikidata_hyperlink":"data/wikidata_hyperlinks",
         # "SimCSE_original":"data/wiki100k_for_simcse.txt"
-        "SimCSE_original":"data/wiki1m_for_simcse.txt"
+        "SimCSE_original":"data/wiki1m_for_simcse.txt",
+        "wikidata_hyperlink_type_hn": "data/wikidata_hyperlinks_with_type_hardnegatives_1m",
+        # "wikidata_hyperlink_type_hn": "data/wikidata_hyperlinks_with_type_hardnegatives",
+        "wikidata_hyperlink_type_hn_abst": "data/wikidata_hyperlinks_with_type_hardnegatives_abst_True_1m"
     }
 
     for dataset, sample_num in zip(train_args.datasets, train_args.sample_nums):
         dataset_path = os.path.join(cwd, dataset_path_dict[dataset])
-        wikipedia_data.extend(RawDataLoader.load(dataset_path, dataset, sample_num=sample_num, hard_negative_num=0, langs=["en"]))
+        wikipedia_data.extend(RawDataLoader.load(dataset_path, dataset, sample_num=sample_num, hard_negative_num=model_args.hard_negative_num, langs=train_args.langs, min_length=model_args.min_seq_length))
 
-
-        # エンティティの語彙を構成
+    # エンティティの語彙を構成
     print("build entity vocab...")
     entity_vocab = build_entity_vocab(wikipedia_data)
     print(f"entities: {len(entity_vocab)}")
 
     print("get_dataset...")   
-    input_ids, attention_masks, token_type_ids, title_id = get_dataset(wikipedia_data, model_args.max_seq_length, tokenizer, entity_vocab)
-    train_dataset = MyDataset(input_ids, attention_masks, token_type_ids, title_id)
+    input_ids, attention_masks, token_type_ids, title_id, hn_title_id = get_dataset(wikipedia_data, model_args.max_seq_length, tokenizer, entity_vocab)
+    train_dataset = MyDataset(input_ids, attention_masks, token_type_ids, title_id, hn_title_id)
+
+    print("### del wikipedia data")
+    del wikipedia_data
+    gc.collect()
+
 
     # エンティティ表現のロード
 
-    print("load entity embedding...")
+    print("###load entity embedding...")
 
     vector_path = "/home/fmg/nishikawa/multilingual_classification_using_language_link/data/enwiki.768.vec"
     embedding = Wikipedia2Vec.load(vector_path)
 
-
     dim_size = 768
+
+    print("###set struct omegaconf")
     OmegaConf.set_struct(model_args, True)
+    print("###Done set struct omegaconf")
     with open_dict(model_args):
+        print("###set")
         model_args.entity_emb_shape = (len(entity_vocab), dim_size)
 
     entity_embeddings = np.random.uniform(
         low=-0.05, high=0.05, size=model_args.entity_emb_shape
     )
+
+    print("###init entity embedding")
+    # for pad
+    entity_embeddings[0] = np.zeros(dim_size)
     cnt = 0
     for entity, index in tqdm(entity_vocab.items()):
         try:
@@ -267,6 +296,8 @@ def main(cfg : DictConfig):
 
     config = AutoConfig.from_pretrained(model_args.model_name_or_path, **config_kwargs)
 
+    print("###load model")
+
     model = BertForEACL.from_pretrained(
         model_args.model_name_or_path,
         from_tf=False,  # チェックポイントからから読むか
@@ -281,6 +312,11 @@ def main(cfg : DictConfig):
 
     model.resize_token_embeddings(len(tokenizer))
     model.entity_embedding.weight = nn.Parameter(torch.FloatTensor(entity_embeddings))
+
+    print("### del entity embeddings")
+    del entity_embeddings
+    gc.collect()
+
 
     model_path = (
         model_args.model_name_or_path
@@ -366,6 +402,8 @@ def main(cfg : DictConfig):
             # The rest of the time (10% of the time) we keep the masked input tokens unchanged
             return inputs, labels
 
+    print("###set trainer")
+
     trainer = CLTrainer(
         model=model,
         args=train_args,
@@ -376,38 +414,52 @@ def main(cfg : DictConfig):
 
     trainer.model_args = model_args
 
-    train_result = trainer.train(model_path=model_path)
-    trainer.save_model()  # Saves the tokenizer too for easy upload
+    if train_args.do_train:
+        print("###train start")
+        train_result = trainer.train(model_path=model_path)
+        trainer.save_model()  # Saves the tokenizer too for easy upload
 
-    output_train_file = os.path.join(train_args.output_dir, "train_results.txt")
+        output_train_file = os.path.join(train_args.output_dir, "train_results.txt")
 
-    if trainer.is_world_process_zero():
-        with open(output_train_file, "w") as writer:
-            logger.info("***** Train results *****")
-            for key, value in sorted(train_result.metrics.items()):
-                logger.info(f"  {key} = {value}")
-                writer.write(f"{key} = {value}\n")
+        if trainer.is_world_process_zero():
+            with open(output_train_file, "w") as writer:
+                logger.info("***** Train results *****")
+                for key, value in sorted(train_result.metrics.items()):
+                    logger.info(f"  {key} = {value}")
+                    writer.write(f"{key} = {value}\n")
 
-    logger.info("*** Evaluate ***")
-    results = trainer.evaluate(eval_senteval_transfer=False)
+    print("### del train dataset")
+    del train_dataset
+    gc.collect()
 
-    output_eval_file = os.path.join(train_args.output_dir, "eval_results.txt")
-    if trainer.is_world_process_zero():
-        with open(output_eval_file, "w") as writer:
-            logger.info("***** Eval results *****")
-            for key, value in sorted(results.items()):
-                logger.info(f"  {key} = {value}")
-                writer.write(f"{key} = {value}\n")
+    if train_args.do_eval:
+        print("###evaluate start")
 
+        logger.info("*** Evaluate ***")
+        results = trainer.evaluate(eval_senteval_transfer=False)
 
-    # MLflowに記録
-    mlflow_writer.log_metric("eval_stsb_spearman", results["eval_stsb_spearman"])
+        output_eval_file = os.path.join(train_args.output_dir, "eval_results.txt")
+        if trainer.is_world_process_zero():
+            with open(output_eval_file, "w") as writer:
+                logger.info("***** Eval results *****")
+                for key, value in sorted(results.items()):
+                    logger.info(f"  {key} = {value}")
+                    writer.write(f"{key} = {value}\n")
+
+        # MLflowに記録
+        mlflow_writer.log_metric("eval_stsb_spearman", results["eval_stsb_spearman"])
+        mlflow_writer.log_metric("eval_sickr_spearman", results["eval_sickr_spearman"])
+        mlflow_writer.log_metric("eval_avg_sts", results["eval_avg_sts"])
 
     # Hydraの成果物をArtifactに保存
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), '.hydra/config.yaml'))
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), '.hydra/hydra.yaml'))
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), '.hydra/overrides.yaml'))
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), 'main.log'))
+
+    print("### del trainer")
+    del trainer, model, tokenizer
+    gc.collect()
     
 if __name__ == "__main__":
     main()
