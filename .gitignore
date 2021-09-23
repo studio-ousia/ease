@@ -8,10 +8,11 @@ const.py
 results/
 ease/__pycache__
 *.txt
-
+cache_dir/
 
 # mlflow
 mlruns/
+mlruns2/
 multirun/
 
 # hydra
