@@ -4,6 +4,7 @@ import sys
 import random
 from tqdm import tqdm
 from datasets import load_dataset
+import gc
 
 random.seed(42)
 
@@ -24,6 +25,7 @@ class AbstractDataFormatter(metaclass=ABCMeta):
         """
         pass
 
+
 # wikipedia abstractから作成したデータのフォーマッタ
 class WikiAbstDataFormatter(AbstractDataFormatter):
     def format(self):
@@ -32,12 +34,30 @@ class WikiAbstDataFormatter(AbstractDataFormatter):
         for idx, data in tqdm(self.file_obj.items()):
             if len(data["text"]) >= self.min_length:
                 res.append(
-                    (data["positive_entity"], data["text"], random.sample(data["negative_entity"], self.hard_negative_num))
+                    (
+                        data["positive_entity"],
+                        data["text"],
+                        random.sample(data["negative_entity"], self.hard_negative_num),
+                    )
                 )
         return random.sample(res, min(len(res), self.sample_num))
 
+
 # wikidataから作成したデータのフォーマッタ
 class WikidataDataFormatter(AbstractDataFormatter):
+    def __init__(
+        self,
+        file_obj,
+        sample_num,
+        hard_negative_num,
+        min_length,
+        is_hardnegative_dataset,
+    ):
+        super().__init__(
+            file_obj, sample_num, hard_negative_num, min_length
+        )  # 親クラスの初期化メソッドを呼び出す
+        self.is_hardnegative_dataset = is_hardnegative_dataset
+
     def format(self):
         print("formatting...")
         res = []
@@ -45,11 +65,32 @@ class WikidataDataFormatter(AbstractDataFormatter):
             lang_res = []
             for idx, data in tqdm(file_obj.items()):
                 if len(data["text"]) >= self.min_length:
-                    lang_res.append(
-                        (data["positive_entity"], data["text"], [])
-                    )
+
+                    if self.is_hardnegative_dataset and self.hard_negative_num > 0:
+                        # hnがなければcontinue
+                        if len(data["negative_entity"]) < self.hard_negative_num:
+                            continue
+
+                    if self.is_hardnegative_dataset:
+                        lang_res.append(
+                            (
+                                data["positive_entity"],
+                                data["text"],
+                                random.sample(
+                                    data["negative_entity"],
+                                    min(
+                                        len(data["negative_entity"]),
+                                        self.hard_negative_num,
+                                    ),
+                                ),
+                            )
+                        )
+                    else:
+                        lang_res.append((data["positive_entity"], data["text"], []))
+
             res.extend(random.sample(lang_res, min(len(lang_res), self.sample_num)))
         return res
+
 
 # simCSEから作成したデータのフォーマッタ
 class SimCSEDataFormatter(AbstractDataFormatter):
@@ -61,23 +102,43 @@ class SimCSEDataFormatter(AbstractDataFormatter):
             res.append(("Apple", data["text"], []))
         return res
 
+
 # データの形式に合わせてデータセットを作成するクラス
 # いろんな形式 -> (title, sentence, hn_title)に変換
 class RawDataLoader:
     @staticmethod
-    def load(dataset_path, dataset, sample_num=100000, hard_negative_num=1, min_length=5, langs=["en", "ar", "es", "tr"]):
-
+    def load(
+        dataset_path,
+        dataset,
+        sample_num=100000,
+        hard_negative_num=1,
+        min_length=5,
+        langs=["en", "ar", "es", "tr"],
+    ):
 
         # ここにloaderを追加していく
         if dataset in ["wiki_hyperlink", "wiki_first-sentence"]:
             file_obj = pickle_load(dataset_path)
-            formatter = WikiAbstDataFormatter(file_obj, sample_num, hard_negative_num, min_length)
-        elif dataset == "wikidata_hyperlink":
+            formatter = WikiAbstDataFormatter(
+                file_obj, sample_num, hard_negative_num, min_length
+            )
+        elif dataset.startswith("wikidata_hyperlink"):
             print(f"langs: {langs}")
+            is_hardnegative_dataset = (
+                True if dataset.startswith("wikidata_hyperlink_type_hn") else False
+            )
             file_objs = [pickle_load(f"{dataset_path}_{lang}.pkl") for lang in langs]
-            formatter = WikidataDataFormatter(file_objs, sample_num, hard_negative_num, min_length)
+            formatter = WikidataDataFormatter(
+                file_objs,
+                sample_num,
+                hard_negative_num,
+                min_length,
+                is_hardnegative_dataset,
+            )
         elif dataset == "SimCSE_original":
-            file_obj = load_dataset("text", data_files=dataset_path, cache_dir="./data/")
+            file_obj = load_dataset(
+                "text", data_files=dataset_path, cache_dir="./data/"
+            )
             formatter = SimCSEDataFormatter(file_obj, 0, 0, 0)
         else:
             print("Error: 該当のモードがありません", file=sys.stderr)

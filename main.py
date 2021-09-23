@@ -49,6 +49,8 @@ from transformers import (
     TrainingArguments,
 )
 
+import gc
+
 
 from transformers.file_utils import cached_property, torch_required, is_torch_available, is_torch_tpu_available
 from transformers.tokenization_utils_base import BatchEncoding, PaddingStrategy, PreTrainedTokenizerBase
@@ -212,7 +214,7 @@ def main(cfg : DictConfig):
 
     # トークナイザ
     tokenizer_kwargs = {
-        "cache_dir": None,
+        "cache_dir": model_args.cache_dir,
         "use_fast": True,
         "revision": "main",
         "use_auth_token": True if False else None,
@@ -228,13 +230,15 @@ def main(cfg : DictConfig):
         "wiki_first-sentence":"data/first_sentences_with_hardnegatives.pkl",
         "wikidata_hyperlink":"data/wikidata_hyperlinks",
         # "SimCSE_original":"data/wiki100k_for_simcse.txt"
-        "SimCSE_original":"data/wiki1m_for_simcse.txt"
+        "SimCSE_original":"data/wiki1m_for_simcse.txt",
+        "wikidata_hyperlink_type_hn": "data/wikidata_hyperlinks_with_type_hardnegatives_1m",
+        # "wikidata_hyperlink_type_hn": "data/wikidata_hyperlinks_with_type_hardnegatives",
+        "wikidata_hyperlink_type_hn_abst": "data/wikidata_hyperlinks_with_type_hardnegatives_abst_True_1m"
     }
 
     for dataset, sample_num in zip(train_args.datasets, train_args.sample_nums):
         dataset_path = os.path.join(cwd, dataset_path_dict[dataset])
-        wikipedia_data.extend(RawDataLoader.load(dataset_path, dataset, sample_num=sample_num, hard_negative_num=model_args.hard_negative_num, langs=["en"], min_length=model_args.min_seq_length))
-
+        wikipedia_data.extend(RawDataLoader.load(dataset_path, dataset, sample_num=sample_num, hard_negative_num=model_args.hard_negative_num, langs=train_args.langs, min_length=model_args.min_seq_length))
 
     # エンティティの語彙を構成
     print("build entity vocab...")
@@ -245,21 +249,32 @@ def main(cfg : DictConfig):
     input_ids, attention_masks, token_type_ids, title_id, hn_title_id = get_dataset(wikipedia_data, model_args.max_seq_length, tokenizer, entity_vocab)
     train_dataset = MyDataset(input_ids, attention_masks, token_type_ids, title_id, hn_title_id)
 
+    print("### del wikipedia data")
+    del wikipedia_data
+    gc.collect()
+
+
     # エンティティ表現のロード
 
-    print("load entity embedding...")
+    print("###load entity embedding...")
 
     vector_path = "/home/fmg/nishikawa/multilingual_classification_using_language_link/data/enwiki.768.vec"
     embedding = Wikipedia2Vec.load(vector_path)
 
     dim_size = 768
+
+    print("###set struct omegaconf")
     OmegaConf.set_struct(model_args, True)
+    print("###Done set struct omegaconf")
     with open_dict(model_args):
+        print("###set")
         model_args.entity_emb_shape = (len(entity_vocab), dim_size)
 
     entity_embeddings = np.random.uniform(
         low=-0.05, high=0.05, size=model_args.entity_emb_shape
     )
+
+    print("###init entity embedding")
     # for pad
     entity_embeddings[0] = np.zeros(dim_size)
     cnt = 0
@@ -281,6 +296,8 @@ def main(cfg : DictConfig):
 
     config = AutoConfig.from_pretrained(model_args.model_name_or_path, **config_kwargs)
 
+    print("###load model")
+
     model = BertForEACL.from_pretrained(
         model_args.model_name_or_path,
         from_tf=False,  # チェックポイントからから読むか
@@ -295,6 +312,11 @@ def main(cfg : DictConfig):
 
     model.resize_token_embeddings(len(tokenizer))
     model.entity_embedding.weight = nn.Parameter(torch.FloatTensor(entity_embeddings))
+
+    print("### del entity embeddings")
+    del entity_embeddings
+    gc.collect()
+
 
     model_path = (
         model_args.model_name_or_path
@@ -380,6 +402,8 @@ def main(cfg : DictConfig):
             # The rest of the time (10% of the time) we keep the masked input tokens unchanged
             return inputs, labels
 
+    print("###set trainer")
+
     trainer = CLTrainer(
         model=model,
         args=train_args,
@@ -391,6 +415,7 @@ def main(cfg : DictConfig):
     trainer.model_args = model_args
 
     if train_args.do_train:
+        print("###train start")
         train_result = trainer.train(model_path=model_path)
         trainer.save_model()  # Saves the tokenizer too for easy upload
 
@@ -403,7 +428,12 @@ def main(cfg : DictConfig):
                     logger.info(f"  {key} = {value}")
                     writer.write(f"{key} = {value}\n")
 
+    print("### del train dataset")
+    del train_dataset
+    gc.collect()
+
     if train_args.do_eval:
+        print("###evaluate start")
 
         logger.info("*** Evaluate ***")
         results = trainer.evaluate(eval_senteval_transfer=False)
@@ -426,6 +456,10 @@ def main(cfg : DictConfig):
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), '.hydra/hydra.yaml'))
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), '.hydra/overrides.yaml'))
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), 'main.log'))
+
+    print("### del trainer")
+    del trainer, model, tokenizer
+    gc.collect()
     
 if __name__ == "__main__":
     main()

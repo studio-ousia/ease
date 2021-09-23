@@ -91,6 +91,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="このプログラムの説明（なくてもよい）")  # 2. パーサを作る
     parser.add_argument("--lang", type=str, default="en")
+    parser.add_argument('--abstract', action='store_true')
     args = parser.parse_args()
     p = Pool(16)
 
@@ -140,58 +141,58 @@ def main():
     title_to_same_type_entities = dict()
 
     cnt = 0
-    for en_title, idx in tqdm(entity_vocab.items()):
-        if idx == 0: continue
-        lang_title = en_title
-        if args.lang != "en":
-            if en_title not in en_title_to_lang_title:
-                continue
-            lang_title = en_title_to_lang_title[en_title]
+    # for en_title, idx in tqdm(entity_vocab.items()):
+    #     if idx == 0: continue
+    #     lang_title = en_title
+    #     if args.lang != "en":
+    #         if en_title not in en_title_to_lang_title:
+    #             continue
+    #         lang_title = en_title_to_lang_title[en_title]
 
-        try:
-            if args.lang == "en":
-                title_to_hyperlink_entities[lang_title] = set(
-                    [
-                        wiki_db.resolve_redirect(link.title)
-                        for paragraph in wiki_db.get_paragraphs(lang_title)
-                        for link in paragraph.wiki_links
-                        if wiki_db.resolve_redirect(link.title) in entity_vocab
-                    ]
-                )
-            else:
-                title_to_hyperlink_entities[lang_title] = set(
-                    [
-                        lang_title_to_en_title[wiki_db.resolve_redirect(link.title)]
-                        for paragraph in wiki_db.get_paragraphs(lang_title)
-                        for link in paragraph.wiki_links
-                        if wiki_db.resolve_redirect(link.title)
-                        in lang_title_to_en_title
-                        and lang_title_to_en_title[wiki_db.resolve_redirect(link.title)]
-                        in entity_vocab
-                    ]
-                )
+    #     try:
+    #         if args.lang == "en":
+    #             title_to_hyperlink_entities[lang_title] = set(
+    #                 [
+    #                     wiki_db.resolve_redirect(link.title)
+    #                     for paragraph in wiki_db.get_paragraphs(lang_title)
+    #                     for link in paragraph.wiki_links
+    #                     if wiki_db.resolve_redirect(link.title) in entity_vocab
+    #                 ]
+    #             )
+    #         else:
+    #             title_to_hyperlink_entities[lang_title] = set(
+    #                 [
+    #                     lang_title_to_en_title[wiki_db.resolve_redirect(link.title)]
+    #                     for paragraph in wiki_db.get_paragraphs(lang_title)
+    #                     for link in paragraph.wiki_links
+    #                     if wiki_db.resolve_redirect(link.title)
+    #                     in lang_title_to_en_title
+    #                     and lang_title_to_en_title[wiki_db.resolve_redirect(link.title)]
+    #                     in entity_vocab
+    #                 ]
+    #             )
 
-        except:
-            pass
+    #     except:
+    #         pass
 
-    pickle_dump(dict(title_to_hyperlink_entities), f"/home/fmg/nishikawa/EASE/data/title_to_hyperlink_entities_{args.lang}.pkl")
+    # pickle_dump(dict(title_to_hyperlink_entities), f"/home/fmg/nishikawa/EASE/data/title_to_hyperlink_entities_{args.lang}.pkl")
 
-    # title_to_hyperlink_entities = pickle_load(
-    #     "/home/fmg/nishikawa/EASE/data/title_to_hyperlink_entities_en.pkl"
-    # )
+    title_to_hyperlink_entities = pickle_load(
+        "/home/fmg/nishikawa/EASE/data/title_to_hyperlink_entities_en.pkl"
+    )
 
     print("set title_to_same_type_entities...")
 
     title_to_same_type_entities = dict()
 
-    for en_title, idx in entity_vocab.items():
-        get_title_to_same_type_entities(title_to_same_type_entities, en_title, en_title_to_rdf_ids, rdf_id_to_en_titles)
+    # for en_title, idx in entity_vocab.items():
+    #     get_title_to_same_type_entities(title_to_same_type_entities, en_title, en_title_to_rdf_ids, rdf_id_to_en_titles)
 
-    pickle_dump(dict(title_to_same_type_entities), "/home/fmg/nishikawa/EASE/data/title_to_same_type_entities.pkl")
+    # pickle_dump(dict(title_to_same_type_entities), "/home/fmg/nishikawa/EASE/data/title_to_same_type_entities.pkl")
 
-    # title_to_same_type_entities = pickle_load(
-    #     "/home/fmg/nishikawa/EASE/data/title_to_same_type_entities.pkl"
-    # )
+    title_to_same_type_entities = pickle_load(
+        "/home/fmg/nishikawa/EASE/data/title_to_same_type_entities.pkl"
+    )
 
     manager = Manager()
 
@@ -218,9 +219,15 @@ def main():
         try:
             paragraphs = [paragraph for paragraph in wiki_db.get_paragraphs(lang_title)]
 
-            paragraphs_with_titles.extend(
-                [(paragraph, lang_title) for paragraph in paragraphs]
-            )
+
+            if args.abstract:
+                paragraphs_with_titles.extend(
+                    [(paragraph, lang_title) for paragraph in paragraphs if paragraph.abstract]
+                )
+            else:
+                paragraphs_with_titles.extend(
+                    [(paragraph, lang_title) for paragraph in paragraphs]
+                )
             cnt += 1
         except:
             pass
@@ -265,7 +272,7 @@ def main():
     print("saving...")
     pickle_dump(
         entity_per_sentence,
-        f"../data/wikidata_hyperlinks_with_type_hardnegatives_{args.lang}.pkl",
+        f"../data/wikidata_hyperlinks_with_type_hardnegatives_abst_{args.abstract}_{args.lang}.pkl",
     )
 
 

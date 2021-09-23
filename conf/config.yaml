@@ -1,6 +1,6 @@
 model_args:
   model_name_or_path: "bert-base-uncased" # bert-base-multilingual-cased
-  cache_dir: None
+  cache_dir: /home/fmg/nishikawa/EASE/cache_dir
   model_revision: "main"
   use_auth_token: False
   simcse_temp: 0.05
@@ -16,6 +16,7 @@ model_args:
   max_seq_length: 32
   min_seq_length: 5
   hard_negative_num: 0
+  entity_emb_shape: None
 
 train_args:
   seed: 42
@@ -26,62 +27,63 @@ train_args:
   sample_nums:
     - 1000
     - 1000
-  # langs:
-  #   - "en"
+  langs:
+    - "en"
   #   - "es"
   #   - "ar"
   #   - "tr"
   eval_transfer: False
   do_eval: True
   do_train: True
-  experiment_name: "9/20_ease"
+  experiment_name: "9/23_ease"
   output_dir: results/my-unsup-simcse-bert-base-uncased
   num_train_epochs: 1
-  per_device_train_batch_size: 128
+  per_device_train_batch_size: 64
   eval_steps: 125
   fp16: True
   overwrite_output_dir: True
   greater_is_better: True
   metric_for_best_model: stsb_spearman
   load_best_model_at_end: True
-  _n_gpu: 1
-  adafactor: false
-  adam_beta1: 0.9
-  adam_beta2: 0.999
-  adam_epsilon: 1.0e-08
-  dataloader_drop_last: false
-  dataloader_num_workers: 0
-  debug: false
-  deepspeed: null
-  disable_tqdm: false
-  do_predict: false
-  eval_accumulation_steps: null
-  # evaluation_strategy: "no"
-  fp16_backend: auto
-  fp16_opt_level: O1
   gradient_accumulation_steps: 1
-  ignore_data_skip: false
-  label_names: null
-  label_smoothing_factor: 0.0
-  local_rank: -1
-  logging_dir: runs/Sep10_17-58-29_gpuhost06
-  logging_first_step: false
-  logging_steps: 500
-  lr_scheduler_type: linear
-  max_grad_norm: 1.0
-  max_steps: -1
-  no_cuda: false
-  past_index: -1
-  per_device_eval_batch_size: 8
-  per_gpu_eval_batch_size: null
-  per_gpu_train_batch_size: null
-  prediction_loss_only: false
-  remove_unused_columns: true
-  run_name: results/my-unsup-ease-bert-base-uncased
-  save_steps: 500
-  save_total_limit: null
-  sharded_ddp: false
-  tpu_metrics_debug: false
-  tpu_num_cores: null
-  warmup_steps: 0
-  weight_decay: 0.0
+  # _n_gpu: 1
+  # adafactor: false
+  # adam_beta1: 0.9
+  # adam_beta2: 0.999
+  # adam_epsilon: 1.0e-08
+  # dataloader_drop_last: false
+  # dataloader_num_workers: 0
+  # debug: false
+  # deepspeed: null
+  # disable_tqdm: false
+  # do_predict: false
+  # eval_accumulation_steps: null
+  # # evaluation_strategy: "no"
+  # fp16_backend: auto
+  # fp16_opt_level: O1
+  # gradient_accumulation_steps: 1
+  # ignore_data_skip: false
+  # label_names: null
+  # label_smoothing_factor: 0.0
+  # local_rank: -1
+  # logging_dir: runs/Sep10_17-58-29_gpuhost06
+  # logging_first_step: false
+  # logging_steps: 500
+  # lr_scheduler_type: linear
+  # max_grad_norm: 1.0
+  # max_steps: -1
+  # no_cuda: false
+  # past_index: -1
+  # per_device_eval_batch_size: 8
+  # per_gpu_eval_batch_size: null
+  # per_gpu_train_batch_size: null
+  # prediction_loss_only: false
+  # remove_unused_columns: true
+  # run_name: results/my-unsup-ease-bert-base-uncased
+  # save_steps: 500
+  # save_total_limit: null
+  # sharded_ddp: false
+  # tpu_metrics_debug: false
+  # tpu_num_cores: null
+  # warmup_steps: 0
+  # weight_decay: 0.0

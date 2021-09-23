@@ -213,7 +213,7 @@ def cl_forward(cls,
     )
 
     # ea hard negative
-    if cls.model_args.hard_negative_num > 0 and hn_title_id != None:
+    if cls.model_args.hard_negative_num > 0:
 
         # hard negativeのweight
         z3_weight = cls.model_args.hard_negative_weight
