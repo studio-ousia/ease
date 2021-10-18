@@ -9,6 +9,7 @@ results/
 ease/__pycache__
 *.txt
 cache_dir/
+text-clustering/data/
 
 # mlflow
 mlruns/
