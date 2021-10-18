@@ -12,20 +12,21 @@ model_args:
   mlp_only_train: True
   ease_loss_ratio: 0
   use_entity_transformation: True
+  use_another_transformation_for_hn: False
   use_only_ease: False
   max_seq_length: 32
-  min_seq_length: 5
+  min_seq_length: 1
   hard_negative_num: 0
+  entity_emb_dim: 768
   entity_emb_shape: None
+  init_wiki2emb: True
 
 train_args:
   seed: 42
   learning_rate: 5e-05
   datasets:
-    - "wiki_hyperlink" # wikidata_hyperlink
-    - "wiki_first-sentence"
+    - wikidata_hyperlink_type_hn
   sample_nums:
-    - 1000
     - 1000
   langs:
     - "en"
@@ -45,7 +46,9 @@ train_args:
   greater_is_better: True
   metric_for_best_model: stsb_spearman
   load_best_model_at_end: True
-  gradient_accumulation_steps: 1
+  gradient_accumulation_steps: 2
+  warmup_steps: 0
+  # warmup_ratio: 0
   # _n_gpu: 1
   # adafactor: false
   # adam_beta1: 0.9
@@ -85,5 +88,4 @@ train_args:
   # sharded_ddp: false
   # tpu_metrics_debug: false
   # tpu_num_cores: null
-  # warmup_steps: 0
   # weight_decay: 0.0

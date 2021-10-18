@@ -32,6 +32,7 @@ def get_title_to_same_type_entities(
         results = set([])
     title_to_same_type_entities[en_title] = results
 
+
 def process(data):
     (
         entity_per_sentence,
@@ -43,27 +44,29 @@ def process(data):
         title_to_hyperlink_entities,
         title_to_same_type_entities,
         lang_title_to_en_title,
-        lang,
+        args,
     ) = data
+    lang = args.lang
     sentence_list = sentence_tokenizer.tokenize(paragraph.text)
+    if args.use_first_sentence:
+        sentence_list = sentence_list[:1]
     idx = 0
     char_num = len(sentence_list[idx])
 
-    for data in paragraph.wiki_links:
-        lang_title = wiki_db.resolve_redirect(data.title)
+    if args.use_first_sentence:
+
+        lang_title = origin_lang_title
         en_title = lang_title
 
         if lang != "en":
             if lang_title not in lang_title_to_en_title:
-                continue
+                return
             en_title = lang_title_to_en_title[lang_title]
 
         if en_title not in entity_vocab:
-            continue
+            return
 
-        start, end = data.span
-
-        # # 該当エンティティと類似度が高いエンティティ
+        # # 該当エンティティと型と同じエンティティ
         # en title to same type en titles
         same_type_entities = title_to_same_type_entities[en_title]
 
@@ -74,10 +77,6 @@ def process(data):
         # ネガティブサンプルの候補エンティティ
         hard_negative_entities = list(same_type_entities - hyperlink_entities)
 
-        while start > char_num and idx + 1 < len(sentence_list):
-            idx += 1
-            char_num += len(sentence_list[idx])
-
         data_idx = len(entity_per_sentence)
         entity_per_sentence[data_idx] = {
             "positive_entity": en_title,
@@ -86,12 +85,51 @@ def process(data):
             "origin_entity": origin_lang_title,
         }
 
+    else:
+        for data in paragraph.wiki_links:
+            lang_title = wiki_db.resolve_redirect(data.title)
+            en_title = lang_title
+
+            if lang != "en":
+                if lang_title not in lang_title_to_en_title:
+                    continue
+                en_title = lang_title_to_en_title[lang_title]
+
+            if en_title not in entity_vocab:
+                continue
+
+            start, end = data.span
+
+            # # 該当エンティティと型と同じエンティティ
+            # en title to same type en titles
+            same_type_entities = title_to_same_type_entities[en_title]
+
+            # # 同じ文書内に現れるエンティティ
+            # lang title to hyperlink en titles
+            hyperlink_entities = title_to_hyperlink_entities[origin_lang_title]
+
+            # ネガティブサンプルの候補エンティティ
+            hard_negative_entities = list(same_type_entities - hyperlink_entities)
+
+            while start > char_num and idx + 1 < len(sentence_list):
+                idx += 1
+                char_num += len(sentence_list[idx])
+
+            data_idx = len(entity_per_sentence)
+            entity_per_sentence[data_idx] = {
+                "positive_entity": en_title,
+                "negative_entity": hard_negative_entities,
+                "text": sentence_list[idx],
+                "origin_entity": origin_lang_title,
+            }
+
 
 def main():
 
     parser = argparse.ArgumentParser(description="このプログラムの説明（なくてもよい）")  # 2. パーサを作る
     parser.add_argument("--lang", type=str, default="en")
-    parser.add_argument('--abstract', action='store_true')
+    parser.add_argument("--abstract", action="store_true")
+    parser.add_argument("--use_first_sentence", action="store_true")
     args = parser.parse_args()
     p = Pool(16)
 
@@ -113,10 +151,6 @@ def main():
     print("set tokenizer...")
     sentence_tokenizer = MultilingualSentenceTokenizer(args.lang)
 
-    # 事前にlang entity -> en wikidata entity辞書を作成しておく
-    # todo 多言語化
-    # print("build lang entity -> en wikidata entity dict")
-
     lang_title_to_en_title = dict()
     en_title_to_lang_title = dict()
 
@@ -137,10 +171,10 @@ def main():
     # lang title to en hyperlink en titles
     # en title to same type en titles
 
-    title_to_hyperlink_entities = dict()
-    title_to_same_type_entities = dict()
+    # title_to_hyperlink_entities = dict()
+    # title_to_same_type_entities = dict()
 
-    cnt = 0
+    # cnt = 0
     # for en_title, idx in tqdm(entity_vocab.items()):
     #     if idx == 0: continue
     #     lang_title = en_title
@@ -178,10 +212,11 @@ def main():
     # pickle_dump(dict(title_to_hyperlink_entities), f"/home/fmg/nishikawa/EASE/data/title_to_hyperlink_entities_{args.lang}.pkl")
 
     title_to_hyperlink_entities = pickle_load(
-        "/home/fmg/nishikawa/EASE/data/title_to_hyperlink_entities_en.pkl"
+        f"/home/fmg/nishikawa/EASE/data/title_to_hyperlink_entities_{args.lang}.pkl"
     )
 
     print("set title_to_same_type_entities...")
+    # en title to same type titles
 
     title_to_same_type_entities = dict()
 
@@ -214,15 +249,23 @@ def main():
             continue
         lang_title = en_title
         if args.lang != "en":
+            if en_title not in en_title_to_lang_title:
+                continue
             lang_title = en_title_to_lang_title[en_title]
 
         try:
             paragraphs = [paragraph for paragraph in wiki_db.get_paragraphs(lang_title)]
 
+            if args.use_first_sentence:
+                paragraphs = paragraphs[:1]
 
             if args.abstract:
                 paragraphs_with_titles.extend(
-                    [(paragraph, lang_title) for paragraph in paragraphs if paragraph.abstract]
+                    [
+                        (paragraph, lang_title)
+                        for paragraph in paragraphs
+                        if paragraph.abstract
+                    ]
                 )
             else:
                 paragraphs_with_titles.extend(
@@ -243,7 +286,7 @@ def main():
             title_to_hyperlink_entities,
             title_to_same_type_entities,
             lang_title_to_en_title,
-            args.lang,
+            args,
         )
         for paragraph, origin_lang_title in paragraphs_with_titles
     ]
@@ -272,7 +315,7 @@ def main():
     print("saving...")
     pickle_dump(
         entity_per_sentence,
-        f"../data/wikidata_hyperlinks_with_type_hardnegatives_abst_{args.abstract}_{args.lang}.pkl",
+        f"../data/wikidata_hyperlinks_with_type_hardnegatives_first_sentence_{args.use_first_sentence}_abst_{args.abstract}_{args.lang}.pkl",
     )
 
 

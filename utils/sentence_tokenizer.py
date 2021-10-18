@@ -1,6 +1,10 @@
-import en_core_web_sm
-import es_core_news_sm
+# import en_core_web_sm
+# import es_core_news_sm
+import ja_core_news_md
+# import ja_core_news_sm
+import zh_core_web_sm
 from sentence_splitter import SentenceSplitter
+from mosestokenizer import MosesSentenceSplitter
 from abc import ABC, ABCMeta, abstractmethod
 
 # 色々なトークナイザをラッパーするクラス
@@ -10,14 +14,12 @@ class MultilingualSentenceTokenizer(object):
         self.build_tokenizer()
 
     def build_tokenizer(self):
-        if self.lang in ["en", "es"]:
+        # todo mosesに変更
+        # zhとjaはそれぞれ
+        if self.lang in ["ja", "zh"]:
             self.tokenizer = SpacySentenceTokenizer(self.lang)
-        elif self.lang == "ar":
-            self.tokenizer = ArabicSentenceTokenizer()
-        elif self.lang == "tr":
-            self.tokenizer = TurkishSentenceTokenizer()
         else:
-            print("対応する言語がありません")
+            self.tokenizer = MosesSentenceTokenizer(self.lang)
 
     def tokenize(self, paragraph):
         return self.tokenizer.tokenize(paragraph)
@@ -32,6 +34,16 @@ class BaseSentenceTokenizer(metaclass=ABCMeta):
         """
         pass
 
+class MosesSentenceTokenizer(BaseSentenceTokenizer):
+    # コンストラクタ
+    def __init__(self, lang):
+        super().__init__()
+        self.lang = lang
+        self.splitter = MosesSentenceSplitter(lang)
+
+    def tokenize(self, paragraph):
+        return self.splitter([paragraph])
+
 
 class SpacySentenceTokenizer(BaseSentenceTokenizer):
 
@@ -42,10 +54,15 @@ class SpacySentenceTokenizer(BaseSentenceTokenizer):
         self.load_nlp()
 
     def load_nlp(self):
-        if self.lang == "en":
-            self.nlp = en_core_web_sm.load()
-        elif self.lang == "es":
-            self.nlp = es_core_news_sm.load()
+        if self.lang == "ja":
+            # self.nlp = ja_core_news_sm.oad()
+            self.nlp = ja_core_news_md.load()
+        elif self.lang == "zh":
+            self.nlp = zh_core_web_sm.load()
+        # if self.lang == "en":
+        #     self.nlp = en_core_web_sm.load()
+        # elif self.lang == "es":
+        #     self.nlp = es_core_news_sm.load()
 
     def tokenize(self, paragraph):
         return [str(sent) for sent in self.nlp(paragraph).sents]

@@ -32,6 +32,22 @@ class MLPLayer(nn.Module):
 
         return x
 
+class EntityMLPLayer(nn.Module):
+    """
+    Head for getting entity representations.
+    """
+
+    def __init__(self, config, entity_dim):
+        super().__init__()
+        self.dense = nn.Linear(entity_dim, config.hidden_size)
+        self.activation = nn.Tanh()
+
+    def forward(self, features, **kwargs):
+        x = self.dense(features)
+        x = self.activation(x)
+
+        return x
+
 class Similarity(nn.Module):
     """
     Dot product or cosine similarity
@@ -92,7 +108,13 @@ def cl_init(cls, config):
     cls.mlp = MLPLayer(config)
     cls.simcse_sim = Similarity(temp=cls.model_args.simcse_temp)
     cls.ease_sim = Similarity(temp=cls.model_args.ease_temp)
-    cls.entity_transformation = MLPLayer(config)
+    cls.entity_transformation = EntityMLPLayer(config, cls.model_args.entity_emb_dim)
+
+    if cls.model_args.use_another_transformation_for_hn:
+        cls.hn_entity_transformation = MLPLayer(config)
+    else:
+        cls.hn_entity_transformation = cls.entity_transformation
+
     cls.entity_embedding = nn.Embedding(
         cls.model_args.entity_emb_shape[0], cls.model_args.entity_emb_shape[1]
     )
@@ -117,7 +139,8 @@ def cl_forward(cls,
     mlm_input_ids=None,
     mlm_labels=None,
     title_id=None,
-    hn_title_id=None
+    hn_title_ids=None,
+    # hn_title_id=None
 ):
     return_dict = return_dict if return_dict is not None else cls.config.use_return_dict
     ori_input_ids = input_ids
@@ -211,26 +234,30 @@ def cl_forward(cls,
     ease_cos_sim = cls.ease_sim(
         z1.unsqueeze(1), entity_embedding.transpose(0, 1)
     )
+    
+     # hard negativeのweight
+    z3_weight = cls.model_args.hard_negative_weight
 
     # ea hard negative
     if cls.model_args.hard_negative_num > 0:
 
-        # hard negativeのweight
-        z3_weight = cls.model_args.hard_negative_weight
-        hn_entity_embedding = cls.entity_embedding(hn_title_id)
-        if cls.model_args.use_entity_transformation:
-            hn_entity_embedding = cls.entity_transformation(hn_entity_embedding)
+        # TODO ここはまとめて計算する
+        for hn_title_id in hn_title_ids.T:
+            hn_entity_embedding = cls.entity_embedding(hn_title_id.unsqueeze(1))
+            if cls.model_args.use_entity_transformation:
+                hn_entity_embedding = cls.entity_transformation(hn_entity_embedding)
 
-        # ea hn cossim
-        ease_hn_cos_sim = cls.ease_sim(z1.unsqueeze(1), hn_entity_embedding.transpose(0, 1))
-                        
-        # weightを作成
-        weights = torch.eye(ease_hn_cos_sim.size(0)).to(cls.device) * z3_weight
+            # ea hn cossim
+            ease_hn_cos_sim = cls.ease_sim(z1.unsqueeze(1), hn_entity_embedding.transpose(0, 1))
+            
+            # weightを作成
+            weights = torch.eye(ease_hn_cos_sim.size(0)).to(cls.device) * z3_weight
 
-        # weightを足す
-        ease_hn_cos_sim = ease_hn_cos_sim + weights
-        # 今までのcos_simに追加する
-        ease_cos_sim = torch.cat([ease_cos_sim, ease_hn_cos_sim], 1)
+            # weightを足す
+            ease_hn_cos_sim = ease_hn_cos_sim + weights
+
+            # 今までのcos_simに追加する
+            ease_cos_sim = torch.cat([ease_cos_sim, ease_hn_cos_sim], 1)
 
     cos_sim = cls.simcse_sim(z1.unsqueeze(1), z2.unsqueeze(0))
 
@@ -258,6 +285,7 @@ def cl_forward(cls,
     ease_labels = torch.arange(ease_cos_sim.size(0)).long().to(cls.device)
     ease_loss = loss_fct(ease_cos_sim, ease_labels)
 
+    # Calculate loss for EASE
     if cls.model_args.use_only_ease:
         loss = ease_loss
     else:
@@ -352,7 +380,8 @@ class BertForEACL(BertPreTrainedModel):
         mlm_input_ids=None,
         mlm_labels=None,
         title_id=None,
-        hn_title_id=None,
+        hn_title_ids=None
+        # hn_title_id=None
     ):
         if sent_emb:
             return sentemb_forward(self, self.bert,
@@ -382,7 +411,8 @@ class BertForEACL(BertPreTrainedModel):
                 mlm_input_ids=mlm_input_ids,
                 mlm_labels=mlm_labels,
                 title_id=title_id,
-                hn_title_id=hn_title_id
+                hn_title_ids=hn_title_ids
+                # hn_title_id=hn_title_id
             )
 
 

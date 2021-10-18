@@ -1,5 +1,6 @@
 import sys
 import io, os
+import re
 import numpy as np
 import logging
 import argparse
@@ -38,7 +39,7 @@ def main():
             default='test', 
             help="What evaluation mode to use (dev: fast mode, dev results; test: full mode, test results); fasttest: fast mode, test results")
     parser.add_argument("--task_set", type=str, 
-            choices=['sts', 'transfer', 'full', 'na'],
+            choices=['sts', 'transfer', 'full', 'na', 'cl-sts'],
             default='sts',
             help="What set of tasks to evaluate on. If not 'na', this will override '--tasks'")
     parser.add_argument("--tasks", type=str, nargs='+', 
@@ -48,9 +49,9 @@ def main():
             help="Tasks to evaluate on. If '--task_set' is specified, this will be overridden")
     
     args = parser.parse_args()
-    
+
     # Load transformers' model checkpoint
-    # print(args.model_name_or_path)
+    print("model_path", args.model_name_or_path)
     # return
     model = AutoModel.from_pretrained(args.model_name_or_path)
     tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
@@ -62,6 +63,8 @@ def main():
         args.tasks = ['STS12', 'STS13', 'STS14', 'STS15', 'STS16', 'STSBenchmark', 'SICKRelatedness']
     elif args.task_set == 'transfer':
         args.tasks = ['MR', 'CR', 'MPQA', 'SUBJ', 'SST2', 'TREC', 'MRPC']
+    elif args.task_set == 'cl-sts':
+        args.tasks = ['STS16CL', 'STS17']
     elif args.task_set == 'full':
         args.tasks = ['STS12', 'STS13', 'STS14', 'STS15', 'STS16', 'STSBenchmark', 'SICKRelatedness']
         args.tasks += ['MR', 'CR', 'MPQA', 'SUBJ', 'SST2', 'TREC', 'MRPC']
@@ -195,9 +198,43 @@ def main():
         for task in ['MR', 'CR', 'SUBJ', 'MPQA', 'SST2', 'TREC', 'MRPC']:
             task_names.append(task)
             if task in results:
-                scores.append("%.2f" % (results[task]['devacc']))    
+                scores.append("%.2f" % (results[task]['acc']))    
             else:
                 scores.append("0.00")
+        task_names.append("Avg.")
+        scores.append("%.2f" % (sum([float(score) for score in scores]) / len(scores)))
+        print_table(task_names, scores)
+
+        ## cross-lingual
+        task_names = []
+        scores = []
+
+        for task in ['STS16CL', 'STS17']:
+            if task == "STS17":
+                datasets = ["STS.input.track1.ar-ar.txt",
+                    "STS.input.track2.ar-en.txt",
+                    "STS.input.track3.es-es.txt",
+                    "STS.input.track4a.es-en.txt",
+                    "STS.input.track5.en-en.txt",
+                    "STS.input.track6.tr-en.txt"]
+
+                for dataset in datasets:
+                    if task in results:
+                        scores.append("%.2f" % (results[task][dataset]['spearman'].correlation * 100)) 
+                    else:
+                        scores.append("0.00")
+                    dataset = re.findall("STS.input.track\d.?\.(.+).txt", dataset)[0]
+                    task_names.append(dataset)
+                    
+
+            else:
+                task_names.append(task)
+                if task in results:
+                    scores.append("%.2f" % (results[task]['all']['spearman']['all'] * 100))
+                else:
+                    scores.append("0.00")
+
+
         task_names.append("Avg.")
         scores.append("%.2f" % (sum([float(score) for score in scores]) / len(scores)))
         print_table(task_names, scores)
