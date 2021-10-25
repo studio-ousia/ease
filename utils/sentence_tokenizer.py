@@ -1,4 +1,4 @@
-# import en_core_web_sm
+import en_core_web_sm
 # import es_core_news_sm
 import ja_core_news_md
 # import ja_core_news_sm
@@ -16,10 +16,12 @@ class MultilingualSentenceTokenizer(object):
     def build_tokenizer(self):
         # todo mosesに変更
         # zhとjaはそれぞれ
+        # if self.lang in ["en"]:
         if self.lang in ["ja", "zh"]:
             self.tokenizer = SpacySentenceTokenizer(self.lang)
         else:
-            self.tokenizer = MosesSentenceTokenizer(self.lang)
+            # self.tokenizer = MosesSentenceTokenizer(self.lang)
+            self.tokenizer = PolyglotSentenceTokenizer(self.lang)
 
     def tokenize(self, paragraph):
         return self.tokenizer.tokenize(paragraph)
@@ -59,8 +61,8 @@ class SpacySentenceTokenizer(BaseSentenceTokenizer):
             self.nlp = ja_core_news_md.load()
         elif self.lang == "zh":
             self.nlp = zh_core_web_sm.load()
-        # if self.lang == "en":
-        #     self.nlp = en_core_web_sm.load()
+        elif self.lang == "en":
+            self.nlp = en_core_web_sm.load()
         # elif self.lang == "es":
         #     self.nlp = es_core_news_sm.load()
 
@@ -99,3 +101,19 @@ def arabic_sentence_tokenizer(paragraph):
     else:
         sentences.append("".join(temp_sentence).strip())
         return sentences
+
+import polyglot
+from polyglot.text import Text
+from polyglot.detect.base import logger as polyglot_logger
+polyglot_logger.setLevel("ERROR")
+
+class PolyglotSentenceTokenizer(BaseSentenceTokenizer):
+
+    # コンストラクタ
+    def __init__(self, lang):
+        super().__init__()
+        self.lang = lang
+
+    def tokenize(self, paragraph):
+        return [sent.raw for sent in Text(paragraph).sentences]
+        # return [sent.raw for sent in Text(paragraph, hint_language_code=self.lang).sentences]

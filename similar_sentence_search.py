@@ -89,7 +89,8 @@ def main():
         help="Which pooler to use",
     )
     parser.add_argument(
-        "--langs", type=str, nargs="+", default=["es", "ar", "tr"] 
+        # "--langs", type=str, nargs="+", default=["es", "ar", "tr"] 
+        "--langs", type=str, nargs="+", default=['kab', 'pam', 'kw', 'br', 'mhr', 'ch', 'csb', 'ang', 'war', 'dsb', 'pms', 'oc', 'lfn', 'hsb', 'awa', 'arz', 'nov', 'nds', 'ie', 'ast', 'fo', 'io', 'wuu', 'ia']
         # "--langs", type=str, nargs="+", default=['be', 'ga', 'hy', 'kk', 'oc']
         # "--langs", type=str, nargs="+", default=['mhr', 'br', 'kw', 'kzj', 'pam', 'dtp', 'ber', 'kab']
     )

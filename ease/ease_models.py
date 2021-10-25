@@ -37,14 +37,22 @@ class EntityMLPLayer(nn.Module):
     Head for getting entity representations.
     """
 
-    def __init__(self, config, entity_dim):
+    def __init__(self, config, entity_dim, use_non_linear_transformation, activation="tanh"):
         super().__init__()
         self.dense = nn.Linear(entity_dim, config.hidden_size)
-        self.activation = nn.Tanh()
+        self.dense2 = nn.Linear(config.hidden_size, config.hidden_size)
+        self.use_non_linear_transformation = use_non_linear_transformation
+
+        if activation == "relu":
+            self.activation = nn.ReLU()
+        else:
+            self.activation = nn.Tanh()
 
     def forward(self, features, **kwargs):
         x = self.dense(features)
         x = self.activation(x)
+        if self.use_non_linear_transformation:
+            x = self.dense2(x)
 
         return x
 
@@ -108,7 +116,7 @@ def cl_init(cls, config):
     cls.mlp = MLPLayer(config)
     cls.simcse_sim = Similarity(temp=cls.model_args.simcse_temp)
     cls.ease_sim = Similarity(temp=cls.model_args.ease_temp)
-    cls.entity_transformation = EntityMLPLayer(config, cls.model_args.entity_emb_dim)
+    cls.entity_transformation = EntityMLPLayer(config, cls.model_args.entity_emb_dim, cls.model_args.use_non_linear_transformation, cls.model_args.activation)
 
     if cls.model_args.use_another_transformation_for_hn:
         cls.hn_entity_transformation = MLPLayer(config)
@@ -234,7 +242,10 @@ def cl_forward(cls,
     ease_cos_sim = cls.ease_sim(
         z1.unsqueeze(1), entity_embedding.transpose(0, 1)
     )
-    
+
+    if cls.model_args.use_equal_loss:
+        ease_cos_sim2 = cls.ease_sim(z2.unsqueeze(1), entity_embedding.transpose(0, 1))
+        
      # hard negativeのweight
     z3_weight = cls.model_args.hard_negative_weight
 
@@ -284,6 +295,13 @@ def cl_forward(cls,
     # ea loss
     ease_labels = torch.arange(ease_cos_sim.size(0)).long().to(cls.device)
     ease_loss = loss_fct(ease_cos_sim, ease_labels)
+
+    if cls.model_args.use_equal_loss:
+        ease_labels2 = torch.arange(ease_cos_sim2.size(0)).long().to(cls.device)
+        ease_loss2 = loss_fct(ease_cos_sim2, ease_labels2)
+        ease_loss = 0.5 * ease_loss + 0.5 * ease_loss2
+
+
 
     # Calculate loss for EASE
     if cls.model_args.use_only_ease:
