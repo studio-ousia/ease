@@ -20,6 +20,10 @@ model_args:
   entity_emb_dim: 768
   entity_emb_shape: None
   init_wiki2emb: True
+  masked_sentence_ratio: 0
+  use_non_linear_transformation: True
+  activation: tanh
+  use_equal_loss: False
 
 train_args:
   seed: 42
@@ -47,7 +51,7 @@ train_args:
   metric_for_best_model: stsb_spearman
   load_best_model_at_end: True
   gradient_accumulation_steps: 2
-  warmup_steps: 0
+  warmup_steps: 500
   # warmup_ratio: 0
   # _n_gpu: 1
   # adafactor: false

@@ -127,7 +127,7 @@ class OurTrainingArguments(TrainingArguments):
 
 def build_entity_vocab(data):
     entities = []
-    for title, sentence, hn_titles in tqdm(data):
+    for title, sentence, hn_titles, masked_sentence in tqdm(data):
         entities.append(title)
         entities.extend(hn_titles)
     entities = set(entities) - set([ENTITY_PAD_MARK])
@@ -142,7 +142,7 @@ def update_args(base_args, input_args):
     return base_args
 
 
-def get_dataset(data, max_seq_length, tokenizer, entity_vocab):
+def get_dataset(data, max_seq_length, tokenizer, entity_vocab, masked_sentence_ratio):
 
     input_ids = []
     attention_masks = []
@@ -151,15 +151,25 @@ def get_dataset(data, max_seq_length, tokenizer, entity_vocab):
     hn_title_ids = []
     cnt = 0
 
-    for title, sentence, hn_titles in tqdm(data):
+    for title, sentence, hn_titles, masked_sentence in tqdm(data):
 
         sent_features = tokenizer(
             sentence, max_length=max_seq_length, truncation=True, padding="max_length"
         )
 
+        if (masked_sentence_ratio > 0 and masked_sentence is not None):
+            masked_sent_features = tokenizer(
+                masked_sentence, max_length=max_seq_length, truncation=True, padding="max_length"
+            )
+
         features = {}
-        for key in sent_features:
-            features[key] = [sent_features[key], sent_features[key]]
+        if (masked_sentence_ratio > random.random() and masked_sentence is not None):
+            cnt += 1
+            for key in sent_features:
+                features[key] = [masked_sent_features[key], sent_features[key]]
+        else:
+            for key in sent_features:
+                features[key] = [sent_features[key], sent_features[key]]
 
         title_ids.append(entity_vocab[title])
         hn_title_ids.append(
@@ -170,7 +180,8 @@ def get_dataset(data, max_seq_length, tokenizer, entity_vocab):
         token_type_ids.append(features["token_type_ids"])
 
     print("all data", len(data))
-    print("hn_title", cnt)
+    # print("hn_title", cnt)
+    # print(cnt / len(data))
 
     return input_ids, attention_masks, token_type_ids, title_ids, hn_title_ids
 
@@ -244,6 +255,7 @@ def main(cfg: DictConfig):
         # "SimCSE_original":"data/wiki100k_for_simcse.txt"
         "SimCSE_original": "data/wiki1m_for_simcse.txt",
         "wikidata_hyperlink_type_hn": "data/wikidata_hyperlinks_with_type_hardnegatives_abst_False_1m",
+        # "wikidata_hyperlink_type_hn": "data/wikidata_hyperlinks_with_type_hardnegatives_test_False_first_sentence_False_abst_False_size_1000000_max_count_10000_link_min_count_10",
         # "wikidata_hyperlink_type_hn": "data/wikidata_hyperlinks_with_type_hardnegatives_first_sentence_False_size_1000000_max_count_100_link_min_count_100",
         # "wikidata_hyperlink_type_hn_first_sentence": "data/wikidata_hyperlinks_with_type_hardnegatives_first_sentence_True_abst_False_size_1000000_max_count_100_link_min_count_10",
         "wikidata_hyperlink_type_hn_first_sentence": "data/wikidata_hyperlinks_with_type_hardnegatives_first_sentence_True_abst_False",
@@ -251,10 +263,11 @@ def main(cfg: DictConfig):
     }
 
     for dataset, sample_num in zip(train_args.datasets, train_args.sample_nums):
-        dataset_path = os.path.join(cwd, dataset_path_dict[dataset])
+        # dataset_path = os.path.join(cwd, dataset_path_dict[dataset])
         wikipedia_data.extend(
             RawDataLoader.load(
-                dataset_path,
+                # dataset_path
+                cwd,
                 dataset,
                 sample_num=sample_num,
                 hard_negative_num=model_args.hard_negative_num,
@@ -270,7 +283,7 @@ def main(cfg: DictConfig):
 
     print("get_dataset...")
     input_ids, attention_masks, token_type_ids, title_id, hn_title_ids = get_dataset(
-        wikipedia_data, model_args.max_seq_length, tokenizer, entity_vocab
+        wikipedia_data, model_args.max_seq_length, tokenizer, entity_vocab, model_args.masked_sentence_ratio
     )
     train_dataset = MyDataset(
         input_ids, attention_masks, token_type_ids, title_id, hn_title_ids

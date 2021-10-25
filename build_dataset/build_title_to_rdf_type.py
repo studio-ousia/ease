@@ -1,3 +1,5 @@
+# en_title_to_wikidata_id, wikidata_id_to_rdf_idsを作成するコード
+
 from collections import defaultdict
 from tqdm import tqdm
 import bz2

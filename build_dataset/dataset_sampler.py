@@ -64,8 +64,8 @@ def main():
     parser = argparse.ArgumentParser(description="このプログラムの説明（なくてもよい）")  # 2. パーサを作る
     parser.add_argument("--sample_size", type=int, default=1000000)
     parser.add_argument("--data_path", type=str)
-    parser.add_argument("--max_count", type=int, default=100)
-    parser.add_argument("--link_min_count", type=int, default=100)
+    parser.add_argument("--max_count", type=int, default=10000)
+    parser.add_argument("--link_min_count", type=int, default=10)
     args = parser.parse_args()
 
     data = pickle_load(args.data_path)
