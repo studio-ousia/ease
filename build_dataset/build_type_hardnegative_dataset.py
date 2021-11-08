@@ -7,7 +7,8 @@ from tqdm import tqdm
 from wikipedia2vec import Wikipedia2Vec
 import time
 from multiprocessing import Pool
-from multiprocessing import Process, Manager
+from multiprocessing import Process, Manager, Value
+from typing import List
 import random
 import argparse
 import gc
@@ -45,6 +46,7 @@ def process(data):
         title_to_same_type_entities,
         lang_title_to_en_title,
         args,
+        error_num,
     ) = data
     lang = args.lang
 
@@ -54,6 +56,7 @@ def process(data):
         print("=== sentence tokenize error ===")
         print(e)
         print("sentence:" + paragraph.text)
+        error_num.value += 1
         return
     
     if args.use_first_sentence:
@@ -145,7 +148,6 @@ def main():
     parser.add_argument("--use_first_sentence", action="store_true")
     parser.add_argument("--test_mode", action="store_true")
     args = parser.parse_args()
-    p = Pool(16)
 
     print("load files...")
     entity_vocab = pickle_load(
@@ -252,6 +254,7 @@ def main():
 
     print("set manager dicts...")
     manager = Manager()
+    error_num = Value('i', 0)
     entity_per_sentence = manager.dict()
     paragraphs_with_titles = []
     title_to_hyperlink_entities = manager.dict(title_to_hyperlink_entities)
@@ -311,20 +314,31 @@ def main():
             title_to_same_type_entities,
             lang_title_to_en_title,
             args,
+            error_num
         )
         for paragraph, origin_lang_title in paragraphs_with_titles
     ]
 
+
     print(len(datas))
+    # p = Pool(16)
 
     print("processing...")
     start = time.time()
 
-    # for data in tqdm(datas):
-    #     process(data)
-    p.map(process, tqdm(datas))
+    for data in tqdm(datas):
+        process(data)
+    # p.map(process, tqdm(datas))
+    # processes: List[Process] = []
+    # for data in datas:
+    #     p: Process = Process(target=process, args=([data]))
+    #     processes.append(p)
+    #     p.start()
+
+    # for p in tqdm(processes):
+    #     p.join()
     end = time.time()
-    p.close()
+    # p.close()
 
     del (
         wiki_db,
@@ -339,11 +353,12 @@ def main():
 
     entity_per_sentence = dict(entity_per_sentence)
 
+    print(f"error num: {error_num.value}")
+
     print("saving...")
     pickle_dump(
         entity_per_sentence,
         f"../data/wikidata_hyperlinks_with_type_hardnegatives_test_{args.test_mode}_first_sentence_{args.use_first_sentence}_abst_{args.abstract}_{args.lang}.pkl",
-        # f"../data/wikidata_hyperlinks_with_type_hardnegatives_first_sentence_{args.use_first_sentence}_abst_{args.abstract}_{args.lang}.pkl",
     )
 
 

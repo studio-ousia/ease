@@ -10,8 +10,6 @@ import sys
 import os
 
 sys.path.append(os.path.abspath(".."))
-
-from main import pickle_load
 from utils.utils import pickle_dump, pickle_load
 
 

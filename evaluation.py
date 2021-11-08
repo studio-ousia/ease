@@ -216,14 +216,18 @@ def main():
                     "STS.input.track3.es-es.txt",
                     "STS.input.track4a.es-en.txt",
                     "STS.input.track5.en-en.txt",
-                    "STS.input.track6.tr-en.txt"]
+                    "STS.input.track6.tr-en.txt",
+                    "STS.input.track7.en-de.txt",
+                    "STS.input.track8.fr-en.txt",
+                    "STS.input.track9.it-en.txt",
+                    "STS.input.track10.nl-en.txt"]
 
                 for dataset in datasets:
                     if task in results:
                         scores.append("%.2f" % (results[task][dataset]['spearman'].correlation * 100)) 
                     else:
                         scores.append("0.00")
-                    dataset = re.findall("STS.input.track\d.?\.(.+).txt", dataset)[0]
+                    dataset = re.findall("STS.input.track\d+.?\.(.+).txt", dataset)[0]
                     task_names.append(dataset)
                     
 

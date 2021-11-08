@@ -1,6 +1,7 @@
 import en_core_web_sm
 # import es_core_news_sm
 import ja_core_news_md
+import de_core_news_sm
 # import ja_core_news_sm
 import zh_core_web_sm
 from sentence_splitter import SentenceSplitter
@@ -17,7 +18,8 @@ class MultilingualSentenceTokenizer(object):
         # todo mosesに変更
         # zhとjaはそれぞれ
         # if self.lang in ["en"]:
-        if self.lang in ["ja", "zh"]:
+        # if self.lang in ["ja", "zh"]:
+        if self.lang in ["None"]:
             self.tokenizer = SpacySentenceTokenizer(self.lang)
         else:
             # self.tokenizer = MosesSentenceTokenizer(self.lang)
@@ -63,6 +65,8 @@ class SpacySentenceTokenizer(BaseSentenceTokenizer):
             self.nlp = zh_core_web_sm.load()
         elif self.lang == "en":
             self.nlp = en_core_web_sm.load()
+        elif self.lang == "de":
+            self.nlp = de_core_news_sm.load()
         # elif self.lang == "es":
         #     self.nlp = es_core_news_sm.load()
 
