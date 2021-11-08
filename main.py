@@ -273,6 +273,7 @@ def main(cfg: DictConfig):
                 hard_negative_num=model_args.hard_negative_num,
                 langs=train_args.langs,
                 min_length=model_args.min_seq_length,
+                seed=train_args.seed
             )
         )
 

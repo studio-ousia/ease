@@ -21,7 +21,7 @@ model_args:
   entity_emb_shape: None
   init_wiki2emb: True
   masked_sentence_ratio: 0
-  use_non_linear_transformation: True
+  use_non_linear_transformation: False
   activation: tanh
   use_equal_loss: False
 
@@ -34,9 +34,6 @@ train_args:
     - 1000
   langs:
     - "en"
-  #   - "es"
-  #   - "ar"
-  #   - "tr"
   eval_transfer: False
   do_eval: True
   do_train: True

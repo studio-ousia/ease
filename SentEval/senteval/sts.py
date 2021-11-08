@@ -299,7 +299,12 @@ class STS17Eval(STSEval):
                          "STS.input.track3.es-es.txt",
                          "STS.input.track4a.es-en.txt",
                          "STS.input.track5.en-en.txt",
-                         "STS.input.track6.tr-en.txt"]
+                    "STS.input.track6.tr-en.txt",
+                    "STS.input.track7.en-de.txt",
+                    "STS.input.track8.fr-en.txt",
+                    "STS.input.track9.it-en.txt",
+                    "STS.input.track10.nl-en.txt"
+                         ]
         # self.datasets = ["track1.ar-ar",
         #                  "track2.ar-en",
         #                  "track3.es-es",

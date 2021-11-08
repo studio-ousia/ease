@@ -1,3 +1,8 @@
+def warn(*args, **kwargs):
+    pass
+import warnings
+warnings.warn = warn
+
 from transformers import AutoModel, AutoTokenizer
 from coclust.evaluation.external import accuracy
 from sklearn.cluster import KMeans 
@@ -8,6 +13,7 @@ import argparse
 from dataset_loader import dataset_load
 from prettytable import PrettyTable
 from tqdm import tqdm
+
 
 import os
 
@@ -25,6 +31,8 @@ def batcher(model, tokenizer, sentence, args, device="cuda"):
         sentence,
         return_tensors="pt",
         padding=True,
+        truncation=True,
+        max_length=512,
     )
     # Move to the correct device
     for k in batch:
@@ -33,8 +41,9 @@ def batcher(model, tokenizer, sentence, args, device="cuda"):
     with torch.no_grad():
         outputs = model(**batch, output_hidden_states=True, return_dict=True)
         last_hidden = outputs.last_hidden_state
-        pooler_output = outputs.pooler_output
         hidden_states = outputs.hidden_states
+        if hasattr(outputs, "pooler_output"):
+            pooler_output = outputs.pooler_output
 
     # Apply different poolers
     if args.pooler == 'cls':
@@ -71,6 +80,16 @@ def main():
         default="avg",
         help="Which pooler to use",
     )
+    
+    parser.add_argument(
+        "--task_set",
+        type=str,
+        choices=["cl", "mono", "full"],
+        default="mono",
+        help="Which task",
+    )
+
+    parser.add_argument('--verbose', action='store_true')
 
     args = parser.parse_args()
     print("model_path", args.model_name_or_path)
@@ -80,33 +99,68 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
-
-    scores = []
     # datasets = ["tweet", "biomedical", "stackoverflow", "searchsnippets", "agnews", "googlenews_ts", "googlenews_t", "googlenews_s"] 
-    datasets = ['AG', 'SS', 'SO', 'Bio', 'Tweet', 'G-TS', 'G-S', 'G-T']
+    # datasets = []
+    dataset_groups = []
+    if args.task_set in ["full", "mono"]:
+        dataset_groups.append(["R8", "R52", "OH", '20N'])
+        # datasets += ['AG', 'SS', 'SO', 'Bio', 'Tweet', 'G-TS', 'G-S', 'G-T']
+    
+    if args.task_set in ["full", "cl"]:
+        # datasets += ['MD-en']
+        # dataset_groups.append(['WN-S-en', 'WN-S-ja', 'WN-S-es', 'WN-S-tr', 'WN-S-ar'])
+        # dataset_groups.append(['WN-T-ar'])
+        # dataset_groups.append(['WN-S-ar'])
+        # dataset_groups.append(['WN-TS-ar'])
+        # 13 langs
+        dataset_groups.append(['WN-T-en', 'WN-T-ar', 'WN-T-ja', 'WN-T-es', 'WN-T-tr', 'WN-T-it', 'WN-T-ko', 'WN-T-pl', 'WN-T-fa', 'WN-T-nl', 'WN-T-ru'])
+        dataset_groups.append(['WN-S-en', 'WN-S-ar', 'WN-S-ja', 'WN-S-es', 'WN-S-tr', 'WN-S-it', 'WN-S-ko', 'WN-S-pl', 'WN-S-fa', 'WN-S-nl', 'WN-S-ru'])
+        dataset_groups.append(['WN-TS-en', 'WN-TS-ar', 'WN-TS-ja', 'WN-TS-es', 'WN-TS-tr', 'WN-TS-it', 'WN-TS-ko', 'WN-TS-pl', 'WN-TS-fa', 'WN-TS-nl', 'WN-TS-ru'])
+        # dataset_groups.append(['WN-T-en', 'WN-T-ar', 'WN-T-ja', 'WN-T-es', 'WN-T-tr', 'WN-T-it', 'WN-T-ko', 'WN-T-pt', 'WN-T-uk', 'WN-T-cs', 'WN-T-pl', 'WN-T-ca', 'WN-T-fi', 'WN-T-fa', 'WN-T-nl', 'WN-T-hu', 'WN-T-eo', 'WN-T-ru'])
+        # dataset_groups.append(['WN-S-en', 'WN-S-ar', 'WN-S-ja', 'WN-S-es', 'WN-S-tr', 'WN-S-it', 'WN-S-ko', 'WN-S-pt', 'WN-S-uk', 'WN-S-cs', 'WN-S-pl', 'WN-S-ca', 'WN-S-fi', 'WN-S-fa', 'WN-S-nl', 'WN-S-hu', 'WN-S-eo', 'WN-S-ru'])
+        # dataset_groups.append(['WN-TS-en', 'WN-TS-ar', 'WN-TS-ja', 'WN-TS-es', 'WN-TS-tr', 'WN-TS-it', 'WN-TS-ko', 'WN-TS-pt', 'WN-TS-uk', 'WN-TS-cs', 'WN-TS-pl', 'WN-TS-ca', 'WN-TS-fi', 'WN-TS-fa', 'WN-TS-nl', 'WN-TS-hu', 'WN-TS-eo', 'WN-TS-ru'])
+        # datasets += ['WN-S-en']
+        # dataset_groups.append(["NC-en", "NC-de", "NC-es"])
+        # datasets += ['WN-en', 'WN-ar', 'WN-ja', 'WN-es', 'WN-tr', 'WN-it', 'WN-ko', 'WN-pt', 'WN-uk', 'WN-cs', 'WN-pl', 'WN-ca', 'WN-fi', 'WN-fa', 'WN-nl', 'WN-hu', 'WN-eo']
+        # datasets += ['WN-en', 'WN-ar', 'WN-ja', 'WN-es', 'WN-tr', 'WN-it', 'WN-ko', 'WN-pt', 'WN-uk', 'WN-cs', 'WN-pl', 'WN-ca', 'WN-fi', 'WN-fa', 'WN-nl', 'WN-hu', 'WN-eo', 'WN-ru']
+        # datasets += ['MD-en', 'MD-fr', 'MD-de', 'MD-ja', 'MD-zh', 'MD-it', 'MD-ru', 'MD-es']
+        # datasets += ['MD-FS-en', 'MD-FS-fr', 'MD-FS-de', 'MD-FS-ja', 'MD-FS-zh', 'MD-FS-it', 'MD-FS-ru', 'MD-FS-es']
     batch_size = 256
 
-    for dataset_key in datasets:
-        print(f"evaluate {dataset_key}...")
-        sentences, labels = dataset_load(dataset_key)
+    results = []
 
-        print("encode sentence embeddings...")
-        sentence_embeddings = []
-        for i in tqdm(range(0, len(sentences), batch_size)):
-            sentence_embeddings.append(batcher(model, tokenizer, sentences[i: i + batch_size], args, device="cuda"))
-        sentence_embeddings = torch.cat(sentence_embeddings, dim=0)
+    for datasets in dataset_groups:
+        scores = []
+        for dataset_key in tqdm(datasets):
+            if args.verbose:
+                print(f"evaluate {dataset_key}...")
+            sentences, labels = dataset_load(dataset_key)
 
-        # sentence_embeddings = batcher(model, tokenizer, sentences, args, device="cuda")
-        print("clutering...")
-        kmeans_model = KMeans(n_clusters=len(set(labels)), random_state=12).fit(sentence_embeddings)
-        pred_labels = kmeans_model.labels_
-        acc = accuracy(labels, pred_labels) * 100
-        print("%.1f" % (acc))
-        scores.append("%.1f" % (acc))
+            if args.verbose:
+                print("encode sentence embeddings...")
+            sentence_embeddings = []
+            for i in tqdm(range(0, len(sentences), batch_size)):
+                sentence_embeddings.append(batcher(model, tokenizer, sentences[i: i + batch_size], args, device="cuda"))
+            sentence_embeddings = torch.cat(sentence_embeddings, dim=0)
 
-    datasets.append("Avg.")
-    scores.append("%.1f" % (sum([float(score) for score in scores]) / len(scores)))
-    print_table(datasets, scores)
+            # sentence_embeddings = batcher(model, tokenizer, sentences, args, device="cuda")
+            if args.verbose:
+                print("clutering...")
+            kmeans_model = KMeans(n_clusters=len(set(labels)), random_state=12).fit(sentence_embeddings)
+            pred_labels = kmeans_model.labels_
+            acc = accuracy(labels, pred_labels) * 100
+            if args.verbose:
+                print("%.1f" % (acc))
+            scores.append("%.1f" % (acc))
+
+        datasets.append("Avg.")
+        scores.append("%.1f" % (sum([float(score) for score in scores]) / len(scores)))
+        results.append((datasets, scores))
+        
+    for result in results:
+        datasets, scores = result
+        print("------ %s ------" % (datasets[0]))
+        print_table(datasets, scores)
 
 
 if __name__ == "__main__":

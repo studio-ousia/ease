@@ -7,8 +7,6 @@ from datasets import load_dataset
 import gc
 import os
 
-
-random.seed(42)
 ENTITY_PAD_MARK = "[PAD]"
 
 # sizeまでPAD_MARKで埋める
@@ -124,7 +122,9 @@ class RawDataLoader:
         hard_negative_num=1,
         min_length=5,
         langs=["en", "ar", "es", "tr"],
+        seed=42,
     ):
+        random.seed(seed)
 
         # # ここにloaderを追加していく
         # if dataset in ["wiki_hyperlink", "wiki_first-sentence"]:
@@ -137,14 +137,31 @@ class RawDataLoader:
             file_objs = []
             for lang in langs:
 
-                if lang in ["en"]:
-                    dataset_path = "data/wikidata_hyperlinks_with_type_hardnegatives_abst_False_1m_en.pkl"
+                if lang in ["en", "ar", "es", "tr"]:
+                    dataset_path = f"data/wikidata_hyperlinks_with_type_hardnegatives_abst_False_1m_{lang}.pkl"
+
+                elif lang in ['fr','de','ja','zh','it','ru','nl']:
+                    dataset_path = f"data/wikidata_hyperlinks_with_type_hardnegatives_test_False_first_sentence_False_abst_False_size_1000000_max_count_10000_link_min_count_10_{lang}.pkl"
 
                 else:
                     dataset_path = f"data/wikidata_hyperlinks_with_type_hardnegatives_test_False_first_sentence_False_abst_False_{lang}.pkl"
                 dataset_path = os.path.join(cwd, dataset_path)
                 file_objs.append(pickle_load(dataset_path))
 
+            formatter = WikidataDataFormatter(
+                file_objs,
+                sample_num,
+                hard_negative_num,
+                min_length,
+            )
+        
+        elif dataset == "wikipedia_random":
+            print(f"langs: {langs}")
+            file_objs = []
+            for lang in langs:
+                dataset_path = f"data/wikidata_randam_sentences_{lang}.pkl"
+                dataset_path = os.path.join(cwd, dataset_path)
+                file_objs.append(pickle_load(dataset_path))
             formatter = WikidataDataFormatter(
                 file_objs,
                 sample_num,

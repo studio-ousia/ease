@@ -91,6 +91,7 @@ def main():
     parser.add_argument(
         # "--langs", type=str, nargs="+", default=["es", "ar", "tr"] 
         "--langs", type=str, nargs="+", default=['kab', 'pam', 'kw', 'br', 'mhr', 'ch', 'csb', 'ang', 'war', 'dsb', 'pms', 'oc', 'lfn', 'hsb', 'awa', 'arz', 'nov', 'nds', 'ie', 'ast', 'fo', 'io', 'wuu', 'ia']
+        # "--langs", type=str, nargs="+", default=["en",'be','ja','yi','no','bo','el','tr','tg','ht','zu','sm','th','sl','ig','am','haw','ro','ur','uz','eo','hi','eu','he','ta','it','zh','id','lo','ga','ku','mi','sw','km','xh','so','tk','rw','mt','st','ceb','ny','fy','my','cy','hy','gl','sn','as','mk','ne','sq','af','ru','lb','pa','es','vi','la','de','ca','ug','wo','nl','tl','bn','lv','pl','mn','et','cs','lt','fr','"fi"','ar','tt','sv','ha','ko','az','gd','kk','mg','gu','kn','si','pt','da','jv','te','ml','su','yo','ky','sr','hu','bs','bg','uk','hr','ms','ka','sk','fa','is','or','mr','co',"kab",'pam','kw','br','mhr','ch','csb','ang','war','dsb','pms','oc','lfn','hsb','awa','arz','nov','nds','ie','ast','fo','io','wuu','ia']
         # "--langs", type=str, nargs="+", default=['be', 'ga', 'hy', 'kk', 'oc']
         # "--langs", type=str, nargs="+", default=['mhr', 'br', 'kw', 'kzj', 'pam', 'dtp', 'ber', 'kab']
     )
@@ -110,15 +111,24 @@ def main():
         if hasattr(lang, "alpha_2")
     }
     langs = [lang_2_to_3[lang] if lang in lang_2_to_3 else lang for lang in args.langs]
+    langs = set(langs)
 
     # 言語ごとにデータを取得
     dataset = dict()
 
-    for lang in langs:
-        src_path = f"data/tatoeba/v1/tatoeba.{lang}-eng.{lang}"
-        trg_path = f"data/tatoeba/v1/tatoeba.{lang}-eng.eng"
-        dataset[lang] = (load_data(src_path), load_data(trg_path))
+    # 存在しない言語群
+    not_exist_langs = set()
 
+    for lang in langs:
+        try:
+            src_path = f"data/tatoeba/v1/tatoeba.{lang}-eng.{lang}"
+            trg_path = f"data/tatoeba/v1/tatoeba.{lang}-eng.eng"
+            dataset[lang] = (load_data(src_path), load_data(trg_path))
+        except:
+            print(f"{lang} doesn't exist.")
+            not_exist_langs.add(lang)
+
+    langs = list(langs - not_exist_langs)
     lang_to_en_scores = []
     en_to_langs_scores = []
 
