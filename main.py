@@ -6,6 +6,7 @@ from transformers import (
     CONFIG_MAPPING,
     MODEL_FOR_MASKED_LM_MAPPING,
     HfArgumentParser,
+    BertForPreTraining,
 )
 from torch.utils.data import TensorDataset, random_split
 
@@ -171,9 +172,13 @@ def get_dataset(data, max_seq_length, tokenizer, entity_vocab, masked_sentence_r
             for key in sent_features:
                 features[key] = [sent_features[key], sent_features[key]]
 
-        title_ids.append(entity_vocab[title])
+        if title in entity_vocab:
+            title_ids.append(entity_vocab[title])
+        else:
+            title_ids.append(entity_vocab[ENTITY_PAD_MARK])
+
         hn_title_ids.append(
-            np.array([entity_vocab[hn_title] for hn_title in hn_titles], dtype=int)
+            np.array([entity_vocab[hn_title] if hn_title in entity_vocab else entity_vocab[ENTITY_PAD_MARK] for hn_title in hn_titles], dtype=int)
         )
         input_ids.append(features["input_ids"])
         attention_masks.append(features["attention_mask"])
@@ -234,6 +239,7 @@ def main(cfg: DictConfig):
     torch.manual_seed(train_args.seed)
     torch.cuda.manual_seed_all(train_args.seed)
 
+
     # トークナイザ
     tokenizer_kwargs = {
         "cache_dir": model_args.cache_dir,
@@ -245,28 +251,13 @@ def main(cfg: DictConfig):
         model_args.model_name_or_path, **tokenizer_kwargs
     )
 
+
     print("loading data...")
     wikipedia_data = []
-    # todo 直接パスを指定
-    dataset_path_dict = {
-        "wiki_hyperlink": "data/hyperlinks_with_hardnegatives.pkl",
-        "wiki_first-sentence": "data/first_sentences_with_hardnegatives.pkl",
-        "wikidata_hyperlink": "data/wikidata_hyperlinks",
-        # "SimCSE_original":"data/wiki100k_for_simcse.txt"
-        "SimCSE_original": "data/wiki1m_for_simcse.txt",
-        "wikidata_hyperlink_type_hn": "data/wikidata_hyperlinks_with_type_hardnegatives_abst_False_1m",
-        # "wikidata_hyperlink_type_hn": "data/wikidata_hyperlinks_with_type_hardnegatives_test_False_first_sentence_False_abst_False_size_1000000_max_count_10000_link_min_count_10",
-        # "wikidata_hyperlink_type_hn": "data/wikidata_hyperlinks_with_type_hardnegatives_first_sentence_False_size_1000000_max_count_100_link_min_count_100",
-        # "wikidata_hyperlink_type_hn_first_sentence": "data/wikidata_hyperlinks_with_type_hardnegatives_first_sentence_True_abst_False_size_1000000_max_count_100_link_min_count_10",
-        "wikidata_hyperlink_type_hn_first_sentence": "data/wikidata_hyperlinks_with_type_hardnegatives_first_sentence_True_abst_False",
-        "wikidata_hyperlink_type_hn_abst": "data/wikidata_hyperlinks_with_type_hardnegatives_abst_True_1m",
-    }
 
     for dataset, sample_num in zip(train_args.datasets, train_args.sample_nums):
-        # dataset_path = os.path.join(cwd, dataset_path_dict[dataset])
         wikipedia_data.extend(
             RawDataLoader.load(
-                # dataset_path
                 cwd,
                 dataset,
                 sample_num=sample_num,
@@ -279,9 +270,12 @@ def main(cfg: DictConfig):
 
     # エンティティの語彙を構成
     print("build entity vocab...")
-    entity_vocab = build_entity_vocab(wikipedia_data)
-    print(f"entities: {len(entity_vocab)}")
+    if train_args.train_saved_model:
+         entity_vocab = pickle_load(os.path.join(model_args.model_name_or_path, "entity_vocab.pkl"))
+    else:
+        entity_vocab = build_entity_vocab(wikipedia_data)
 
+    print(f"entities: {len(entity_vocab)}")
     print("get_dataset...")
     input_ids, attention_masks, token_type_ids, title_id, hn_title_ids = get_dataset(
         wikipedia_data, model_args.max_seq_length, tokenizer, entity_vocab, model_args.masked_sentence_ratio
@@ -334,6 +328,7 @@ def main(cfg: DictConfig):
                 pass
         print(cnt)
 
+
     # モデルのロード
     config_kwargs = {
         "cache_dir": model_args.cache_dir,
@@ -347,17 +342,22 @@ def main(cfg: DictConfig):
 
     model = BertForEACL.from_pretrained(
         model_args.model_name_or_path,
-        from_tf=False,  # チェックポイントからから読むか
+        from_tf=bool(".ckpt" in model_args.model_name_or_path),
         config=config,
         cache_dir=model_args.cache_dir,
         revision=model_args.model_revision,
         use_auth_token=True if model_args.use_auth_token else None,
         model_args=model_args,
-        # train_args=train_args
     )
+
+    if model_args.do_mlm:
+        # TODO書き換え
+        pretrained_model = BertForPreTraining.from_pretrained("bert-base-multilingual-cased")
+        model.lm_head.load_state_dict(pretrained_model.cls.predictions.state_dict())
 
     model.resize_token_embeddings(len(tokenizer))
     model.entity_embedding.weight = nn.Parameter(torch.FloatTensor(entity_embeddings))
+    model.entity_embedding.weight.requires_grad = True
 
     print("### del entity embeddings")
     del entity_embeddings
@@ -446,6 +446,7 @@ def main(cfg: DictConfig):
             """
             Prepare masked tokens inputs/labels for masked language modeling: 80% MASK, 10% random, 10% original.
             """
+            inputs = inputs.clone()
             labels = inputs.clone()
             # We sample a few tokens in each sequence for MLM training (with probability `self.mlm_probability`)
             probability_matrix = torch.full(labels.shape, self.mlm_probability)
@@ -537,11 +538,15 @@ def main(cfg: DictConfig):
         mlflow_writer.log_metric("eval_sickr_spearman", results["eval_sickr_spearman"])
         mlflow_writer.log_metric("eval_avg_sts", results["eval_avg_sts"])
 
+    # entity_vocabを保存
+    pickle_dump(entity_vocab, os.path.join(train_args.output_dir, "entity_vocab.pkl"))
+
     # Hydraの成果物をArtifactに保存
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), ".hydra/config.yaml"))
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), ".hydra/hydra.yaml"))
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), ".hydra/overrides.yaml"))
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), "main.log"))
+
 
     print("### del trainer")
     del trainer, model, tokenizer

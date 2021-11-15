@@ -8,9 +8,10 @@ model_args:
   pooler_type: "cls" # "avg-first_last"
   hard_negative_weight: 1.0
   do_mlm: False
-  mlm_weight: 0.1
   mlp_only_train: True
+  mlm_loss_ratio: 0.1
   ease_loss_ratio: 0
+  simcse_loss_ratio: 1
   use_entity_transformation: True
   use_another_transformation_for_hn: False
   use_only_ease: False
@@ -26,6 +27,7 @@ model_args:
   use_equal_loss: False
 
 train_args:
+  train_saved_model: False
   seed: 42
   learning_rate: 5e-05
   datasets:
@@ -38,7 +40,7 @@ train_args:
   do_eval: True
   do_train: True
   experiment_name: "9/23_ease"
-  output_dir: results/my-unsup-simcse-bert-base-uncased
+  output_dir: results/test
   num_train_epochs: 1
   per_device_train_batch_size: 64
   eval_steps: 125
@@ -49,6 +51,9 @@ train_args:
   load_best_model_at_end: True
   gradient_accumulation_steps: 2
   warmup_steps: 500
+  ignore_data_skip: False
+  resume_from_checkpoint: False
+  group_by_length: False
   # warmup_ratio: 0
   # _n_gpu: 1
   # adafactor: false

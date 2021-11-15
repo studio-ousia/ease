@@ -301,20 +301,15 @@ def cl_forward(cls,
         ease_loss2 = loss_fct(ease_cos_sim2, ease_labels2)
         ease_loss = 0.5 * ease_loss + 0.5 * ease_loss2
 
-
-
     # Calculate loss for EASE
-    if cls.model_args.use_only_ease:
-        loss = ease_loss
-    else:
-        loss = loss + cls.model_args.ease_loss_ratio * ease_loss
+    loss = cls.model_args.simcse_loss_ratio * loss + cls.model_args.ease_loss_ratio * ease_loss
 
     # Calculate loss for MLM
     if mlm_outputs is not None and mlm_labels is not None:
         mlm_labels = mlm_labels.view(-1, mlm_labels.size(-1))
         prediction_scores = cls.lm_head(mlm_outputs.last_hidden_state)
         masked_lm_loss = loss_fct(prediction_scores.view(-1, cls.config.vocab_size), mlm_labels.view(-1))
-        loss = loss + cls.model_args.mlm_weight * masked_lm_loss
+        loss = loss + cls.model_args.mlm_loss_ratio * masked_lm_loss
 
     if not return_dict:
         output = (cos_sim,) + outputs[2:]
@@ -377,10 +372,7 @@ class BertForEACL(BertPreTrainedModel):
         super().__init__(config)
         self.model_args = model_kargs["model_args"]
         self.bert = BertModel(config)
-
-        if self.model_args.do_mlm:
-            self.lm_head = BertLMPredictionHead(config)
-
+        self.lm_head = BertLMPredictionHead(config)
         cl_init(self, config)
 
     def forward(self,

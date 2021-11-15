@@ -74,7 +74,7 @@ def main():
     data = filter_size(data, args.sample_size)
 
     before_pkl_idx = args.data_path.index(".pkl") - 3
-    lang = args.data_path[before_pkl_idx: before_pkl_idx +3]
+    lang = args.data_path[before_pkl_idx: before_pkl_idx + 3]
     
     output_path = (
         args.data_path[:before_pkl_idx]

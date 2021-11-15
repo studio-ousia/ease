@@ -8,6 +8,8 @@ from prettytable import PrettyTable
 import torch
 import transformers
 from transformers import AutoModel, AutoTokenizer
+from omegaconf import OmegaConf
+from utils.mlflow_writer import MlflowWriter
 
 # Set up logger
 logging.basicConfig(format='%(asctime)s : %(message)s', level=logging.DEBUG)
@@ -47,8 +49,22 @@ def main():
                      'MR', 'CR', 'MPQA', 'SUBJ', 'SST2', 'TREC', 'MRPC',
                      'SICKRelatedness', 'STSBenchmark'], 
             help="Tasks to evaluate on. If '--task_set' is specified, this will be overridden")
+    parser.add_argument(
+        "--experiment_name",
+        type=str,
+        default="evals",
+        help="mlflow experiment name",
+    )
+
     
     args = parser.parse_args()
+    
+    # mlflow
+    cfg = OmegaConf.create({"eval_args": vars(args)})
+    EXPERIMENT_NAME = args.experiment_name
+    tracking_uri = f"/home/fmg/nishikawa/EASE/mlruns"
+    mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri=tracking_uri)
+    mlflow_writer.log_params_from_omegaconf_dict(cfg)
 
     # Load transformers' model checkpoint
     print("model_path", args.model_name_or_path)
@@ -223,24 +239,27 @@ def main():
                     "STS.input.track10.nl-en.txt"]
 
                 for dataset in datasets:
+                    lang_name = re.findall("STS.input.track\d+.?\.(.+).txt", dataset)[0]
                     if task in results:
+                        mlflow_writer.log_metric(lang_name, results[task][dataset]['spearman'].correlation * 100)
                         scores.append("%.2f" % (results[task][dataset]['spearman'].correlation * 100)) 
                     else:
                         scores.append("0.00")
-                    dataset = re.findall("STS.input.track\d+.?\.(.+).txt", dataset)[0]
-                    task_names.append(dataset)
+                    task_names.append(lang_name)
                     
 
             else:
                 task_names.append(task)
                 if task in results:
                     scores.append("%.2f" % (results[task]['all']['spearman']['all'] * 100))
+                    mlflow_writer.log_metric(task, results[task]['all']['spearman']['all'] * 100)
                 else:
                     scores.append("0.00")
 
 
         task_names.append("Avg.")
         scores.append("%.2f" % (sum([float(score) for score in scores]) / len(scores)))
+        mlflow_writer.log_metric("CL-STS Avg.", sum([float(score) for score in scores]) / len(scores))
         print_table(task_names, scores)
 
 

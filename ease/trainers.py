@@ -324,7 +324,8 @@ class CLTrainer(Trainer):
         self.state.is_hyper_param_search = trial is not None
 
         # Check if saved optimizer or scheduler states exist
-        self._load_optimizer_and_scheduler(model_path)
+        if self.args.resume_from_checkpoint:
+            self._load_optimizer_and_scheduler(model_path)
 
         model = self.model_wrapped
 
@@ -391,7 +392,7 @@ class CLTrainer(Trainer):
         steps_trained_in_current_epoch = 0
 
         # Check if continuing training from a checkpoint
-        if model_path and os.path.isfile(os.path.join(model_path, "trainer_state.json")):
+        if model_path and os.path.isfile(os.path.join(model_path, "trainer_state.json")) and self.args.resume_from_checkpoint:
             self.state = TrainerState.load_from_json(os.path.join(model_path, "trainer_state.json"))
             epochs_trained = self.state.global_step // num_update_steps_per_epoch
             if not self.args.ignore_data_skip:
