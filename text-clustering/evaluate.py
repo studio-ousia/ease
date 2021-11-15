@@ -13,6 +13,8 @@ import argparse
 from dataset_loader import dataset_load
 from prettytable import PrettyTable
 from tqdm import tqdm
+from omegaconf import OmegaConf
+from utils.mlflow_writer import MlflowWriter
 
 
 import os
@@ -76,8 +78,8 @@ def main():
         "--pooler",
         type=str,
         choices=["cls", "cls_before_pooler", "avg", "avg_top2", "avg_first_last"],
-        # default="cls_before_pooler",
-        default="avg",
+        default="cls_before_pooler",
+#         default="avg",
         help="Which pooler to use",
     )
     
@@ -89,10 +91,31 @@ def main():
         help="Which task",
     )
 
+    parser.add_argument(
+        "--experiment_name",
+        type=str,
+        default="evals",
+        help="mlflow experiment name",
+    )
+    
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=12,
+        help="seed for Kmeans",
+    )
+
     parser.add_argument('--verbose', action='store_true')
 
     args = parser.parse_args()
     print("model_path", args.model_name_or_path)
+    
+    # mlflow
+    cfg = OmegaConf.create({"eval_args": vars(args)})
+    EXPERIMENT_NAME = args.experiment_name
+    tracking_uri = f"/home/fmg/nishikawa/EASE/mlruns"
+    mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri=tracking_uri)
+    mlflow_writer.log_params_from_omegaconf_dict(cfg)
 
     # Load transformers' model checkpoint
     model = AutoModel.from_pretrained(args.model_name_or_path)
@@ -104,23 +127,33 @@ def main():
     dataset_groups = []
     if args.task_set in ["full", "mono"]:
         dataset_groups.append(["R8", "R52", "OH", '20N'])
-        # datasets += ['AG', 'SS', 'SO', 'Bio', 'Tweet', 'G-TS', 'G-S', 'G-T']
+        dataset_groups.append(['AG', 'SS', 'SO', 'Bio', 'Tweet', 'G-TS', 'G-S', 'G-T'])
     
     if args.task_set in ["full", "cl"]:
-        # datasets += ['MD-en']
+
+        # 15 langs label-unified 
+        # dataset_groups.append(['WN-TFS-ar', 'WN-TFS-ca', 'WN-TFS-cs', 'WN-TFS-de', 'WN-TFS-es', 'WN-TFS-eo', 'WN-TFS-fa', 'WN-TFS-fr', 'WN-TFS-ko', 'WN-TFS-ja', 'WN-TFS-pl', 'WN-TFS-pt', 'WN-TFS-ru', 'WN-TFS-sv', 'WN-TFS-tr'])
+        # dataset_groups.append(['WN-FS-ar', 'WN-FS-ca', 'WN-FS-cs', 'WN-FS-de', 'WN-FS-es', 'WN-FS-eo', 'WN-FS-fa', 'WN-FS-fr', 'WN-FS-ko', 'WN-FS-ja', 'WN-FS-pl', 'WN-FS-pt', 'WN-FS-ru', 'WN-FS-sv', 'WN-FS-tr'])
+        dataset_groups.append(['WN-S-ar', 'WN-S-ca', 'WN-S-cs', 'WN-S-de', 'WN-S-es', 'WN-S-eo', 'WN-S-fa', 'WN-S-fr', 'WN-S-ko', 'WN-S-ja', 'WN-S-pl', 'WN-S-pt', 'WN-S-ru', 'WN-S-sv', 'WN-S-tr'])
+        dataset_groups.append(['WN-T-ar', 'WN-T-ca', 'WN-T-cs', 'WN-T-de', 'WN-T-es', 'WN-T-eo', 'WN-T-fa', 'WN-T-fr', 'WN-T-ko', 'WN-T-ja', 'WN-T-pl', 'WN-T-pt', 'WN-T-ru', 'WN-T-sv', 'WN-T-tr'])
+        dataset_groups.append(['WN-TS-ar', 'WN-TS-ca', 'WN-TS-cs', 'WN-TS-de', 'WN-TS-es', 'WN-TS-eo', 'WN-TS-fa', 'WN-TS-fr', 'WN-TS-ko', 'WN-TS-ja', 'WN-TS-pl', 'WN-TS-pt', 'WN-TS-ru', 'WN-TS-sv', 'WN-TS-tr'])
         # dataset_groups.append(['WN-S-en', 'WN-S-ja', 'WN-S-es', 'WN-S-tr', 'WN-S-ar'])
-        # dataset_groups.append(['WN-T-ar'])
-        # dataset_groups.append(['WN-S-ar'])
-        # dataset_groups.append(['WN-TS-ar'])
+        # dataset_groups.append(['WN-T-en', 'WN-T-de', 'WN-T-fr'])
+
+#         dataset_groups.append(['WN-S-ar'])
+#         dataset_groups.append(['WN-TS-ar'])
         # 13 langs
-        dataset_groups.append(['WN-T-en', 'WN-T-ar', 'WN-T-ja', 'WN-T-es', 'WN-T-tr', 'WN-T-it', 'WN-T-ko', 'WN-T-pl', 'WN-T-fa', 'WN-T-nl', 'WN-T-ru'])
-        dataset_groups.append(['WN-S-en', 'WN-S-ar', 'WN-S-ja', 'WN-S-es', 'WN-S-tr', 'WN-S-it', 'WN-S-ko', 'WN-S-pl', 'WN-S-fa', 'WN-S-nl', 'WN-S-ru'])
-        dataset_groups.append(['WN-TS-en', 'WN-TS-ar', 'WN-TS-ja', 'WN-TS-es', 'WN-TS-tr', 'WN-TS-it', 'WN-TS-ko', 'WN-TS-pl', 'WN-TS-fa', 'WN-TS-nl', 'WN-TS-ru'])
+        # dataset_groups.append(['WN-T-en', 'WN-T-ar', 'WN-T-ja', 'WN-T-es', 'WN-T-tr', 'WN-T-it', 'WN-T-ko', 'WN-T-pl', 'WN-T-fa', 'WN-T-nl', 'WN-T-ru'])
+        # dataset_groups.append(['WN-S-en', 'WN-S-ar', 'WN-S-ja', 'WN-S-es', 'WN-S-tr', 'WN-S-it', 'WN-S-ko', 'WN-S-pl', 'WN-S-fa', 'WN-S-nl', 'WN-S-ru'])
+        # dataset_groups.append(['WN-TS-en', 'WN-TS-ar', 'WN-TS-ja', 'WN-TS-es', 'WN-TS-tr', 'WN-TS-it', 'WN-TS-ko', 'WN-TS-pl', 'WN-TS-fa', 'WN-TS-nl', 'WN-TS-ru'])
+        
+        # NC
+        # dataset_groups.append(["NC-en", "NC-de", "NC-es"])
+
         # dataset_groups.append(['WN-T-en', 'WN-T-ar', 'WN-T-ja', 'WN-T-es', 'WN-T-tr', 'WN-T-it', 'WN-T-ko', 'WN-T-pt', 'WN-T-uk', 'WN-T-cs', 'WN-T-pl', 'WN-T-ca', 'WN-T-fi', 'WN-T-fa', 'WN-T-nl', 'WN-T-hu', 'WN-T-eo', 'WN-T-ru'])
         # dataset_groups.append(['WN-S-en', 'WN-S-ar', 'WN-S-ja', 'WN-S-es', 'WN-S-tr', 'WN-S-it', 'WN-S-ko', 'WN-S-pt', 'WN-S-uk', 'WN-S-cs', 'WN-S-pl', 'WN-S-ca', 'WN-S-fi', 'WN-S-fa', 'WN-S-nl', 'WN-S-hu', 'WN-S-eo', 'WN-S-ru'])
         # dataset_groups.append(['WN-TS-en', 'WN-TS-ar', 'WN-TS-ja', 'WN-TS-es', 'WN-TS-tr', 'WN-TS-it', 'WN-TS-ko', 'WN-TS-pt', 'WN-TS-uk', 'WN-TS-cs', 'WN-TS-pl', 'WN-TS-ca', 'WN-TS-fi', 'WN-TS-fa', 'WN-TS-nl', 'WN-TS-hu', 'WN-TS-eo', 'WN-TS-ru'])
         # datasets += ['WN-S-en']
-        # dataset_groups.append(["NC-en", "NC-de", "NC-es"])
         # datasets += ['WN-en', 'WN-ar', 'WN-ja', 'WN-es', 'WN-tr', 'WN-it', 'WN-ko', 'WN-pt', 'WN-uk', 'WN-cs', 'WN-pl', 'WN-ca', 'WN-fi', 'WN-fa', 'WN-nl', 'WN-hu', 'WN-eo']
         # datasets += ['WN-en', 'WN-ar', 'WN-ja', 'WN-es', 'WN-tr', 'WN-it', 'WN-ko', 'WN-pt', 'WN-uk', 'WN-cs', 'WN-pl', 'WN-ca', 'WN-fi', 'WN-fa', 'WN-nl', 'WN-hu', 'WN-eo', 'WN-ru']
         # datasets += ['MD-en', 'MD-fr', 'MD-de', 'MD-ja', 'MD-zh', 'MD-it', 'MD-ru', 'MD-es']
@@ -146,16 +179,18 @@ def main():
             # sentence_embeddings = batcher(model, tokenizer, sentences, args, device="cuda")
             if args.verbose:
                 print("clutering...")
-            kmeans_model = KMeans(n_clusters=len(set(labels)), random_state=12).fit(sentence_embeddings)
+            kmeans_model = KMeans(n_clusters=len(set(labels)), random_state=args.seed).fit(sentence_embeddings)
             pred_labels = kmeans_model.labels_
             acc = accuracy(labels, pred_labels) * 100
             if args.verbose:
                 print("%.1f" % (acc))
             scores.append("%.1f" % (acc))
+            mlflow_writer.log_metric(dataset_key, acc)
 
         datasets.append("Avg.")
         scores.append("%.1f" % (sum([float(score) for score in scores]) / len(scores)))
         results.append((datasets, scores))
+        mlflow_writer.log_metric(f"{datasets[0]}-Avg.", sum([float(score) for score in scores]) / len(scores))
         
     for result in results:
         datasets, scores = result
