@@ -11,6 +11,8 @@ ease/__pycache__
 cache_dir/
 text-clustering/data/
 experiments/
+test*
+ease/test*
 
 # mlflow
 mlruns/
