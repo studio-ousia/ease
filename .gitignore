@@ -7,7 +7,7 @@ saved_models/
 const.py
 results/
 ease/__pycache__
-*.txt
+build_dataset/*txt
 cache_dir/
 text-clustering/data/
 experiments/
