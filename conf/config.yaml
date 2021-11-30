@@ -25,6 +25,8 @@ model_args:
   use_non_linear_transformation: False
   activation: tanh
   use_equal_loss: False
+  use_mlp_forcibly: False
+  use_entity_to_sentence_loss: False
 
 train_args:
   train_saved_model: False
@@ -44,10 +46,11 @@ train_args:
   num_train_epochs: 1
   per_device_train_batch_size: 64
   eval_steps: 125
+  logging_steps: 125
   fp16: True
   overwrite_output_dir: True
   greater_is_better: True
-  metric_for_best_model: stsb_spearman
+  metric_for_best_model: stsb_spearman # avg_sts
   load_best_model_at_end: True
   gradient_accumulation_steps: 2
   warmup_steps: 500

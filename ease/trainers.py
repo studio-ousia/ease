@@ -148,6 +148,21 @@ class CLTrainer(Trainer):
 
         self.log(metrics)
         return metrics
+
+    def compute_loss(self, model, inputs, return_outputs=False):
+        outputs = model(**inputs)
+
+        if (self.state.global_step + 1) % self.args.logging_steps == 0:
+            log_dict = {}
+            if outputs.simcse_loss is not None:
+                log_dict["simcse_loss"] = outputs.simcse_loss.item()
+            if outputs.mlm_loss is not None:
+                log_dict["mlm_loss"] = outputs.mlm_loss.item()
+            if outputs.ease_loss is not None:
+                log_dict["ease_loss"] = outputs.ease_loss.item()
+            self.log(log_dict)
+
+        return (outputs.loss, outputs) if return_outputs else outputs.loss
         
     def _save_checkpoint(self, model, trial, metrics=None):
         """

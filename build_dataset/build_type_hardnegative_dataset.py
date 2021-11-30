@@ -50,15 +50,19 @@ def process(data):
     ) = data
     lang = args.lang
 
-    try:
-        sentence_list = sentence_tokenizer.tokenize(paragraph.text)
-    except Exception as e:
-        print("=== sentence tokenize error ===")
-        print(e)
-        print("sentence:" + paragraph.text)
-        error_num.value += 1
-        return
-    
+    if not args.use_paragraph:
+        try:
+            sentence_list = sentence_tokenizer.tokenize(paragraph.text)
+        except Exception as e:
+            print("=== sentence tokenize error ===")
+            print(e)
+            print("sentence:" + paragraph.text)
+            error_num.value += 1
+            return
+
+    else:
+        sentence_list = [paragraph.text]
+
     if args.use_first_sentence:
         sentence_list = sentence_list[:1]
     idx = 0
@@ -146,6 +150,7 @@ def main():
     parser.add_argument("--lang", type=str, default="en")
     parser.add_argument("--abstract", action="store_true")
     parser.add_argument("--use_first_sentence", action="store_true")
+    parser.add_argument("--use_paragraph", action="store_true")
     parser.add_argument("--test_mode", action="store_true")
     args = parser.parse_args()
 
@@ -358,7 +363,7 @@ def main():
     print("saving...")
     pickle_dump(
         entity_per_sentence,
-        f"../data/wikidata_hyperlinks_with_type_hardnegatives_test_{args.test_mode}_first_sentence_{args.use_first_sentence}_abst_{args.abstract}_{args.lang}.pkl",
+        f"../data/wikidata_hyperlinks_with_type_hardnegatives_test_{args.test_mode}_first_sentence_{args.use_first_sentence}_abst_{args.abstract}_paragraph_{args.use_paragraph}_{args.lang}.pkl",
     )
 
 

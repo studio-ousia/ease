@@ -198,7 +198,7 @@ def cl_forward(cls,
 
     # If using "cls", we add an extra MLP layer
     # (same as BERT's original implementation) over the representation.
-    if cls.pooler_type == "cls":
+    if cls.pooler_type == "cls" or cls.model_args.use_mlp_forcibly:
         pooler_output = cls.mlp(pooler_output)
 
     # Separate representation
@@ -290,9 +290,9 @@ def cl_forward(cls,
         ).to(cls.device)
         cos_sim = cos_sim + weights
 
-    loss = loss_fct(cos_sim, labels)
+    simcse_loss = loss_fct(cos_sim, labels)
 
-    # ea loss
+    # entity contrastive learning loss
     ease_labels = torch.arange(ease_cos_sim.size(0)).long().to(cls.device)
     ease_loss = loss_fct(ease_cos_sim, ease_labels)
 
@@ -301,10 +301,17 @@ def cl_forward(cls,
         ease_loss2 = loss_fct(ease_cos_sim2, ease_labels2)
         ease_loss = 0.5 * ease_loss + 0.5 * ease_loss2
 
+    if cls.model_args.use_entity_to_sentence_loss:
+        ease_cos_sim2 = cls.ease_sim(entity_embedding, z1.unsqueeze(0))
+        ease_labels2 = torch.arange(ease_cos_sim2.size(0)).long().to(cls.device)
+        ease_loss2 = loss_fct(ease_cos_sim2, ease_labels2)
+        ease_loss = ease_loss + ease_loss2
+
     # Calculate loss for EASE
-    loss = cls.model_args.simcse_loss_ratio * loss + cls.model_args.ease_loss_ratio * ease_loss
+    loss = cls.model_args.simcse_loss_ratio * simcse_loss + cls.model_args.ease_loss_ratio * ease_loss
 
     # Calculate loss for MLM
+    masked_lm_loss = None
     if mlm_outputs is not None and mlm_labels is not None:
         mlm_labels = mlm_labels.view(-1, mlm_labels.size(-1))
         prediction_scores = cls.lm_head(mlm_outputs.last_hidden_state)
@@ -314,12 +321,19 @@ def cl_forward(cls,
     if not return_dict:
         output = (cos_sim,) + outputs[2:]
         return ((loss,) + output) if loss is not None else output
-    return SequenceClassifierOutput(
+
+    sequence_classifier_output = SequenceClassifierOutput(
         loss=loss,
         logits=cos_sim,
         hidden_states=outputs.hidden_states,
         attentions=outputs.attentions,
     )
+    sequence_classifier_output.simcse_loss = cls.model_args.simcse_loss_ratio * simcse_loss
+    sequence_classifier_output.ease_loss = cls.model_args.ease_loss_ratio * ease_loss
+    sequence_classifier_output.mlm_loss = None
+    if masked_lm_loss is not None:
+        sequence_classifier_output.mlm_loss = cls.model_args.mlm_loss_ratio * masked_lm_loss
+    return sequence_classifier_output
 
 ## Sentence embedding出力用
 def sentemb_forward(
@@ -352,7 +366,7 @@ def sentemb_forward(
     )
 
     pooler_output = cls.pooler(attention_mask, outputs)
-    if cls.pooler_type == "cls" and not cls.model_args.mlp_only_train:
+    if (cls.pooler_type == "cls" and not cls.model_args.mlp_only_train) or cls.model_args.use_mlp_forcibly:
         pooler_output = cls.mlp(pooler_output)
 
     if not return_dict:
@@ -391,7 +405,6 @@ class BertForEACL(BertPreTrainedModel):
         mlm_labels=None,
         title_id=None,
         hn_title_ids=None
-        # hn_title_id=None
     ):
         if sent_emb:
             return sentemb_forward(self, self.bert,
@@ -422,21 +435,18 @@ class BertForEACL(BertPreTrainedModel):
                 mlm_labels=mlm_labels,
                 title_id=title_id,
                 hn_title_ids=hn_title_ids
-                # hn_title_id=hn_title_id
             )
 
 
 
-class RobertaForCL(RobertaPreTrainedModel):
+class RobertaForEACL(RobertaPreTrainedModel):
     _keys_to_ignore_on_load_missing = [r"position_ids"]
 
     def __init__(self, config, *model_args, **model_kargs):
         super().__init__(config)
         self.model_args = model_kargs["model_args"]
         self.roberta = RobertaModel(config)
-
-        if self.model_args.do_mlm:
-            self.lm_head = RobertaLMHead(config)
+        self.lm_head = RobertaLMHead(config)
 
         cl_init(self, config)
 
@@ -454,6 +464,8 @@ class RobertaForCL(RobertaPreTrainedModel):
         sent_emb=False,
         mlm_input_ids=None,
         mlm_labels=None,
+        title_id=None,
+        hn_title_ids=None
     ):
         if sent_emb:
             return sentemb_forward(self, self.roberta,
@@ -482,4 +494,6 @@ class RobertaForCL(RobertaPreTrainedModel):
                 return_dict=return_dict,
                 mlm_input_ids=mlm_input_ids,
                 mlm_labels=mlm_labels,
+                title_id=title_id,
+                hn_title_ids=hn_title_ids
             )

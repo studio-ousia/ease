@@ -132,7 +132,7 @@ class RawDataLoader:
         #     formatter = WikiAbstDataFormatter(
         #         file_obj, sample_num, hard_negative_num, min_length
         #     )
-        if dataset == "wikidata_hyperlink_type_hn":
+        if dataset.startswith("wikidata_hyperlink_type_hn"):
             print(f"langs: {langs}")
             file_objs = []
             for lang in langs:
@@ -140,13 +140,26 @@ class RawDataLoader:
                 if lang in ["en", "ar", "es", "tr"]:
                     dataset_path = f"data/wikidata_hyperlinks_with_type_hardnegatives_abst_False_1m_{lang}.pkl"
 
-                elif lang in ['fr','de','ja','zh','it','ru','nl']:
+                else:
                     dataset_path = f"data/wikidata_hyperlinks_with_type_hardnegatives_test_False_first_sentence_False_abst_False_size_1000000_max_count_10000_link_min_count_10_{lang}.pkl"
 
-                else:
-                    dataset_path = f"data/wikidata_hyperlinks_with_type_hardnegatives_test_False_first_sentence_False_abst_False_{lang}.pkl"
+                # elif lang in ['fr','de','ja','zh','it','ru','nl']:
+                #     dataset_path = f"data/wikidata_hyperlinks_with_type_hardnegatives_test_False_first_sentence_False_abst_False_size_1000000_max_count_10000_link_min_count_10_{lang}.pkl"
+
+                # else:
+                #     dataset_path = f"data/wikidata_hyperlinks_with_type_hardnegatives_test_False_first_sentence_False_abst_False_{lang}.pkl"
+
+
+                if dataset == "wikidata_hyperlink_type_hn_paragraph":
+                    dataset_path = f"data/wikidata_hyperlinks_with_type_hardnegatives_test_False_first_sentence_False_abst_False_paragraph_True_size_1000000_max_count_10000_link_min_count_10_{lang}.pkl"
+
                 dataset_path = os.path.join(cwd, dataset_path)
-                file_objs.append(pickle_load(dataset_path))
+
+                try:
+                    file_objs.append(pickle_load(dataset_path))
+
+                except FileNotFoundError:
+                    print(f'{dataset_path} file not found error!')
 
             formatter = WikidataDataFormatter(
                 file_objs,
