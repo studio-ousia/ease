@@ -7,3 +7,7 @@ prettytable==2.1.0
 gradio
 torch
 setuptools==49.3.0
+comet_ml
+hydra-core==1.1.0
+omegaconf
+mlflow

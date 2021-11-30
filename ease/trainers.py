@@ -76,10 +76,8 @@ from transformers.trainer import _model_unwrap
 from transformers.optimization import Adafactor, AdamW, get_scheduler
 import copy
 # Set path to SentEval
-# PATH_TO_SENTEVAL = './SentEval'
-PATH_TO_SENTEVAL = "/home/fmg/nishikawa/EASE/SentEval"
-# PATH_TO_DATA = './SentEval/data'
-PATH_TO_DATA = "/home/fmg/nishikawa/EASE/SentEval/data"
+PATH_TO_SENTEVAL = "../SentEval"
+PATH_TO_DATA = "../SentEval/data"
 
 # Import SentEval
 sys.path.insert(0, PATH_TO_SENTEVAL)
