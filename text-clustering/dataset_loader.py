@@ -66,6 +66,7 @@ def dataset_load(key):
         "WN-T-ca": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
         "WN-T-cs": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
         "WN-T-de": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
+        "WN-T-en": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
         "WN-T-es": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
         "WN-T-eo": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
         "WN-T-fa": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
@@ -111,6 +112,7 @@ def dataset_load(key):
         "WN-FS-ca": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
         "WN-FS-cs": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
         "WN-FS-de": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
+        "WN-FS-en": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
         "WN-FS-es": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
         "WN-FS-eo": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
         "WN-FS-fa": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
@@ -122,6 +124,7 @@ def dataset_load(key):
         "WN-FS-ru": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
         "WN-FS-sv": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
         "WN-FS-tr": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
+        "WN-unified": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
         "WN-TFS-ar": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
         "WN-TFS-ca": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
         "WN-TFS-cs": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
@@ -229,7 +232,9 @@ def dataset_load(key):
     
     if key in key_to_label_path:
         label_path = key_to_label_path[key]
-        
+
+    lang_pos = []
+    data_num = 0
 
     if key == "Tweet":
         with open(data_path) as f:
@@ -272,30 +277,60 @@ def dataset_load(key):
         labels = [label for sentence, label in sentence_labels]
 
     elif key.startswith("WN"):
-        lang = key[-2:]
-        label_path = data_path + "/" + lang + "_categories.txt"
 
-        if key.startswith("WN-TS"):
-            data_path = data_path + "/" + lang + "_title_and_texts.txt"
-        elif key.startswith("WN-T"):
-            data_path = data_path + "/" + lang + "_titles.txt"
-        elif key.startswith("WN-S"):
-            data_path = data_path + "/" + lang + "_texts.txt"
-        elif key.startswith("WN-FS"):
-            data_path = data_path + "/" + lang + "_sentences.txt"
-        elif key.startswith("WN-TFS"):
-            data_path = data_path + "/" + lang + "_title_and_sentences.txt"
+        if key.startswith("WN-unified"):
+            with open('/home/fmg/nishikawa/EASE/text-clustering/wikinews_clustering/en_cat_to_lang_cat.json') as f:
+                en_cat_to_lang_cat = json.load(f)
 
-        with open(data_path) as f:
-            sentences = [s.strip() for s in f.readlines()]
+            sentences, categories = [], []
 
-        with open(label_path) as f:
-            categories = [s.strip() for s in f.readlines()]
 
-        # for sentence tokenizer error
-        if key.startswith("WN-FS"):
-            sentences, categories = zip(*[(sentence, category) for sentence, category in zip(sentences, categories) if len(sentence) > 0])
-            sentences, categories = list(sentences), list(categories)
+            for lang in ["en","ar","ja","es","tr","ko","pl","fa","ru","de","fr","ca","cs","eo","pt","sv"]:
+                if lang != "en":
+                    lang_cat_to_en_cat = {lang_dict[lang]:en_cat for en_cat,lang_dict in en_cat_to_lang_cat.items() if lang in lang_dict}
+                else:
+                    lang_cat_to_en_cat = {en_cat: en_cat for en_cat in en_cat_to_lang_cat.keys() }
+
+                lang_data_path = data_path + "/" + lang + "_sentences.txt"
+                lang_label_path = data_path + "/" + lang + "_categories.txt"
+                with open(lang_data_path) as f:
+                    tmp_sentences = [s.strip() for s in f.readlines()]
+
+                with open(lang_label_path) as f:
+                    tmp_categories = [s.strip() for s in f.readlines()]
+
+                tmp_sentences, tmp_categories = zip(*[(sentence, lang_cat_to_en_cat[category]) for sentence, category in zip(tmp_sentences, tmp_categories) if category in lang_cat_to_en_cat])
+
+                sentences.extend(tmp_sentences)
+                categories.extend(tmp_categories)
+                lang_pos.append((lang, data_num, data_num + len(tmp_sentences)))
+                data_num += len(tmp_sentences)
+
+        else:
+            lang = key[-2:]
+            label_path = data_path + "/" + lang + "_categories.txt"
+
+            if key.startswith("WN-TFS"):
+                data_path = data_path + "/" + lang + "_title_and_sentences.txt"
+            elif key.startswith("WN-TS"):
+                data_path = data_path + "/" + lang + "_title_and_texts.txt"
+            elif key.startswith("WN-T"):
+                data_path = data_path + "/" + lang + "_titles.txt"
+            elif key.startswith("WN-S"):
+                data_path = data_path + "/" + lang + "_texts.txt"
+            elif key.startswith("WN-FS"):
+                data_path = data_path + "/" + lang + "_sentences.txt"
+
+            with open(data_path) as f:
+                sentences = [s.strip() for s in f.readlines()]
+
+            with open(label_path) as f:
+                categories = [s.strip() for s in f.readlines()]
+
+            # for sentence tokenizer error
+            if key.startswith("WN-FS"):
+                sentences, categories = zip(*[(sentence, category) for sentence, category in zip(sentences, categories) if len(sentence) > 0])
+                sentences, categories = list(sentences), list(categories)
         category_to_idx = {category:idx for idx, category in enumerate(set(categories))}
         labels = [category_to_idx[category] for category in categories]
 
@@ -331,4 +366,4 @@ def dataset_load(key):
         categories = [d[-1] for d in data]
         category_to_idx = {category: idx for idx, category in enumerate(set(categories))}
         labels = [category_to_idx[category] for category in categories]
-    return sentences, labels
+    return sentences, labels, lang_pos

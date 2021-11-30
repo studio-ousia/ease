@@ -3,7 +3,7 @@ def warn(*args, **kwargs):
 import warnings
 warnings.warn = warn
 
-from transformers import AutoModel, AutoTokenizer
+from transformers import AutoModel, AutoTokenizer, XLMRobertaTokenizer
 from coclust.evaluation.external import accuracy
 from sklearn.cluster import KMeans 
 import torch
@@ -15,6 +15,19 @@ from prettytable import PrettyTable
 from tqdm import tqdm
 from omegaconf import OmegaConf
 from utils.mlflow_writer import MlflowWriter
+
+from sklearn.metrics.cluster import contingency_matrix
+from munkres import Munkres
+def get_label_mapping_dict(list1, list2):
+    mapping_dict = dict()
+    m = Munkres()
+    contmat = contingency_matrix(list1, list2)
+    idx_pairs = m.compute(contmat.max() - contmat)
+    classes, class_idx = np.unique(list1, return_inverse=True)
+    clusters, cluster_idx = np.unique(list2, return_inverse=True)
+    for l1_idx, l2_idx in idx_pairs:
+        mapping_dict[classes[l1_idx]] = clusters[l2_idx]
+    return mapping_dict
 
 
 import os
@@ -119,7 +132,10 @@ def main():
 
     # Load transformers' model checkpoint
     model = AutoModel.from_pretrained(args.model_name_or_path)
-    tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
+    if "xlm" in args.model_name_or_path:
+        tokenizer = XLMRobertaTokenizer.from_pretrained(args.model_name_or_path)
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
     # datasets = ["tweet", "biomedical", "stackoverflow", "searchsnippets", "agnews", "googlenews_ts", "googlenews_t", "googlenews_s"] 
@@ -132,16 +148,15 @@ def main():
     if args.task_set in ["full", "cl"]:
 
         # 15 langs label-unified 
+        # dataset_groups.append(["WN-unified"])
+        # todo add en
+        dataset_groups.append(['WN-FS-ar', 'WN-FS-ca', 'WN-FS-cs', 'WN-FS-de',  'WN-FS-en', 'WN-FS-eo', 'WN-FS-es', 'WN-FS-fa', 'WN-FS-fr', 'WN-FS-ko', 'WN-FS-ja', 'WN-FS-pl', 'WN-FS-pt', 'WN-FS-ru', 'WN-FS-sv', 'WN-FS-tr'])
         # dataset_groups.append(['WN-TFS-ar', 'WN-TFS-ca', 'WN-TFS-cs', 'WN-TFS-de', 'WN-TFS-es', 'WN-TFS-eo', 'WN-TFS-fa', 'WN-TFS-fr', 'WN-TFS-ko', 'WN-TFS-ja', 'WN-TFS-pl', 'WN-TFS-pt', 'WN-TFS-ru', 'WN-TFS-sv', 'WN-TFS-tr'])
-        # dataset_groups.append(['WN-FS-ar', 'WN-FS-ca', 'WN-FS-cs', 'WN-FS-de', 'WN-FS-es', 'WN-FS-eo', 'WN-FS-fa', 'WN-FS-fr', 'WN-FS-ko', 'WN-FS-ja', 'WN-FS-pl', 'WN-FS-pt', 'WN-FS-ru', 'WN-FS-sv', 'WN-FS-tr'])
-        dataset_groups.append(['WN-S-ar', 'WN-S-ca', 'WN-S-cs', 'WN-S-de', 'WN-S-es', 'WN-S-eo', 'WN-S-fa', 'WN-S-fr', 'WN-S-ko', 'WN-S-ja', 'WN-S-pl', 'WN-S-pt', 'WN-S-ru', 'WN-S-sv', 'WN-S-tr'])
-        dataset_groups.append(['WN-T-ar', 'WN-T-ca', 'WN-T-cs', 'WN-T-de', 'WN-T-es', 'WN-T-eo', 'WN-T-fa', 'WN-T-fr', 'WN-T-ko', 'WN-T-ja', 'WN-T-pl', 'WN-T-pt', 'WN-T-ru', 'WN-T-sv', 'WN-T-tr'])
-        dataset_groups.append(['WN-TS-ar', 'WN-TS-ca', 'WN-TS-cs', 'WN-TS-de', 'WN-TS-es', 'WN-TS-eo', 'WN-TS-fa', 'WN-TS-fr', 'WN-TS-ko', 'WN-TS-ja', 'WN-TS-pl', 'WN-TS-pt', 'WN-TS-ru', 'WN-TS-sv', 'WN-TS-tr'])
+        # dataset_groups.append(['WN-S-ar', 'WN-S-ca', 'WN-S-cs', 'WN-S-de', 'WN-S-es', 'WN-S-eo', 'WN-S-fa', 'WN-S-fr', 'WN-S-ko', 'WN-S-ja', 'WN-S-pl', 'WN-S-pt', 'WN-S-ru', 'WN-S-sv', 'WN-S-tr'])
+        # dataset_groups.append(['WN-T-ar', 'WN-T-ca', 'WN-T-cs', 'WN-T-de', 'WN-T-es', 'WN-T-eo', 'WN-T-fa', 'WN-T-fr', 'WN-T-ko', 'WN-T-ja', 'WN-T-pl', 'WN-T-pt', 'WN-T-ru', 'WN-T-sv', 'WN-T-tr'])
+        # dataset_groups.append(['WN-TS-ar', 'WN-TS-ca', 'WN-TS-cs', 'WN-TS-de', 'WN-TS-es', 'WN-TS-eo', 'WN-TS-fa', 'WN-TS-fr', 'WN-TS-ko', 'WN-TS-ja', 'WN-TS-pl', 'WN-TS-pt', 'WN-TS-ru', 'WN-TS-sv', 'WN-TS-tr'])
         # dataset_groups.append(['WN-S-en', 'WN-S-ja', 'WN-S-es', 'WN-S-tr', 'WN-S-ar'])
         # dataset_groups.append(['WN-T-en', 'WN-T-de', 'WN-T-fr'])
-
-#         dataset_groups.append(['WN-S-ar'])
-#         dataset_groups.append(['WN-TS-ar'])
         # 13 langs
         # dataset_groups.append(['WN-T-en', 'WN-T-ar', 'WN-T-ja', 'WN-T-es', 'WN-T-tr', 'WN-T-it', 'WN-T-ko', 'WN-T-pl', 'WN-T-fa', 'WN-T-nl', 'WN-T-ru'])
         # dataset_groups.append(['WN-S-en', 'WN-S-ar', 'WN-S-ja', 'WN-S-es', 'WN-S-tr', 'WN-S-it', 'WN-S-ko', 'WN-S-pl', 'WN-S-fa', 'WN-S-nl', 'WN-S-ru'])
@@ -153,11 +168,6 @@ def main():
         # dataset_groups.append(['WN-T-en', 'WN-T-ar', 'WN-T-ja', 'WN-T-es', 'WN-T-tr', 'WN-T-it', 'WN-T-ko', 'WN-T-pt', 'WN-T-uk', 'WN-T-cs', 'WN-T-pl', 'WN-T-ca', 'WN-T-fi', 'WN-T-fa', 'WN-T-nl', 'WN-T-hu', 'WN-T-eo', 'WN-T-ru'])
         # dataset_groups.append(['WN-S-en', 'WN-S-ar', 'WN-S-ja', 'WN-S-es', 'WN-S-tr', 'WN-S-it', 'WN-S-ko', 'WN-S-pt', 'WN-S-uk', 'WN-S-cs', 'WN-S-pl', 'WN-S-ca', 'WN-S-fi', 'WN-S-fa', 'WN-S-nl', 'WN-S-hu', 'WN-S-eo', 'WN-S-ru'])
         # dataset_groups.append(['WN-TS-en', 'WN-TS-ar', 'WN-TS-ja', 'WN-TS-es', 'WN-TS-tr', 'WN-TS-it', 'WN-TS-ko', 'WN-TS-pt', 'WN-TS-uk', 'WN-TS-cs', 'WN-TS-pl', 'WN-TS-ca', 'WN-TS-fi', 'WN-TS-fa', 'WN-TS-nl', 'WN-TS-hu', 'WN-TS-eo', 'WN-TS-ru'])
-        # datasets += ['WN-S-en']
-        # datasets += ['WN-en', 'WN-ar', 'WN-ja', 'WN-es', 'WN-tr', 'WN-it', 'WN-ko', 'WN-pt', 'WN-uk', 'WN-cs', 'WN-pl', 'WN-ca', 'WN-fi', 'WN-fa', 'WN-nl', 'WN-hu', 'WN-eo']
-        # datasets += ['WN-en', 'WN-ar', 'WN-ja', 'WN-es', 'WN-tr', 'WN-it', 'WN-ko', 'WN-pt', 'WN-uk', 'WN-cs', 'WN-pl', 'WN-ca', 'WN-fi', 'WN-fa', 'WN-nl', 'WN-hu', 'WN-eo', 'WN-ru']
-        # datasets += ['MD-en', 'MD-fr', 'MD-de', 'MD-ja', 'MD-zh', 'MD-it', 'MD-ru', 'MD-es']
-        # datasets += ['MD-FS-en', 'MD-FS-fr', 'MD-FS-de', 'MD-FS-ja', 'MD-FS-zh', 'MD-FS-it', 'MD-FS-ru', 'MD-FS-es']
     batch_size = 256
 
     results = []
@@ -167,7 +177,7 @@ def main():
         for dataset_key in tqdm(datasets):
             if args.verbose:
                 print(f"evaluate {dataset_key}...")
-            sentences, labels = dataset_load(dataset_key)
+            sentences, labels, lang_pos = dataset_load(dataset_key)
 
             if args.verbose:
                 print("encode sentence embeddings...")
@@ -181,14 +191,28 @@ def main():
                 print("clutering...")
             kmeans_model = KMeans(n_clusters=len(set(labels)), random_state=args.seed).fit(sentence_embeddings)
             pred_labels = kmeans_model.labels_
+            
+            if dataset_key == "WN-unified":
+                datasets = []
+                mapping_dict = get_label_mapping_dict(pred_labels, labels)
+                pred_labels = [mapping_dict[pred_label] for pred_label in pred_labels]
+
+                for lang, start_idx, end_idx in lang_pos:
+                    acc = np.sum((np.array(labels[start_idx:end_idx]) == pred_labels[start_idx:end_idx])) / len(pred_labels[start_idx:end_idx]) * 100
+                    # acc = accuracy(labels[start_idx:end_idx], pred_labels[start_idx:end_idx]) * 100
+                    scores.append("%.2f" % (acc))
+                    mlflow_writer.log_metric(f"{dataset_key}-{lang}", acc) 
+                    datasets.append(f"{dataset_key}-{lang}")
+                break
+
             acc = accuracy(labels, pred_labels) * 100
             if args.verbose:
-                print("%.1f" % (acc))
-            scores.append("%.1f" % (acc))
+                print("%.2f" % (acc))
+            scores.append("%.2f" % (acc))
             mlflow_writer.log_metric(dataset_key, acc)
 
         datasets.append("Avg.")
-        scores.append("%.1f" % (sum([float(score) for score in scores]) / len(scores)))
+        scores.append("%.2f" % (sum([float(score) for score in scores]) / len(scores)))
         results.append((datasets, scores))
         mlflow_writer.log_metric(f"{datasets[0]}-Avg.", sum([float(score) for score in scores]) / len(scores))
         

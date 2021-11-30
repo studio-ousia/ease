@@ -18,11 +18,11 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 from scipy.spatial.distance import cosine
-from transformers import AutoModel, AutoTokenizer, AutoConfig, AdamW
+from transformers import AutoModel, AutoTokenizer, AutoConfig, AdamW, XLMRobertaTokenizer
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from wikipedia2vec import Wikipedia2Vec
 
-from ease.ease_models import BertForEACL
+from ease.ease_models import BertForEACL, RobertaForEACL
 from ease.trainers import CLTrainer
 
 from utils.utils import pickle_dump, pickle_load, save_model
@@ -182,7 +182,9 @@ def get_dataset(data, max_seq_length, tokenizer, entity_vocab, masked_sentence_r
         )
         input_ids.append(features["input_ids"])
         attention_masks.append(features["attention_mask"])
-        token_type_ids.append(features["token_type_ids"])
+        if "token_type_ids" in features:
+            token_type_ids.append(features["token_type_ids"])
+
 
     print("all data", len(data))
     # print("hn_title", cnt)
@@ -193,11 +195,13 @@ def get_dataset(data, max_seq_length, tokenizer, entity_vocab, masked_sentence_r
 
 class MyDataset(torch.utils.data.Dataset):
     def __init__(
-        self, input_ids, attention_mask, token_type_ids, title_id, hn_title_ids
+        self, input_ids, attention_mask, token_type_ids, title_id, hn_title_ids, bert_model
     ):
+        self.bert_model = bert_model
         self.input_ids = input_ids
         self.attention_mask = attention_mask
-        self.token_type_ids = token_type_ids
+        if "roberta" not in self.bert_model:
+            self.token_type_ids = token_type_ids
         self.title_id = title_id
         self.hn_title_ids = hn_title_ids
 
@@ -205,7 +209,8 @@ class MyDataset(torch.utils.data.Dataset):
         item = dict()
         item["input_ids"] = self.input_ids[idx]
         item["attention_mask"] = self.attention_mask[idx]
-        item["token_type_ids"] = self.token_type_ids[idx]
+        if "roberta" not in self.bert_model:
+            item["token_type_ids"] = self.token_type_ids[idx]
         item["title_id"] = self.title_id[idx]
         item["hn_title_ids"] = self.hn_title_ids[idx]
         return item
@@ -247,9 +252,11 @@ def main(cfg: DictConfig):
         "revision": "main",
         "use_auth_token": True if False else None,
     }
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_args.model_name_or_path, **tokenizer_kwargs
-    )
+
+    if "xlm" in model_args.model_name_or_path:
+        tokenizer = XLMRobertaTokenizer.from_pretrained(model_args.model_name_or_path)
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path, **tokenizer_kwargs)
 
 
     print("loading data...")
@@ -281,7 +288,7 @@ def main(cfg: DictConfig):
         wikipedia_data, model_args.max_seq_length, tokenizer, entity_vocab, model_args.masked_sentence_ratio
     )
     train_dataset = MyDataset(
-        input_ids, attention_masks, token_type_ids, title_id, hn_title_ids
+        input_ids, attention_masks, token_type_ids, title_id, hn_title_ids, model_args.model_name_or_path
     )
 
     print("### del wikipedia data")
@@ -340,20 +347,47 @@ def main(cfg: DictConfig):
 
     print("###load model")
 
-    model = BertForEACL.from_pretrained(
-        model_args.model_name_or_path,
-        from_tf=bool(".ckpt" in model_args.model_name_or_path),
-        config=config,
-        cache_dir=model_args.cache_dir,
-        revision=model_args.model_revision,
-        use_auth_token=True if model_args.use_auth_token else None,
-        model_args=model_args,
-    )
+    if "roberta" in model_args.model_name_or_path:
 
-    if model_args.do_mlm:
-        # TODO書き換え
-        pretrained_model = BertForPreTraining.from_pretrained("bert-base-multilingual-cased")
-        model.lm_head.load_state_dict(pretrained_model.cls.predictions.state_dict())
+        model = RobertaForEACL.from_pretrained(
+            model_args.model_name_or_path,
+            from_tf=bool(".ckpt" in model_args.model_name_or_path),
+            config=config,
+            cache_dir=model_args.cache_dir,
+            revision=model_args.model_revision,
+            use_auth_token=True if model_args.use_auth_token else None,
+            model_args=model_args,
+        )
+
+        # if model_args.do_mlm:
+        #     if "xlm" in model_args.model_name_or_path:
+        #         pretrained_model = BertForPreTraining.from_pretrained("xlm-roberta-base")
+        #     else:
+        #         pretrained_model = BertForPreTraining.from_pretrained("roberta-base")
+
+        #     model.lm_head.load_state_dict(pretrained_model.cls.predictions.state_dict())
+
+
+    elif any(model in model_args.model_name_or_path for model in ("bert", "LaBSE")):
+
+        model = BertForEACL.from_pretrained(
+            model_args.model_name_or_path,
+            from_tf=bool(".ckpt" in model_args.model_name_or_path),
+            config=config,
+            cache_dir=model_args.cache_dir,
+            revision=model_args.model_revision,
+            use_auth_token=True if model_args.use_auth_token else None,
+            model_args=model_args,
+        )
+
+        if model_args.do_mlm:
+            if "multilingual" in model_args.model_name_or_path:
+                pretrained_model = BertForPreTraining.from_pretrained("bert-base-multilingual-cased")
+            else:
+                pretrained_model = BertForPreTraining.from_pretrained("bert-base-uncased")
+
+            model.lm_head.load_state_dict(pretrained_model.cls.predictions.state_dict())
+
 
     model.resize_token_embeddings(len(tokenizer))
     model.entity_embedding.weight = nn.Parameter(torch.FloatTensor(entity_embeddings))
