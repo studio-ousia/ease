@@ -153,6 +153,9 @@ class RawDataLoader:
                 if dataset == "wikidata_hyperlink_type_hn_paragraph":
                     dataset_path = f"data/wikidata_hyperlinks_with_type_hardnegatives_test_False_first_sentence_False_abst_False_paragraph_True_size_1000000_max_count_10000_link_min_count_10_{lang}.pkl"
 
+                if dataset == "wikidata_hyperlink_type_hn_high_freq":
+                    dataset_path = f"data/wikidata_hyperlinks_with_type_hardnegatives_test_False_first_sentence_False_abst_False_size_1000000_max_count_10000_link_min_count_50_{lang}.pkl"
+
                 dataset_path = os.path.join(cwd, dataset_path)
 
                 try:

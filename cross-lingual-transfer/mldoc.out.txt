@@ -1,0 +1,628 @@
+gpuhost12
+Could not find conda environment: pytorch-1.6
+You can list all discoverable environments with `conda info --envs`.
+
+comet_ml is installed but `COMET_API_KEY` is not set.
+Some weights of the model checkpoint at ../results/my-unsup-mease-data-typehn-18-langs-avg-xlm-roberta-base-best were not used when initializing BertForSequenceClassificationWithPooler: ['roberta.embeddings.position_ids', 'roberta.embeddings.word_embeddings.weight', 'roberta.embeddings.position_embeddings.weight', 'roberta.embeddings.token_type_embeddings.weight', 'roberta.embeddings.LayerNorm.weight', 'roberta.embeddings.LayerNorm.bias', 'roberta.encoder.layer.0.attention.self.query.weight', 'roberta.encoder.layer.0.attention.self.query.bias', 'roberta.encoder.layer.0.attention.self.key.weight', 'roberta.encoder.layer.0.attention.self.key.bias', 'roberta.encoder.layer.0.attention.self.value.weight', 'roberta.encoder.layer.0.attention.self.value.bias', 'roberta.encoder.layer.0.attention.output.dense.weight', 'roberta.encoder.layer.0.attention.output.dense.bias', 'roberta.encoder.layer.0.attention.output.LayerNorm.weight', 'roberta.encoder.layer.0.attention.output.LayerNorm.bias', 'roberta.encoder.layer.0.intermediate.dense.weight', 'roberta.encoder.layer.0.intermediate.dense.bias', 'roberta.encoder.layer.0.output.dense.weight', 'roberta.encoder.layer.0.output.dense.bias', 'roberta.encoder.layer.0.output.LayerNorm.weight', 'roberta.encoder.layer.0.output.LayerNorm.bias', 'roberta.encoder.layer.1.attention.self.query.weight', 'roberta.encoder.layer.1.attention.self.query.bias', 'roberta.encoder.layer.1.attention.self.key.weight', 'roberta.encoder.layer.1.attention.self.key.bias', 'roberta.encoder.layer.1.attention.self.value.weight', 'roberta.encoder.layer.1.attention.self.value.bias', 'roberta.encoder.layer.1.attention.output.dense.weight', 'roberta.encoder.layer.1.attention.output.dense.bias', 'roberta.encoder.layer.1.attention.output.LayerNorm.weight', 'roberta.encoder.layer.1.attention.output.LayerNorm.bias', 'roberta.encoder.layer.1.intermediate.dense.weight', 'roberta.encoder.layer.1.intermediate.dense.bias', 'roberta.encoder.layer.1.output.dense.weight', 'roberta.encoder.layer.1.output.dense.bias', 'roberta.encoder.layer.1.output.LayerNorm.weight', 'roberta.encoder.layer.1.output.LayerNorm.bias', 'roberta.encoder.layer.2.attention.self.query.weight', 'roberta.encoder.layer.2.attention.self.query.bias', 'roberta.encoder.layer.2.attention.self.key.weight', 'roberta.encoder.layer.2.attention.self.key.bias', 'roberta.encoder.layer.2.attention.self.value.weight', 'roberta.encoder.layer.2.attention.self.value.bias', 'roberta.encoder.layer.2.attention.output.dense.weight', 'roberta.encoder.layer.2.attention.output.dense.bias', 'roberta.encoder.layer.2.attention.output.LayerNorm.weight', 'roberta.encoder.layer.2.attention.output.LayerNorm.bias', 'roberta.encoder.layer.2.intermediate.dense.weight', 'roberta.encoder.layer.2.intermediate.dense.bias', 'roberta.encoder.layer.2.output.dense.weight', 'roberta.encoder.layer.2.output.dense.bias', 'roberta.encoder.layer.2.output.LayerNorm.weight', 'roberta.encoder.layer.2.output.LayerNorm.bias', 'roberta.encoder.layer.3.attention.self.query.weight', 'roberta.encoder.layer.3.attention.self.query.bias', 'roberta.encoder.layer.3.attention.self.key.weight', 'roberta.encoder.layer.3.attention.self.key.bias', 'roberta.encoder.layer.3.attention.self.value.weight', 'roberta.encoder.layer.3.attention.self.value.bias', 'roberta.encoder.layer.3.attention.output.dense.weight', 'roberta.encoder.layer.3.attention.output.dense.bias', 'roberta.encoder.layer.3.attention.output.LayerNorm.weight', 'roberta.encoder.layer.3.attention.output.LayerNorm.bias', 'roberta.encoder.layer.3.intermediate.dense.weight', 'roberta.encoder.layer.3.intermediate.dense.bias', 'roberta.encoder.layer.3.output.dense.weight', 'roberta.encoder.layer.3.output.dense.bias', 'roberta.encoder.layer.3.output.LayerNorm.weight', 'roberta.encoder.layer.3.output.LayerNorm.bias', 'roberta.encoder.layer.4.attention.self.query.weight', 'roberta.encoder.layer.4.attention.self.query.bias', 'roberta.encoder.layer.4.attention.self.key.weight', 'roberta.encoder.layer.4.attention.self.key.bias', 'roberta.encoder.layer.4.attention.self.value.weight', 'roberta.encoder.layer.4.attention.self.value.bias', 'roberta.encoder.layer.4.attention.output.dense.weight', 'roberta.encoder.layer.4.attention.output.dense.bias', 'roberta.encoder.layer.4.attention.output.LayerNorm.weight', 'roberta.encoder.layer.4.attention.output.LayerNorm.bias', 'roberta.encoder.layer.4.intermediate.dense.weight', 'roberta.encoder.layer.4.intermediate.dense.bias', 'roberta.encoder.layer.4.output.dense.weight', 'roberta.encoder.layer.4.output.dense.bias', 'roberta.encoder.layer.4.output.LayerNorm.weight', 'roberta.encoder.layer.4.output.LayerNorm.bias', 'roberta.encoder.layer.5.attention.self.query.weight', 'roberta.encoder.layer.5.attention.self.query.bias', 'roberta.encoder.layer.5.attention.self.key.weight', 'roberta.encoder.layer.5.attention.self.key.bias', 'roberta.encoder.layer.5.attention.self.value.weight', 'roberta.encoder.layer.5.attention.self.value.bias', 'roberta.encoder.layer.5.attention.output.dense.weight', 'roberta.encoder.layer.5.attention.output.dense.bias', 'roberta.encoder.layer.5.attention.output.LayerNorm.weight', 'roberta.encoder.layer.5.attention.output.LayerNorm.bias', 'roberta.encoder.layer.5.intermediate.dense.weight', 'roberta.encoder.layer.5.intermediate.dense.bias', 'roberta.encoder.layer.5.output.dense.weight', 'roberta.encoder.layer.5.output.dense.bias', 'roberta.encoder.layer.5.output.LayerNorm.weight', 'roberta.encoder.layer.5.output.LayerNorm.bias', 'roberta.encoder.layer.6.attention.self.query.weight', 'roberta.encoder.layer.6.attention.self.query.bias', 'roberta.encoder.layer.6.attention.self.key.weight', 'roberta.encoder.layer.6.attention.self.key.bias', 'roberta.encoder.layer.6.attention.self.value.weight', 'roberta.encoder.layer.6.attention.self.value.bias', 'roberta.encoder.layer.6.attention.output.dense.weight', 'roberta.encoder.layer.6.attention.output.dense.bias', 'roberta.encoder.layer.6.attention.output.LayerNorm.weight', 'roberta.encoder.layer.6.attention.output.LayerNorm.bias', 'roberta.encoder.layer.6.intermediate.dense.weight', 'roberta.encoder.layer.6.intermediate.dense.bias', 'roberta.encoder.layer.6.output.dense.weight', 'roberta.encoder.layer.6.output.dense.bias', 'roberta.encoder.layer.6.output.LayerNorm.weight', 'roberta.encoder.layer.6.output.LayerNorm.bias', 'roberta.encoder.layer.7.attention.self.query.weight', 'roberta.encoder.layer.7.attention.self.query.bias', 'roberta.encoder.layer.7.attention.self.key.weight', 'roberta.encoder.layer.7.attention.self.key.bias', 'roberta.encoder.layer.7.attention.self.value.weight', 'roberta.encoder.layer.7.attention.self.value.bias', 'roberta.encoder.layer.7.attention.output.dense.weight', 'roberta.encoder.layer.7.attention.output.dense.bias', 'roberta.encoder.layer.7.attention.output.LayerNorm.weight', 'roberta.encoder.layer.7.attention.output.LayerNorm.bias', 'roberta.encoder.layer.7.intermediate.dense.weight', 'roberta.encoder.layer.7.intermediate.dense.bias', 'roberta.encoder.layer.7.output.dense.weight', 'roberta.encoder.layer.7.output.dense.bias', 'roberta.encoder.layer.7.output.LayerNorm.weight', 'roberta.encoder.layer.7.output.LayerNorm.bias', 'roberta.encoder.layer.8.attention.self.query.weight', 'roberta.encoder.layer.8.attention.self.query.bias', 'roberta.encoder.layer.8.attention.self.key.weight', 'roberta.encoder.layer.8.attention.self.key.bias', 'roberta.encoder.layer.8.attention.self.value.weight', 'roberta.encoder.layer.8.attention.self.value.bias', 'roberta.encoder.layer.8.attention.output.dense.weight', 'roberta.encoder.layer.8.attention.output.dense.bias', 'roberta.encoder.layer.8.attention.output.LayerNorm.weight', 'roberta.encoder.layer.8.attention.output.LayerNorm.bias', 'roberta.encoder.layer.8.intermediate.dense.weight', 'roberta.encoder.layer.8.intermediate.dense.bias', 'roberta.encoder.layer.8.output.dense.weight', 'roberta.encoder.layer.8.output.dense.bias', 'roberta.encoder.layer.8.output.LayerNorm.weight', 'roberta.encoder.layer.8.output.LayerNorm.bias', 'roberta.encoder.layer.9.attention.self.query.weight', 'roberta.encoder.layer.9.attention.self.query.bias', 'roberta.encoder.layer.9.attention.self.key.weight', 'roberta.encoder.layer.9.attention.self.key.bias', 'roberta.encoder.layer.9.attention.self.value.weight', 'roberta.encoder.layer.9.attention.self.value.bias', 'roberta.encoder.layer.9.attention.output.dense.weight', 'roberta.encoder.layer.9.attention.output.dense.bias', 'roberta.encoder.layer.9.attention.output.LayerNorm.weight', 'roberta.encoder.layer.9.attention.output.LayerNorm.bias', 'roberta.encoder.layer.9.intermediate.dense.weight', 'roberta.encoder.layer.9.intermediate.dense.bias', 'roberta.encoder.layer.9.output.dense.weight', 'roberta.encoder.layer.9.output.dense.bias', 'roberta.encoder.layer.9.output.LayerNorm.weight', 'roberta.encoder.layer.9.output.LayerNorm.bias', 'roberta.encoder.layer.10.attention.self.query.weight', 'roberta.encoder.layer.10.attention.self.query.bias', 'roberta.encoder.layer.10.attention.self.key.weight', 'roberta.encoder.layer.10.attention.self.key.bias', 'roberta.encoder.layer.10.attention.self.value.weight', 'roberta.encoder.layer.10.attention.self.value.bias', 'roberta.encoder.layer.10.attention.output.dense.weight', 'roberta.encoder.layer.10.attention.output.dense.bias', 'roberta.encoder.layer.10.attention.output.LayerNorm.weight', 'roberta.encoder.layer.10.attention.output.LayerNorm.bias', 'roberta.encoder.layer.10.intermediate.dense.weight', 'roberta.encoder.layer.10.intermediate.dense.bias', 'roberta.encoder.layer.10.output.dense.weight', 'roberta.encoder.layer.10.output.dense.bias', 'roberta.encoder.layer.10.output.LayerNorm.weight', 'roberta.encoder.layer.10.output.LayerNorm.bias', 'roberta.encoder.layer.11.attention.self.query.weight', 'roberta.encoder.layer.11.attention.self.query.bias', 'roberta.encoder.layer.11.attention.self.key.weight', 'roberta.encoder.layer.11.attention.self.key.bias', 'roberta.encoder.layer.11.attention.self.value.weight', 'roberta.encoder.layer.11.attention.self.value.bias', 'roberta.encoder.layer.11.attention.output.dense.weight', 'roberta.encoder.layer.11.attention.output.dense.bias', 'roberta.encoder.layer.11.attention.output.LayerNorm.weight', 'roberta.encoder.layer.11.attention.output.LayerNorm.bias', 'roberta.encoder.layer.11.intermediate.dense.weight', 'roberta.encoder.layer.11.intermediate.dense.bias', 'roberta.encoder.layer.11.output.dense.weight', 'roberta.encoder.layer.11.output.dense.bias', 'roberta.encoder.layer.11.output.LayerNorm.weight', 'roberta.encoder.layer.11.output.LayerNorm.bias', 'roberta.pooler.dense.weight', 'roberta.pooler.dense.bias', 'lm_head.bias', 'lm_head.dense.weight', 'lm_head.dense.bias', 'lm_head.layer_norm.weight', 'lm_head.layer_norm.bias', 'lm_head.decoder.weight', 'lm_head.decoder.bias', 'mlp.dense.weight', 'mlp.dense.bias', 'entity_transformation.dense.weight', 'entity_transformation.dense.bias', 'entity_transformation.dense2.weight', 'entity_transformation.dense2.bias', 'hn_entity_transformation.dense.weight', 'hn_entity_transformation.dense.bias', 'hn_entity_transformation.dense2.weight', 'hn_entity_transformation.dense2.bias', 'entity_embedding.weight']
+- This IS expected if you are initializing BertForSequenceClassificationWithPooler from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing BertForSequenceClassificationWithPooler from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of BertForSequenceClassificationWithPooler were not initialized from the model checkpoint at ../results/my-unsup-mease-data-typehn-18-langs-avg-xlm-roberta-base-best and are newly initialized: ['embeddings.word_embeddings.weight', 'embeddings.position_embeddings.weight', 'embeddings.token_type_embeddings.weight', 'embeddings.LayerNorm.weight', 'embeddings.LayerNorm.bias', 'encoder.layer.0.attention.self.query.weight', 'encoder.layer.0.attention.self.query.bias', 'encoder.layer.0.attention.self.key.weight', 'encoder.layer.0.attention.self.key.bias', 'encoder.layer.0.attention.self.value.weight', 'encoder.layer.0.attention.self.value.bias', 'encoder.layer.0.attention.output.dense.weight', 'encoder.layer.0.attention.output.dense.bias', 'encoder.layer.0.attention.output.LayerNorm.weight', 'encoder.layer.0.attention.output.LayerNorm.bias', 'encoder.layer.0.intermediate.dense.weight', 'encoder.layer.0.intermediate.dense.bias', 'encoder.layer.0.output.dense.weight', 'encoder.layer.0.output.dense.bias', 'encoder.layer.0.output.LayerNorm.weight', 'encoder.layer.0.output.LayerNorm.bias', 'encoder.layer.1.attention.self.query.weight', 'encoder.layer.1.attention.self.query.bias', 'encoder.layer.1.attention.self.key.weight', 'encoder.layer.1.attention.self.key.bias', 'encoder.layer.1.attention.self.value.weight', 'encoder.layer.1.attention.self.value.bias', 'encoder.layer.1.attention.output.dense.weight', 'encoder.layer.1.attention.output.dense.bias', 'encoder.layer.1.attention.output.LayerNorm.weight', 'encoder.layer.1.attention.output.LayerNorm.bias', 'encoder.layer.1.intermediate.dense.weight', 'encoder.layer.1.intermediate.dense.bias', 'encoder.layer.1.output.dense.weight', 'encoder.layer.1.output.dense.bias', 'encoder.layer.1.output.LayerNorm.weight', 'encoder.layer.1.output.LayerNorm.bias', 'encoder.layer.2.attention.self.query.weight', 'encoder.layer.2.attention.self.query.bias', 'encoder.layer.2.attention.self.key.weight', 'encoder.layer.2.attention.self.key.bias', 'encoder.layer.2.attention.self.value.weight', 'encoder.layer.2.attention.self.value.bias', 'encoder.layer.2.attention.output.dense.weight', 'encoder.layer.2.attention.output.dense.bias', 'encoder.layer.2.attention.output.LayerNorm.weight', 'encoder.layer.2.attention.output.LayerNorm.bias', 'encoder.layer.2.intermediate.dense.weight', 'encoder.layer.2.intermediate.dense.bias', 'encoder.layer.2.output.dense.weight', 'encoder.layer.2.output.dense.bias', 'encoder.layer.2.output.LayerNorm.weight', 'encoder.layer.2.output.LayerNorm.bias', 'encoder.layer.3.attention.self.query.weight', 'encoder.layer.3.attention.self.query.bias', 'encoder.layer.3.attention.self.key.weight', 'encoder.layer.3.attention.self.key.bias', 'encoder.layer.3.attention.self.value.weight', 'encoder.layer.3.attention.self.value.bias', 'encoder.layer.3.attention.output.dense.weight', 'encoder.layer.3.attention.output.dense.bias', 'encoder.layer.3.attention.output.LayerNorm.weight', 'encoder.layer.3.attention.output.LayerNorm.bias', 'encoder.layer.3.intermediate.dense.weight', 'encoder.layer.3.intermediate.dense.bias', 'encoder.layer.3.output.dense.weight', 'encoder.layer.3.output.dense.bias', 'encoder.layer.3.output.LayerNorm.weight', 'encoder.layer.3.output.LayerNorm.bias', 'encoder.layer.4.attention.self.query.weight', 'encoder.layer.4.attention.self.query.bias', 'encoder.layer.4.attention.self.key.weight', 'encoder.layer.4.attention.self.key.bias', 'encoder.layer.4.attention.self.value.weight', 'encoder.layer.4.attention.self.value.bias', 'encoder.layer.4.attention.output.dense.weight', 'encoder.layer.4.attention.output.dense.bias', 'encoder.layer.4.attention.output.LayerNorm.weight', 'encoder.layer.4.attention.output.LayerNorm.bias', 'encoder.layer.4.intermediate.dense.weight', 'encoder.layer.4.intermediate.dense.bias', 'encoder.layer.4.output.dense.weight', 'encoder.layer.4.output.dense.bias', 'encoder.layer.4.output.LayerNorm.weight', 'encoder.layer.4.output.LayerNorm.bias', 'encoder.layer.5.attention.self.query.weight', 'encoder.layer.5.attention.self.query.bias', 'encoder.layer.5.attention.self.key.weight', 'encoder.layer.5.attention.self.key.bias', 'encoder.layer.5.attention.self.value.weight', 'encoder.layer.5.attention.self.value.bias', 'encoder.layer.5.attention.output.dense.weight', 'encoder.layer.5.attention.output.dense.bias', 'encoder.layer.5.attention.output.LayerNorm.weight', 'encoder.layer.5.attention.output.LayerNorm.bias', 'encoder.layer.5.intermediate.dense.weight', 'encoder.layer.5.intermediate.dense.bias', 'encoder.layer.5.output.dense.weight', 'encoder.layer.5.output.dense.bias', 'encoder.layer.5.output.LayerNorm.weight', 'encoder.layer.5.output.LayerNorm.bias', 'encoder.layer.6.attention.self.query.weight', 'encoder.layer.6.attention.self.query.bias', 'encoder.layer.6.attention.self.key.weight', 'encoder.layer.6.attention.self.key.bias', 'encoder.layer.6.attention.self.value.weight', 'encoder.layer.6.attention.self.value.bias', 'encoder.layer.6.attention.output.dense.weight', 'encoder.layer.6.attention.output.dense.bias', 'encoder.layer.6.attention.output.LayerNorm.weight', 'encoder.layer.6.attention.output.LayerNorm.bias', 'encoder.layer.6.intermediate.dense.weight', 'encoder.layer.6.intermediate.dense.bias', 'encoder.layer.6.output.dense.weight', 'encoder.layer.6.output.dense.bias', 'encoder.layer.6.output.LayerNorm.weight', 'encoder.layer.6.output.LayerNorm.bias', 'encoder.layer.7.attention.self.query.weight', 'encoder.layer.7.attention.self.query.bias', 'encoder.layer.7.attention.self.key.weight', 'encoder.layer.7.attention.self.key.bias', 'encoder.layer.7.attention.self.value.weight', 'encoder.layer.7.attention.self.value.bias', 'encoder.layer.7.attention.output.dense.weight', 'encoder.layer.7.attention.output.dense.bias', 'encoder.layer.7.attention.output.LayerNorm.weight', 'encoder.layer.7.attention.output.LayerNorm.bias', 'encoder.layer.7.intermediate.dense.weight', 'encoder.layer.7.intermediate.dense.bias', 'encoder.layer.7.output.dense.weight', 'encoder.layer.7.output.dense.bias', 'encoder.layer.7.output.LayerNorm.weight', 'encoder.layer.7.output.LayerNorm.bias', 'encoder.layer.8.attention.self.query.weight', 'encoder.layer.8.attention.self.query.bias', 'encoder.layer.8.attention.self.key.weight', 'encoder.layer.8.attention.self.key.bias', 'encoder.layer.8.attention.self.value.weight', 'encoder.layer.8.attention.self.value.bias', 'encoder.layer.8.attention.output.dense.weight', 'encoder.layer.8.attention.output.dense.bias', 'encoder.layer.8.attention.output.LayerNorm.weight', 'encoder.layer.8.attention.output.LayerNorm.bias', 'encoder.layer.8.intermediate.dense.weight', 'encoder.layer.8.intermediate.dense.bias', 'encoder.layer.8.output.dense.weight', 'encoder.layer.8.output.dense.bias', 'encoder.layer.8.output.LayerNorm.weight', 'encoder.layer.8.output.LayerNorm.bias', 'encoder.layer.9.attention.self.query.weight', 'encoder.layer.9.attention.self.query.bias', 'encoder.layer.9.attention.self.key.weight', 'encoder.layer.9.attention.self.key.bias', 'encoder.layer.9.attention.self.value.weight', 'encoder.layer.9.attention.self.value.bias', 'encoder.layer.9.attention.output.dense.weight', 'encoder.layer.9.attention.output.dense.bias', 'encoder.layer.9.attention.output.LayerNorm.weight', 'encoder.layer.9.attention.output.LayerNorm.bias', 'encoder.layer.9.intermediate.dense.weight', 'encoder.layer.9.intermediate.dense.bias', 'encoder.layer.9.output.dense.weight', 'encoder.layer.9.output.dense.bias', 'encoder.layer.9.output.LayerNorm.weight', 'encoder.layer.9.output.LayerNorm.bias', 'encoder.layer.10.attention.self.query.weight', 'encoder.layer.10.attention.self.query.bias', 'encoder.layer.10.attention.self.key.weight', 'encoder.layer.10.attention.self.key.bias', 'encoder.layer.10.attention.self.value.weight', 'encoder.layer.10.attention.self.value.bias', 'encoder.layer.10.attention.output.dense.weight', 'encoder.layer.10.attention.output.dense.bias', 'encoder.layer.10.attention.output.LayerNorm.weight', 'encoder.layer.10.attention.output.LayerNorm.bias', 'encoder.layer.10.intermediate.dense.weight', 'encoder.layer.10.intermediate.dense.bias', 'encoder.layer.10.output.dense.weight', 'encoder.layer.10.output.dense.bias', 'encoder.layer.10.output.LayerNorm.weight', 'encoder.layer.10.output.LayerNorm.bias', 'encoder.layer.11.attention.self.query.weight', 'encoder.layer.11.attention.self.query.bias', 'encoder.layer.11.attention.self.key.weight', 'encoder.layer.11.attention.self.key.bias', 'encoder.layer.11.attention.self.value.weight', 'encoder.layer.11.attention.self.value.bias', 'encoder.layer.11.attention.output.dense.weight', 'encoder.layer.11.attention.output.dense.bias', 'encoder.layer.11.attention.output.LayerNorm.weight', 'encoder.layer.11.attention.output.LayerNorm.bias', 'encoder.layer.11.intermediate.dense.weight', 'encoder.layer.11.intermediate.dense.bias', 'encoder.layer.11.output.dense.weight', 'encoder.layer.11.output.dense.bias', 'encoder.layer.11.output.LayerNorm.weight', 'encoder.layer.11.output.LayerNorm.bias', 'pooler.dense.weight', 'pooler.dense.bias', 'classifier.weight', 'classifier.bias']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+COMET INFO: No Comet API Key was found, creating an OfflineExperiment. Set up your API Key to get the full Comet experience https://www.comet.ml/docs/python-sdk/advanced/#python-configuration
+en
+fr
+de
+ja
+zh
+it
+ru
+es
+classifier.weight
+classifier.bias
+
+  0%|          | 0/160 [00:00<?, ?it/s]  1%|          | 1/160 [00:00<01:34,  1.69it/s]  1%|▏         | 2/160 [00:00<01:11,  2.22it/s]  2%|▏         | 3/160 [00:00<00:54,  2.90it/s]  2%|▎         | 4/160 [00:00<00:42,  3.68it/s]  3%|▎         | 5/160 [00:01<00:34,  4.54it/s]  4%|▍         | 6/160 [00:01<00:28,  5.42it/s]  4%|▍         | 7/160 [00:01<00:24,  6.27it/s]  5%|▌         | 8/160 [00:01<00:21,  7.04it/s]  6%|▌         | 9/160 [00:01<00:19,  7.71it/s]  6%|▋         | 10/160 [00:01<00:18,  8.26it/s]                                                {'loss': 34.7483, 'learning_rate': 0.09375, 'epoch': 0.31}
+  6%|▋         | 10/160 [00:01<00:18,  8.26it/s]
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00,  6.05it/s][A
+ 38%|███▊      | 3/8 [00:00<00:01,  4.61it/s][A
+ 50%|█████     | 4/8 [00:01<00:01,  3.94it/s][A
+ 62%|██████▎   | 5/8 [00:01<00:00,  3.58it/s][A
+ 75%|███████▌  | 6/8 [00:01<00:00,  3.37it/s][A
+ 88%|████████▊ | 7/8 [00:02<00:00,  3.25it/s][A
+100%|██████████| 8/8 [00:02<00:00,  3.16it/s][A                                                
+                                             {'eval_loss': 31.044898986816406, 'eval_accuracy': 0.266, 'eval_runtime': 2.6422, 'eval_samples_per_second': 378.473, 'epoch': 0.31}
+[A  6%|▋         | 10/160 [00:04<00:18,  8.26it/s]
+100%|██████████| 8/8 [00:02<00:00,  3.16it/s][A
+                                             [A  7%|▋         | 11/160 [00:08<05:03,  2.04s/it]  8%|▊         | 12/160 [00:08<03:36,  1.46s/it]  8%|▊         | 13/160 [00:08<02:35,  1.05s/it]  9%|▉         | 14/160 [00:08<01:52,  1.30it/s]  9%|▉         | 15/160 [00:08<01:22,  1.76it/s] 10%|█         | 16/160 [00:08<01:01,  2.34it/s] 11%|█         | 17/160 [00:08<00:47,  3.03it/s] 11%|█▏        | 18/160 [00:08<00:37,  3.84it/s] 12%|█▏        | 19/160 [00:08<00:29,  4.70it/s] 12%|█▎        | 20/160 [00:08<00:25,  5.58it/s]                                                {'loss': 25.5539, 'learning_rate': 0.08750000000000001, 'epoch': 0.62} 12%|█▎        | 20/160 [00:08<00:25,  5.58it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00,  6.03it/s][A
+ 38%|███▊      | 3/8 [00:00<00:01,  4.62it/s][A
+ 50%|█████     | 4/8 [00:01<00:01,  3.96it/s][A
+ 62%|██████▎   | 5/8 [00:01<00:00,  3.60it/s][A
+ 75%|███████▌  | 6/8 [00:01<00:00,  3.39it/s][A
+ 88%|████████▊ | 7/8 [00:02<00:00,  3.26it/s][A
+100%|██████████| 8/8 [00:02<00:00,  3.17it/s][A                                                
+                                             [A{'eval_loss': 18.039371490478516, 'eval_accuracy': 0.323, 'eval_runtime': 2.6334, 'eval_samples_per_second': 379.744, 'epoch': 0.62}
+ 12%|█▎        | 20/160 [00:11<00:25,  5.58it/s]
+100%|██████████| 8/8 [00:02<00:00,  3.17it/s][A
+                                             [A 13%|█▎        | 21/160 [00:15<04:56,  2.13s/it] 14%|█▍        | 22/160 [00:15<03:31,  1.53s/it] 14%|█▍        | 23/160 [00:15<02:31,  1.11s/it] 15%|█▌        | 24/160 [00:15<01:49,  1.24it/s] 16%|█▌        | 25/160 [00:16<01:20,  1.69it/s] 16%|█▋        | 26/160 [00:16<00:59,  2.25it/s] 17%|█▋        | 27/160 [00:16<00:45,  2.93it/s] 18%|█▊        | 28/160 [00:16<00:35,  3.71it/s] 18%|█▊        | 29/160 [00:16<00:28,  4.57it/s] 19%|█▉        | 30/160 [00:16<00:23,  5.45it/s]                                                {'loss': 17.2135, 'learning_rate': 0.08125, 'epoch': 0.94}
+ 19%|█▉        | 30/160 [00:17<00:23,  5.45it/s]
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00,  6.06it/s][A
+ 38%|███▊      | 3/8 [00:00<00:01,  4.62it/s][A
+ 50%|█████     | 4/8 [00:01<00:01,  3.95it/s][A
+ 62%|██████▎   | 5/8 [00:01<00:00,  3.60it/s][A
+ 75%|███████▌  | 6/8 [00:01<00:00,  3.39it/s][A
+ 88%|████████▊ | 7/8 [00:02<00:00,  3.25it/s][A
+100%|██████████| 8/8 [00:02<00:00,  3.16it/s][A                                                
+                                             [A{'eval_loss': 17.009292602539062, 'eval_accuracy': 0.274, 'eval_runtime': 2.6382, 'eval_samples_per_second': 379.049, 'epoch': 0.94}
+ 19%|█▉        | 30/160 [00:19<00:23,  5.45it/s]
+100%|██████████| 8/8 [00:02<00:00,  3.16it/s][A
+                                             [A 19%|█▉        | 31/160 [00:24<05:03,  2.35s/it] 21%|██        | 33/160 [00:24<03:31,  1.67s/it] 21%|██▏       | 34/160 [00:24<02:30,  1.20s/it] 22%|██▏       | 35/160 [00:24<01:48,  1.15it/s] 23%|██▎       | 37/160 [00:24<01:18,  1.57it/s] 24%|██▍       | 39/160 [00:24<00:57,  2.10it/s] 25%|██▌       | 40/160 [00:24<00:43,  2.75it/s]                                                {'loss': 11.4245, 'learning_rate': 0.07500000000000001, 'epoch': 1.25} 25%|██▌       | 40/160 [00:24<00:43,  2.75it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00,  6.04it/s][A
+ 38%|███▊      | 3/8 [00:00<00:01,  4.61it/s][A
+ 50%|█████     | 4/8 [00:01<00:01,  3.96it/s][A
+ 62%|██████▎   | 5/8 [00:01<00:00,  3.60it/s][A
+ 75%|███████▌  | 6/8 [00:01<00:00,  3.38it/s][A
+ 88%|████████▊ | 7/8 [00:02<00:00,  3.25it/s][A
+100%|██████████| 8/8 [00:02<00:00,  3.16it/s][A                                                
+                                             [A{'eval_loss': 6.465122222900391, 'eval_accuracy': 0.33, 'eval_runtime': 2.6413, 'eval_samples_per_second': 378.596, 'epoch': 1.25}
+ 25%|██▌       | 40/160 [00:27<00:43,  2.75it/s]
+100%|██████████| 8/8 [00:02<00:00,  3.16it/s][A
+                                             [A 26%|██▌       | 41/160 [00:31<04:40,  2.35s/it] 26%|██▋       | 42/160 [00:31<03:18,  1.68s/it] 28%|██▊       | 44/160 [00:32<02:20,  1.21s/it] 28%|██▊       | 45/160 [00:32<01:40,  1.14it/s] 29%|██▉       | 46/160 [00:32<01:13,  1.55it/s] 29%|██▉       | 47/160 [00:32<00:54,  2.08it/s] 30%|███       | 48/160 [00:32<00:41,  2.73it/s] 31%|███       | 49/160 [00:32<00:31,  3.49it/s] 31%|███▏      | 50/160 [00:32<00:25,  4.33it/s]                                                {'loss': 8.5219, 'learning_rate': 0.06875, 'epoch': 1.56}
+ 31%|███▏      | 50/160 [00:32<00:25,  4.33it/s]
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00,  6.03it/s][A
+ 38%|███▊      | 3/8 [00:00<00:01,  4.62it/s][A
+ 50%|█████     | 4/8 [00:01<00:01,  3.95it/s][A
+ 62%|██████▎   | 5/8 [00:01<00:00,  3.60it/s][A
+ 75%|███████▌  | 6/8 [00:01<00:00,  3.38it/s][A
+ 88%|████████▊ | 7/8 [00:02<00:00,  3.25it/s][A
+100%|██████████| 8/8 [00:02<00:00,  3.16it/s][A                                                
+                                             [A{'eval_loss': 13.223043441772461, 'eval_accuracy': 0.238, 'eval_runtime': 2.6403, 'eval_samples_per_second': 378.742, 'epoch': 1.56}
+ 31%|███▏      | 50/160 [00:35<00:25,  4.33it/s]
+100%|██████████| 8/8 [00:02<00:00,  3.16it/s][A
+                                             [A 32%|███▏      | 51/160 [00:39<04:05,  2.25s/it] 32%|███▎      | 52/160 [00:39<02:53,  1.61s/it] 34%|███▍      | 54/160 [00:40<02:02,  1.16s/it] 34%|███▍      | 55/160 [00:40<01:28,  1.19it/s] 36%|███▌      | 57/160 [00:40<01:03,  1.62it/s] 37%|███▋      | 59/160 [00:40<00:46,  2.16it/s] 38%|███▊      | 60/160 [00:40<00:35,  2.83it/s]                                                {'loss': 5.6205, 'learning_rate': 0.0625, 'epoch': 1.88}
+ 38%|███▊      | 60/160 [00:40<00:35,  2.83it/s]
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00,  6.02it/s][A
+ 38%|███▊      | 3/8 [00:00<00:01,  4.61it/s][A
+ 50%|█████     | 4/8 [00:01<00:01,  3.95it/s][A
+ 62%|██████▎   | 5/8 [00:01<00:00,  3.59it/s][A
+ 75%|███████▌  | 6/8 [00:01<00:00,  3.38it/s][A
+ 88%|████████▊ | 7/8 [00:02<00:00,  3.25it/s][A
+100%|██████████| 8/8 [00:02<00:00,  3.16it/s][A                                                {'eval_loss': 1.7579548358917236, 'eval_accuracy': 0.498, 'eval_runtime': 2.6428, 'eval_samples_per_second': 378.391, 'epoch': 1.88}
+                                             [A
+ 38%|███▊      | 60/160 [00:43<00:35,  2.83it/s]
+100%|██████████| 8/8 [00:02<00:00,  3.16it/s][A
+                                             [A 38%|███▊      | 61/160 [00:47<03:33,  2.16s/it] 39%|███▉      | 62/160 [00:47<02:31,  1.54s/it] 39%|███▉      | 63/160 [00:47<01:47,  1.11s/it] 41%|████      | 65/160 [00:47<01:15,  1.26it/s] 42%|████▏     | 67/160 [00:47<00:54,  1.70it/s] 43%|████▎     | 69/160 [00:47<00:40,  2.26it/s]                                                {'loss': 2.5831, 'learning_rate': 0.05625, 'epoch': 2.19}
+ 44%|████▍     | 70/160 [00:47<00:39,  2.26it/s]
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00,  6.01it/s][A
+ 38%|███▊      | 3/8 [00:00<00:01,  4.61it/s][A
+ 50%|█████     | 4/8 [00:01<00:01,  3.94it/s][A
+ 62%|██████▎   | 5/8 [00:01<00:00,  3.59it/s][A
+ 75%|███████▌  | 6/8 [00:01<00:00,  3.38it/s][A
+ 88%|████████▊ | 7/8 [00:02<00:00,  3.24it/s][A
+100%|██████████| 8/8 [00:02<00:00,  3.16it/s][A                                                
+                                             [A{'eval_loss': 2.0138027667999268, 'eval_accuracy': 0.466, 'eval_runtime': 2.6397, 'eval_samples_per_second': 378.825, 'epoch': 2.19}
+ 44%|████▍     | 70/160 [00:50<00:39,  2.26it/s]
+100%|██████████| 8/8 [00:02<00:00,  3.16it/s][A
+                                             [A 44%|████▍     | 71/160 [00:54<01:52,  1.27s/it] 45%|████▌     | 72/160 [00:54<01:20,  1.09it/s] 46%|████▌     | 73/160 [00:54<00:58,  1.48it/s] 46%|████▋     | 74/160 [00:54<00:43,  1.99it/s] 47%|████▋     | 75/160 [00:54<00:32,  2.62it/s] 48%|████▊     | 77/160 [00:54<00:24,  3.36it/s] 49%|████▉     | 78/160 [00:54<00:19,  4.19it/s] 49%|████▉     | 79/160 [00:54<00:15,  5.07it/s] 50%|█████     | 80/160 [00:55<00:13,  5.94it/s]                                                {'loss': 2.2933, 'learning_rate': 0.05, 'epoch': 2.5}
+ 50%|█████     | 80/160 [00:55<00:13,  5.94it/s]
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:01,  6.00it/s][A
+ 38%|███▊      | 3/8 [00:00<00:01,  4.59it/s][A
+ 50%|█████     | 4/8 [00:01<00:01,  3.94it/s][A
+ 62%|██████▎   | 5/8 [00:01<00:00,  3.59it/s][A
+ 75%|███████▌  | 6/8 [00:01<00:00,  3.37it/s][A
+ 88%|████████▊ | 7/8 [00:02<00:00,  3.24it/s][A
+100%|██████████| 8/8 [00:02<00:00,  3.15it/s][A                                                {'eval_loss': 2.6487483978271484, 'eval_accuracy': 0.304, 'eval_runtime': 2.6453, 'eval_samples_per_second': 378.031, 'epoch': 2.5}
+                                             [A
+ 50%|█████     | 80/160 [00:57<00:13,  5.94it/s]
+100%|██████████| 8/8 [00:02<00:00,  3.15it/s][A
+                                             [A 51%|█████     | 81/160 [01:01<02:33,  1.94s/it] 51%|█████▏    | 82/160 [01:01<01:48,  1.39s/it] 52%|█████▏    | 83/160 [01:01<01:17,  1.01s/it] 52%|█████▎    | 84/160 [01:01<00:55,  1.36it/s] 53%|█████▎    | 85/160 [01:01<00:40,  1.84it/s] 54%|█████▍    | 86/160 [01:01<00:30,  2.43it/s] 54%|█████▍    | 87/160 [01:01<00:23,  3.14it/s] 56%|█████▌    | 89/160 [01:01<00:17,  3.96it/s]{'loss': 2.0272, 'learning_rate': 0.043750000000000004, 'epoch': 2.81}
+                                                 56%|█████▋    | 90/160 [01:02<00:17,  3.96it/s]
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00,  6.02it/s][A
+ 38%|███▊      | 3/8 [00:00<00:01,  4.60it/s][A
+ 50%|█████     | 4/8 [00:01<00:01,  3.95it/s][A
+ 62%|██████▎   | 5/8 [00:01<00:00,  3.59it/s][A
+ 75%|███████▌  | 6/8 [00:01<00:00,  3.37it/s][A
+ 88%|████████▊ | 7/8 [00:02<00:00,  3.24it/s][A
+100%|██████████| 8/8 [00:02<00:00,  3.15it/s][A                                                {'eval_loss': 1.7222832441329956, 'eval_accuracy': 0.528, 'eval_runtime': 2.6487, 'eval_samples_per_second': 377.55, 'epoch': 2.81}
+                                             [A
+ 56%|█████▋    | 90/160 [01:04<00:17,  3.96it/s]
+100%|██████████| 8/8 [00:02<00:00,  3.15it/s][A
+                                             [A 57%|█████▋    | 91/160 [01:08<01:24,  1.22s/it] 57%|█████▊    | 92/160 [01:09<01:00,  1.12it/s] 58%|█████▊    | 93/160 [01:09<00:44,  1.52it/s] 59%|█████▉    | 94/160 [01:09<00:32,  2.04it/s] 59%|█████▉    | 95/160 [01:09<00:24,  2.68it/s] 61%|██████    | 97/160 [01:09<00:17,  3.57it/s] 62%|██████▏   | 99/160 [01:09<00:13,  4.42it/s]                                                {'loss': 2.6534, 'learning_rate': 0.037500000000000006, 'epoch': 3.12}
+ 62%|██████▎   | 100/160 [01:09<00:13,  4.42it/s]
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00,  6.03it/s][A
+ 38%|███▊      | 3/8 [00:00<00:01,  4.61it/s][A
+ 50%|█████     | 4/8 [00:01<00:01,  3.94it/s][A
+ 62%|██████▎   | 5/8 [00:01<00:00,  3.59it/s][A
+ 75%|███████▌  | 6/8 [00:01<00:00,  3.38it/s][A
+ 88%|████████▊ | 7/8 [00:02<00:00,  3.24it/s][A
+100%|██████████| 8/8 [00:02<00:00,  3.15it/s][A                                                 
+                                             [A{'eval_loss': 5.127084732055664, 'eval_accuracy': 0.315, 'eval_runtime': 2.6552, 'eval_samples_per_second': 376.622, 'epoch': 3.12}
+ 62%|██████▎   | 100/160 [01:12<00:13,  4.42it/s]
+100%|██████████| 8/8 [00:02<00:00,  3.15it/s][A
+                                             [A 63%|██████▎   | 101/160 [01:16<01:06,  1.13s/it] 64%|██████▍   | 102/160 [01:16<00:48,  1.21it/s] 64%|██████▍   | 103/160 [01:16<00:34,  1.63it/s] 65%|██████▌   | 104/160 [01:16<00:25,  2.18it/s] 66%|██████▌   | 105/160 [01:16<00:19,  2.85it/s] 67%|██████▋   | 107/160 [01:16<00:14,  3.62it/s] 68%|██████▊   | 108/160 [01:16<00:11,  4.48it/s] 68%|██████▊   | 109/160 [01:16<00:09,  5.37it/s] 69%|██████▉   | 110/160 [01:17<00:08,  6.23it/s]                                                 {'loss': 3.193, 'learning_rate': 0.03125, 'epoch': 3.44}
+ 69%|██████▉   | 110/160 [01:17<00:08,  6.23it/s]
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00,  6.02it/s][A
+ 38%|███▊      | 3/8 [00:00<00:01,  4.59it/s][A
+ 50%|█████     | 4/8 [00:01<00:01,  3.94it/s][A
+ 62%|██████▎   | 5/8 [00:01<00:00,  3.59it/s][A
+ 75%|███████▌  | 6/8 [00:01<00:00,  3.37it/s][A
+ 88%|████████▊ | 7/8 [00:02<00:00,  3.24it/s][A
+100%|██████████| 8/8 [00:02<00:00,  3.15it/s][A                                                 
+                                             {'eval_loss': 1.4016706943511963, 'eval_accuracy': 0.506, 'eval_runtime': 2.6494, 'eval_samples_per_second': 377.446, 'epoch': 3.44}[A
+ 69%|██████▉   | 110/160 [01:19<00:08,  6.23it/s]
+100%|██████████| 8/8 [00:02<00:00,  3.15it/s][A
+                                             [A 69%|██████▉   | 111/160 [01:23<01:36,  1.97s/it] 70%|███████   | 112/160 [01:23<01:08,  1.42s/it] 71%|███████   | 113/160 [01:23<00:48,  1.02s/it] 72%|███████▏  | 115/160 [01:23<00:33,  1.34it/s] 72%|███████▎  | 116/160 [01:23<00:24,  1.81it/s] 73%|███████▎  | 117/160 [01:23<00:17,  2.40it/s] 74%|███████▍  | 118/160 [01:24<00:13,  3.11it/s] 74%|███████▍  | 119/160 [01:24<00:10,  3.92it/s] 75%|███████▌  | 120/160 [01:24<00:08,  4.78it/s]                                                 {'loss': 1.4459, 'learning_rate': 0.025, 'epoch': 3.75}
+ 75%|███████▌  | 120/160 [01:24<00:08,  4.78it/s]
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00,  6.00it/s][A
+ 38%|███▊      | 3/8 [00:00<00:01,  4.59it/s][A
+ 50%|█████     | 4/8 [00:01<00:01,  3.94it/s][A
+ 62%|██████▎   | 5/8 [00:01<00:00,  3.58it/s][A
+ 75%|███████▌  | 6/8 [00:01<00:00,  3.37it/s][A
+ 88%|████████▊ | 7/8 [00:02<00:00,  3.23it/s][A
+100%|██████████| 8/8 [00:02<00:00,  3.15it/s][A                                                 {'eval_loss': 1.1930522918701172, 'eval_accuracy': 0.574, 'eval_runtime': 2.6487, 'eval_samples_per_second': 377.538, 'epoch': 3.75}
+                                             [A
+ 75%|███████▌  | 120/160 [01:26<00:08,  4.78it/s]
+100%|██████████| 8/8 [00:02<00:00,  3.15it/s][A
+                                             [A 76%|███████▌  | 121/160 [01:31<01:33,  2.40s/it] 76%|███████▋  | 122/160 [01:31<01:05,  1.72s/it] 77%|███████▋  | 123/160 [01:31<00:45,  1.23s/it] 78%|███████▊  | 125/160 [01:32<00:31,  1.12it/s] 79%|███████▉  | 126/160 [01:32<00:22,  1.53it/s] 79%|███████▉  | 127/160 [01:32<00:16,  2.05it/s] 81%|████████  | 129/160 [01:32<00:11,  2.77it/s]                                                 {'loss': 1.2648, 'learning_rate': 0.018750000000000003, 'epoch': 4.06}
+ 81%|████████▏ | 130/160 [01:32<00:10,  2.77it/s]
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:01,  5.98it/s][A
+ 38%|███▊      | 3/8 [00:00<00:01,  4.58it/s][A
+ 50%|█████     | 4/8 [00:01<00:01,  3.93it/s][A
+ 62%|██████▎   | 5/8 [00:01<00:00,  3.58it/s][A
+ 75%|███████▌  | 6/8 [00:01<00:00,  3.37it/s][A
+ 88%|████████▊ | 7/8 [00:02<00:00,  3.23it/s][A
+100%|██████████| 8/8 [00:02<00:00,  3.14it/s][A                                                 
+                                             [A{'eval_loss': 1.0993988513946533, 'eval_accuracy': 0.581, 'eval_runtime': 2.6479, 'eval_samples_per_second': 377.66, 'epoch': 4.06}
+ 81%|████████▏ | 130/160 [01:35<00:10,  2.77it/s]
+100%|██████████| 8/8 [00:03<00:00,  3.14it/s][A
+                                             [A 82%|████████▏ | 131/160 [01:40<00:41,  1.42s/it] 82%|████████▎ | 132/160 [01:40<00:28,  1.03s/it] 83%|████████▎ | 133/160 [01:40<00:20,  1.33it/s] 84%|████████▍ | 134/160 [01:40<00:14,  1.80it/s] 84%|████████▍ | 135/160 [01:40<00:10,  2.38it/s] 85%|████████▌ | 136/160 [01:40<00:07,  3.09it/s] 86%|████████▌ | 137/160 [01:40<00:05,  3.89it/s] 86%|████████▋ | 138/160 [01:41<00:04,  4.76it/s] 87%|████████▋ | 139/160 [01:41<00:03,  5.64it/s] 88%|████████▊ | 140/160 [01:41<00:03,  6.47it/s]                                                 {'loss': 1.3194, 'learning_rate': 0.0125, 'epoch': 4.38}
+ 88%|████████▊ | 140/160 [01:41<00:03,  6.47it/s]
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00,  6.01it/s][A
+ 38%|███▊      | 3/8 [00:00<00:01,  4.60it/s][A
+ 50%|█████     | 4/8 [00:01<00:01,  3.94it/s][A
+ 62%|██████▎   | 5/8 [00:01<00:00,  3.58it/s][A
+ 75%|███████▌  | 6/8 [00:01<00:00,  3.37it/s][A
+ 88%|████████▊ | 7/8 [00:02<00:00,  3.24it/s][A
+100%|██████████| 8/8 [00:02<00:00,  3.15it/s][A                                                 
+                                             [A{'eval_loss': 1.1427223682403564, 'eval_accuracy': 0.572, 'eval_runtime': 2.6475, 'eval_samples_per_second': 377.71, 'epoch': 4.38} 88%|████████▊ | 140/160 [01:43<00:03,  6.47it/s]
+
+100%|██████████| 8/8 [00:02<00:00,  3.15it/s][A
+                                             [A 88%|████████▊ | 141/160 [01:48<00:42,  2.24s/it] 89%|████████▉ | 142/160 [01:48<00:28,  1.61s/it] 89%|████████▉ | 143/160 [01:48<00:19,  1.15s/it] 90%|█████████ | 144/160 [01:48<00:13,  1.19it/s] 91%|█████████ | 145/160 [01:48<00:09,  1.62it/s] 91%|█████████▏| 146/160 [01:48<00:06,  2.16it/s] 92%|█████████▏| 147/160 [01:48<00:04,  2.83it/s] 92%|█████████▎| 148/160 [01:49<00:03,  3.60it/s] 93%|█████████▎| 149/160 [01:49<00:02,  4.45it/s] 94%|█████████▍| 150/160 [01:49<00:01,  5.34it/s]                                                 {'loss': 1.1042, 'learning_rate': 0.00625, 'epoch': 4.69}
+ 94%|█████████▍| 150/160 [01:49<00:01,  5.34it/s]
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:01,  6.00it/s][A
+ 38%|███▊      | 3/8 [00:00<00:01,  4.59it/s][A
+ 50%|█████     | 4/8 [00:01<00:01,  3.93it/s][A
+ 62%|██████▎   | 5/8 [00:01<00:00,  3.58it/s][A
+ 75%|███████▌  | 6/8 [00:01<00:00,  3.37it/s][A
+ 88%|████████▊ | 7/8 [00:02<00:00,  3.23it/s][A
+100%|██████████| 8/8 [00:02<00:00,  3.15it/s][A                                                 
+                                             {'eval_loss': 0.9282329082489014, 'eval_accuracy': 0.637, 'eval_runtime': 2.6495, 'eval_samples_per_second': 377.423, 'epoch': 4.69}
+[A 94%|█████████▍| 150/160 [01:51<00:01,  5.34it/s]
+100%|██████████| 8/8 [00:02<00:00,  3.15it/s][A
+                                             [A 94%|█████████▍| 151/160 [01:55<00:18,  2.06s/it] 95%|█████████▌| 152/160 [01:55<00:11,  1.48s/it] 96%|█████████▌| 153/160 [01:55<00:07,  1.07s/it] 96%|█████████▋| 154/160 [01:56<00:04,  1.29it/s] 97%|█████████▋| 155/160 [01:56<00:02,  1.74it/s] 98%|█████████▊| 156/160 [01:56<00:01,  2.31it/s] 98%|█████████▊| 157/160 [01:56<00:00,  3.00it/s] 99%|█████████▉| 158/160 [01:56<00:00,  3.80it/s] 99%|█████████▉| 159/160 [01:56<00:00,  4.66it/s]                                                 {'loss': 0.827, 'learning_rate': 0.0, 'epoch': 5.0}
+100%|██████████| 160/160 [01:56<00:00,  4.66it/s]
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00,  6.01it/s][A
+ 38%|███▊      | 3/8 [00:00<00:01,  4.59it/s][A
+ 50%|█████     | 4/8 [00:01<00:01,  3.94it/s][A
+ 62%|██████▎   | 5/8 [00:01<00:00,  3.58it/s][A
+ 75%|███████▌  | 6/8 [00:01<00:00,  3.37it/s][A
+ 88%|████████▊ | 7/8 [00:02<00:00,  3.24it/s][A
+100%|██████████| 8/8 [00:02<00:00,  3.15it/s][A                                                 
+                                             [A{'eval_loss': 1.0361428260803223, 'eval_accuracy': 0.627, 'eval_runtime': 2.6476, 'eval_samples_per_second': 377.706, 'epoch': 5.0}
+100%|██████████| 160/160 [01:59<00:00,  4.66it/s]
+100%|██████████| 8/8 [00:02<00:00,  3.15it/s][A
+                                             [A                                                 {'train_runtime': 133.3574, 'train_samples_per_second': 1.2, 'epoch': 5.0}
+100%|██████████| 160/160 [02:11<00:00,  4.66it/s]COMET INFO: ----------------------------------
+COMET INFO: Comet.ml OfflineExperiment Summary
+COMET INFO: ----------------------------------
+COMET INFO:   Data:
+COMET INFO:     display_summary_level : 1
+COMET INFO:     url                   : [OfflineExperiment will get URL after upload]
+COMET INFO:   Metrics [count] (min, max):
+COMET INFO:     epoch [33]                   : (0.31, 5.0)
+COMET INFO:     eval_accuracy [16]           : (0.238, 0.637)
+COMET INFO:     eval_loss [16]               : (0.9282329082489014, 31.044898986816406)
+COMET INFO:     eval_runtime [16]            : (2.6334, 2.6552)
+COMET INFO:     eval_samples_per_second [16] : (376.622, 379.744)
+COMET INFO:     learning_rate [16]           : (0.0, 0.09375)
+COMET INFO:     loss [32]                    : (0.827, 34.7483)
+COMET INFO:     total_flos                   : 4270797680640000
+COMET INFO:     train_runtime                : 133.3574
+COMET INFO:     train_samples_per_second     : 1.2
+COMET INFO:   Others:
+COMET INFO:     Created from       : MLFlow auto-logger
+COMET INFO:     offline_experiment : True
+COMET INFO:   Parameters:
+COMET INFO:     _n_gpu                       : 1
+COMET INFO:     _name_or_path                : ../results/my-unsup-mease-data-typehn-18-langs-avg-xlm-roberta-base-best
+COMET INFO:     adafactor                    : 1
+COMET INFO:     adam_beta1                   : 0.9
+COMET INFO:     adam_beta2                   : 0.999
+COMET INFO:     adam_epsilon                 : 1e-08
+COMET INFO:     add_cross_attention          : 1
+COMET INFO:     architectures                : ['RobertaForEACL']
+COMET INFO:     attention_probs_dropout_prob : 0.1
+COMET INFO:     bad_words_ids                : 1
+COMET INFO:     bos_token_id                 : 1
+COMET INFO:     chunk_size_feed_forward      : 1
+COMET INFO:     dataloader_drop_last         : 1
+COMET INFO:     dataloader_num_workers       : 1
+COMET INFO:     dataloader_pin_memory        : True
+COMET INFO:     ddp_find_unused_parameters   : 1
+COMET INFO:     debug                        : 1
+COMET INFO:     decoder_start_token_id       : 1
+COMET INFO:     deepspeed                    : 1
+COMET INFO:     disable_tqdm                 : 1
+COMET INFO:     diversity_penalty            : 1
+COMET INFO:     do_eval                      : 1
+COMET INFO:     do_finetune                  : 1
+COMET INFO:     do_predict                   : 1
+COMET INFO:     do_sample                    : 1
+COMET INFO:     do_train                     : 1
+COMET INFO:     early_stopping               : 1
+COMET INFO:     encoder_no_repeat_ngram_size : 1
+COMET INFO:     eos_token_id                 : 2
+COMET INFO:     eval_accumulation_steps      : 1
+COMET INFO:     eval_steps                   : 10
+COMET INFO:     evaluation_strategy          : steps
+COMET INFO:     finetuning_task              : 1
+COMET INFO:     fp16                         : 1
+COMET INFO:     fp16_backend                 : auto
+COMET INFO:     fp16_opt_level               : O1
+COMET INFO:     gradient_checkpointing       : 1
+COMET INFO:     greater_is_better            : True
+COMET INFO:     group_by_length              : 1
+COMET INFO:     hidden_act                   : gelu
+COMET INFO:     hidden_dropout_prob          : 0.1
+COMET INFO:     hidden_size                  : 768
+COMET INFO:     id2label                     : {"0": "LABEL_0", "1": "LABEL_1", "2": "LABEL_2", "3": "LABEL_3"}
+COMET INFO:     ignore_data_skip             : 1
+COMET INFO:     initializer_range            : 0.02
+COMET INFO:     intermediate_size            : 3072
+COMET INFO:     is_decoder                   : 1
+COMET INFO:     is_encoder_decoder           : 1
+COMET INFO:     label2id                     : {"LABEL_0": 0, "LABEL_1": 1, "LABEL_2": 2, "LABEL_3": 3}
+COMET INFO:     label_names                  : 1
+COMET INFO:     label_smoothing_factor       : 1
+COMET INFO:     layer_norm_eps               : 1e-05
+COMET INFO:     length_penalty               : 1.0
+COMET INFO:     load_best_model_at_end       : True
+COMET INFO:     local_rank                   : -1
+COMET INFO:     logging_dir                  : ./logs
+COMET INFO:     logging_first_step           : 1
+COMET INFO:     logging_steps                : 10
+COMET INFO:     lr_scheduler_type            : linear
+COMET INFO:     max_grad_norm                : 1.0
+COMET INFO:     max_length                   : 20
+COMET INFO:     max_position_embeddings      : 514
+COMET INFO:     max_steps                    : -1
+COMET INFO:     metric_for_best_model        : accuracy
+COMET INFO:     min_length                   : 1
+COMET INFO:     model_type                   : roberta
+COMET INFO:     no_cuda                      : 1
+COMET INFO:     no_repeat_ngram_size         : 1
+COMET INFO:     num_attention_heads          : 12
+COMET INFO:     num_beam_groups              : 1
+COMET INFO:     num_beams                    : 1
+COMET INFO:     num_hidden_layers            : 12
+COMET INFO:     num_return_sequences         : 1
+COMET INFO:     num_train_epochs             : 5
+COMET INFO:     output_attentions            : 1
+COMET INFO:     output_dir                   : ./results
+COMET INFO:     output_hidden_states         : 1
+COMET INFO:     output_past                  : True
+COMET INFO:     output_scores                : 1
+COMET INFO:     overwrite_output_dir         : 1
+COMET INFO:     pad_token_id                 : 1
+COMET INFO:     past_index                   : -1
+COMET INFO:     per_device_eval_batch_size   : 128
+COMET INFO:     per_device_train_batch_size  : 32
+COMET INFO:     per_gpu_eval_batch_size      : 1
+COMET INFO:     per_gpu_train_batch_size     : 1
+COMET INFO:     pooler_type                  : avg
+COMET INFO:     position_embedding_type      : absolute
+COMET INFO:     prediction_loss_only         : 1
+COMET INFO:     prefix                       : 1
+COMET INFO:     problem_type                 : 1
+COMET INFO:     pruned_heads                 : {}
+COMET INFO:     remove_unused_columns        : True
+COMET INFO:     repetition_penalty           : 1.0
+COMET INFO:     report_to                    : ['mlflow']
+COMET INFO:     return_dict                  : True
+COMET INFO:     return_dict_in_generate      : 1
+COMET INFO:     run_name                     : ./results
+COMET INFO:     save_steps                   : 500
+COMET INFO:     save_total_limit             : 1
+COMET INFO:     seed                         : 42
+COMET INFO:     sep_token_id                 : 1
+COMET INFO:     sharded_ddp                  : 1
+COMET INFO:     task_specific_params         : 1
+COMET INFO:     temperature                  : 1.0
+COMET INFO:     tie_encoder_decoder          : 1
+COMET INFO:     tie_word_embeddings          : True
+COMET INFO:     tokenizer_class              : 1
+COMET INFO:     top_k                        : 50
+COMET INFO:     top_p                        : 1.0
+COMET INFO:     torchscript                  : 1
+COMET INFO:     tpu_metrics_debug            : 1
+COMET INFO:     tpu_num_cores                : 1
+COMET INFO:     transformers_version         : 4.3.3
+COMET INFO:     type_vocab_size              : 1
+COMET INFO:     use_bfloat16                 : 1
+COMET INFO:     use_cache                    : True
+COMET INFO:     vocab_size                   : 250002
+COMET INFO:     warmup_steps                 : 1
+COMET INFO:     weight_decay                 : 1
+COMET INFO:     xla_device                   : 1
+COMET INFO:   Uploads:
+COMET INFO:     environment details      : 1
+COMET INFO:     filename                 : 1
+COMET INFO:     git metadata             : 1
+COMET INFO:     git-patch (uncompressed) : 1 (1 KB)
+COMET INFO:     installed packages       : 1
+COMET INFO:     model graph              : 1
+COMET INFO:     os packages              : 1
+COMET INFO:     source_code              : 1
+COMET INFO: ----------------------------------
+COMET INFO: Saving offline stats to disk before program termination (may take several seconds)
+COMET INFO: Starting saving the offline archive
+COMET INFO: To upload this offline experiment, run:
+    comet upload /tmp/tmp0f60fu2r/84450acd48cc4e308afd8dee6a68d79d.zip
+100%|██████████| 160/160 [02:13<00:00,  1.20it/s]
+  0%|          | 0/8 [00:00<?, ?it/s] 25%|██▌       | 2/8 [00:00<00:01,  5.47it/s] 38%|███▊      | 3/8 [00:00<00:01,  4.36it/s] 50%|█████     | 4/8 [00:01<00:01,  3.82it/s] 62%|██████▎   | 5/8 [00:01<00:00,  3.52it/s] 75%|███████▌  | 6/8 [00:01<00:00,  3.33it/s] 88%|████████▊ | 7/8 [00:02<00:00,  3.21it/s]100%|██████████| 8/8 [00:02<00:00,  3.13it/s]COMET INFO: No Comet API Key was found, creating an OfflineExperiment. Set up your API Key to get the full Comet experience https://www.comet.ml/docs/python-sdk/advanced/#python-configuration
+100%|██████████| 8/8 [00:03<00:00,  2.55it/s]{'eval_loss': 0.9282329082489014, 'eval_accuracy': 0.637, 'eval_runtime': 2.6818, 'eval_samples_per_second': 372.89, 'epoch': 5.0}
+
+COMET INFO: ----------------------------------
+COMET INFO: Comet.ml OfflineExperiment Summary
+COMET INFO: ----------------------------------
+COMET INFO:   Data:
+COMET INFO:     display_summary_level : 1
+COMET INFO:     url                   : [OfflineExperiment will get URL after upload]
+COMET INFO:   Metrics:
+COMET INFO:     epoch                   : 5.0
+COMET INFO:     eval_accuracy           : 0.637
+COMET INFO:     eval_loss               : 0.9282329082489014
+COMET INFO:     eval_runtime            : 2.6818
+COMET INFO:     eval_samples_per_second : 372.89
+COMET INFO:   Others:
+COMET INFO:     Created from       : MLFlow auto-logger
+COMET INFO:     offline_experiment : True
+COMET INFO:   Uploads:
+COMET INFO:     environment details      : 1
+COMET INFO:     filename                 : 1
+COMET INFO:     git metadata             : 1
+COMET INFO:     git-patch (uncompressed) : 1 (1 KB)
+COMET INFO:     installed packages       : 1
+COMET INFO:     os packages              : 1
+COMET INFO:     source_code              : 1
+COMET INFO: ----------------------------------
+COMET INFO: Starting saving the offline archive
+COMET INFO: To upload this offline experiment, run:
+    comet upload /tmp/tmpp1___vzc/a46dac4c29cb4af995cf82bdf8d97cc0.zip
+comet_ml is installed but `COMET_API_KEY` is not set.
+Some weights of the model checkpoint at ../results/my-unsup-mease-data-typehn-18-langs-avg-xlm-roberta-base-best were not used when initializing BertForSequenceClassificationWithPooler: ['roberta.embeddings.position_ids', 'roberta.embeddings.word_embeddings.weight', 'roberta.embeddings.position_embeddings.weight', 'roberta.embeddings.token_type_embeddings.weight', 'roberta.embeddings.LayerNorm.weight', 'roberta.embeddings.LayerNorm.bias', 'roberta.encoder.layer.0.attention.self.query.weight', 'roberta.encoder.layer.0.attention.self.query.bias', 'roberta.encoder.layer.0.attention.self.key.weight', 'roberta.encoder.layer.0.attention.self.key.bias', 'roberta.encoder.layer.0.attention.self.value.weight', 'roberta.encoder.layer.0.attention.self.value.bias', 'roberta.encoder.layer.0.attention.output.dense.weight', 'roberta.encoder.layer.0.attention.output.dense.bias', 'roberta.encoder.layer.0.attention.output.LayerNorm.weight', 'roberta.encoder.layer.0.attention.output.LayerNorm.bias', 'roberta.encoder.layer.0.intermediate.dense.weight', 'roberta.encoder.layer.0.intermediate.dense.bias', 'roberta.encoder.layer.0.output.dense.weight', 'roberta.encoder.layer.0.output.dense.bias', 'roberta.encoder.layer.0.output.LayerNorm.weight', 'roberta.encoder.layer.0.output.LayerNorm.bias', 'roberta.encoder.layer.1.attention.self.query.weight', 'roberta.encoder.layer.1.attention.self.query.bias', 'roberta.encoder.layer.1.attention.self.key.weight', 'roberta.encoder.layer.1.attention.self.key.bias', 'roberta.encoder.layer.1.attention.self.value.weight', 'roberta.encoder.layer.1.attention.self.value.bias', 'roberta.encoder.layer.1.attention.output.dense.weight', 'roberta.encoder.layer.1.attention.output.dense.bias', 'roberta.encoder.layer.1.attention.output.LayerNorm.weight', 'roberta.encoder.layer.1.attention.output.LayerNorm.bias', 'roberta.encoder.layer.1.intermediate.dense.weight', 'roberta.encoder.layer.1.intermediate.dense.bias', 'roberta.encoder.layer.1.output.dense.weight', 'roberta.encoder.layer.1.output.dense.bias', 'roberta.encoder.layer.1.output.LayerNorm.weight', 'roberta.encoder.layer.1.output.LayerNorm.bias', 'roberta.encoder.layer.2.attention.self.query.weight', 'roberta.encoder.layer.2.attention.self.query.bias', 'roberta.encoder.layer.2.attention.self.key.weight', 'roberta.encoder.layer.2.attention.self.key.bias', 'roberta.encoder.layer.2.attention.self.value.weight', 'roberta.encoder.layer.2.attention.self.value.bias', 'roberta.encoder.layer.2.attention.output.dense.weight', 'roberta.encoder.layer.2.attention.output.dense.bias', 'roberta.encoder.layer.2.attention.output.LayerNorm.weight', 'roberta.encoder.layer.2.attention.output.LayerNorm.bias', 'roberta.encoder.layer.2.intermediate.dense.weight', 'roberta.encoder.layer.2.intermediate.dense.bias', 'roberta.encoder.layer.2.output.dense.weight', 'roberta.encoder.layer.2.output.dense.bias', 'roberta.encoder.layer.2.output.LayerNorm.weight', 'roberta.encoder.layer.2.output.LayerNorm.bias', 'roberta.encoder.layer.3.attention.self.query.weight', 'roberta.encoder.layer.3.attention.self.query.bias', 'roberta.encoder.layer.3.attention.self.key.weight', 'roberta.encoder.layer.3.attention.self.key.bias', 'roberta.encoder.layer.3.attention.self.value.weight', 'roberta.encoder.layer.3.attention.self.value.bias', 'roberta.encoder.layer.3.attention.output.dense.weight', 'roberta.encoder.layer.3.attention.output.dense.bias', 'roberta.encoder.layer.3.attention.output.LayerNorm.weight', 'roberta.encoder.layer.3.attention.output.LayerNorm.bias', 'roberta.encoder.layer.3.intermediate.dense.weight', 'roberta.encoder.layer.3.intermediate.dense.bias', 'roberta.encoder.layer.3.output.dense.weight', 'roberta.encoder.layer.3.output.dense.bias', 'roberta.encoder.layer.3.output.LayerNorm.weight', 'roberta.encoder.layer.3.output.LayerNorm.bias', 'roberta.encoder.layer.4.attention.self.query.weight', 'roberta.encoder.layer.4.attention.self.query.bias', 'roberta.encoder.layer.4.attention.self.key.weight', 'roberta.encoder.layer.4.attention.self.key.bias', 'roberta.encoder.layer.4.attention.self.value.weight', 'roberta.encoder.layer.4.attention.self.value.bias', 'roberta.encoder.layer.4.attention.output.dense.weight', 'roberta.encoder.layer.4.attention.output.dense.bias', 'roberta.encoder.layer.4.attention.output.LayerNorm.weight', 'roberta.encoder.layer.4.attention.output.LayerNorm.bias', 'roberta.encoder.layer.4.intermediate.dense.weight', 'roberta.encoder.layer.4.intermediate.dense.bias', 'roberta.encoder.layer.4.output.dense.weight', 'roberta.encoder.layer.4.output.dense.bias', 'roberta.encoder.layer.4.output.LayerNorm.weight', 'roberta.encoder.layer.4.output.LayerNorm.bias', 'roberta.encoder.layer.5.attention.self.query.weight', 'roberta.encoder.layer.5.attention.self.query.bias', 'roberta.encoder.layer.5.attention.self.key.weight', 'roberta.encoder.layer.5.attention.self.key.bias', 'roberta.encoder.layer.5.attention.self.value.weight', 'roberta.encoder.layer.5.attention.self.value.bias', 'roberta.encoder.layer.5.attention.output.dense.weight', 'roberta.encoder.layer.5.attention.output.dense.bias', 'roberta.encoder.layer.5.attention.output.LayerNorm.weight', 'roberta.encoder.layer.5.attention.output.LayerNorm.bias', 'roberta.encoder.layer.5.intermediate.dense.weight', 'roberta.encoder.layer.5.intermediate.dense.bias', 'roberta.encoder.layer.5.output.dense.weight', 'roberta.encoder.layer.5.output.dense.bias', 'roberta.encoder.layer.5.output.LayerNorm.weight', 'roberta.encoder.layer.5.output.LayerNorm.bias', 'roberta.encoder.layer.6.attention.self.query.weight', 'roberta.encoder.layer.6.attention.self.query.bias', 'roberta.encoder.layer.6.attention.self.key.weight', 'roberta.encoder.layer.6.attention.self.key.bias', 'roberta.encoder.layer.6.attention.self.value.weight', 'roberta.encoder.layer.6.attention.self.value.bias', 'roberta.encoder.layer.6.attention.output.dense.weight', 'roberta.encoder.layer.6.attention.output.dense.bias', 'roberta.encoder.layer.6.attention.output.LayerNorm.weight', 'roberta.encoder.layer.6.attention.output.LayerNorm.bias', 'roberta.encoder.layer.6.intermediate.dense.weight', 'roberta.encoder.layer.6.intermediate.dense.bias', 'roberta.encoder.layer.6.output.dense.weight', 'roberta.encoder.layer.6.output.dense.bias', 'roberta.encoder.layer.6.output.LayerNorm.weight', 'roberta.encoder.layer.6.output.LayerNorm.bias', 'roberta.encoder.layer.7.attention.self.query.weight', 'roberta.encoder.layer.7.attention.self.query.bias', 'roberta.encoder.layer.7.attention.self.key.weight', 'roberta.encoder.layer.7.attention.self.key.bias', 'roberta.encoder.layer.7.attention.self.value.weight', 'roberta.encoder.layer.7.attention.self.value.bias', 'roberta.encoder.layer.7.attention.output.dense.weight', 'roberta.encoder.layer.7.attention.output.dense.bias', 'roberta.encoder.layer.7.attention.output.LayerNorm.weight', 'roberta.encoder.layer.7.attention.output.LayerNorm.bias', 'roberta.encoder.layer.7.intermediate.dense.weight', 'roberta.encoder.layer.7.intermediate.dense.bias', 'roberta.encoder.layer.7.output.dense.weight', 'roberta.encoder.layer.7.output.dense.bias', 'roberta.encoder.layer.7.output.LayerNorm.weight', 'roberta.encoder.layer.7.output.LayerNorm.bias', 'roberta.encoder.layer.8.attention.self.query.weight', 'roberta.encoder.layer.8.attention.self.query.bias', 'roberta.encoder.layer.8.attention.self.key.weight', 'roberta.encoder.layer.8.attention.self.key.bias', 'roberta.encoder.layer.8.attention.self.value.weight', 'roberta.encoder.layer.8.attention.self.value.bias', 'roberta.encoder.layer.8.attention.output.dense.weight', 'roberta.encoder.layer.8.attention.output.dense.bias', 'roberta.encoder.layer.8.attention.output.LayerNorm.weight', 'roberta.encoder.layer.8.attention.output.LayerNorm.bias', 'roberta.encoder.layer.8.intermediate.dense.weight', 'roberta.encoder.layer.8.intermediate.dense.bias', 'roberta.encoder.layer.8.output.dense.weight', 'roberta.encoder.layer.8.output.dense.bias', 'roberta.encoder.layer.8.output.LayerNorm.weight', 'roberta.encoder.layer.8.output.LayerNorm.bias', 'roberta.encoder.layer.9.attention.self.query.weight', 'roberta.encoder.layer.9.attention.self.query.bias', 'roberta.encoder.layer.9.attention.self.key.weight', 'roberta.encoder.layer.9.attention.self.key.bias', 'roberta.encoder.layer.9.attention.self.value.weight', 'roberta.encoder.layer.9.attention.self.value.bias', 'roberta.encoder.layer.9.attention.output.dense.weight', 'roberta.encoder.layer.9.attention.output.dense.bias', 'roberta.encoder.layer.9.attention.output.LayerNorm.weight', 'roberta.encoder.layer.9.attention.output.LayerNorm.bias', 'roberta.encoder.layer.9.intermediate.dense.weight', 'roberta.encoder.layer.9.intermediate.dense.bias', 'roberta.encoder.layer.9.output.dense.weight', 'roberta.encoder.layer.9.output.dense.bias', 'roberta.encoder.layer.9.output.LayerNorm.weight', 'roberta.encoder.layer.9.output.LayerNorm.bias', 'roberta.encoder.layer.10.attention.self.query.weight', 'roberta.encoder.layer.10.attention.self.query.bias', 'roberta.encoder.layer.10.attention.self.key.weight', 'roberta.encoder.layer.10.attention.self.key.bias', 'roberta.encoder.layer.10.attention.self.value.weight', 'roberta.encoder.layer.10.attention.self.value.bias', 'roberta.encoder.layer.10.attention.output.dense.weight', 'roberta.encoder.layer.10.attention.output.dense.bias', 'roberta.encoder.layer.10.attention.output.LayerNorm.weight', 'roberta.encoder.layer.10.attention.output.LayerNorm.bias', 'roberta.encoder.layer.10.intermediate.dense.weight', 'roberta.encoder.layer.10.intermediate.dense.bias', 'roberta.encoder.layer.10.output.dense.weight', 'roberta.encoder.layer.10.output.dense.bias', 'roberta.encoder.layer.10.output.LayerNorm.weight', 'roberta.encoder.layer.10.output.LayerNorm.bias', 'roberta.encoder.layer.11.attention.self.query.weight', 'roberta.encoder.layer.11.attention.self.query.bias', 'roberta.encoder.layer.11.attention.self.key.weight', 'roberta.encoder.layer.11.attention.self.key.bias', 'roberta.encoder.layer.11.attention.self.value.weight', 'roberta.encoder.layer.11.attention.self.value.bias', 'roberta.encoder.layer.11.attention.output.dense.weight', 'roberta.encoder.layer.11.attention.output.dense.bias', 'roberta.encoder.layer.11.attention.output.LayerNorm.weight', 'roberta.encoder.layer.11.attention.output.LayerNorm.bias', 'roberta.encoder.layer.11.intermediate.dense.weight', 'roberta.encoder.layer.11.intermediate.dense.bias', 'roberta.encoder.layer.11.output.dense.weight', 'roberta.encoder.layer.11.output.dense.bias', 'roberta.encoder.layer.11.output.LayerNorm.weight', 'roberta.encoder.layer.11.output.LayerNorm.bias', 'roberta.pooler.dense.weight', 'roberta.pooler.dense.bias', 'lm_head.bias', 'lm_head.dense.weight', 'lm_head.dense.bias', 'lm_head.layer_norm.weight', 'lm_head.layer_norm.bias', 'lm_head.decoder.weight', 'lm_head.decoder.bias', 'mlp.dense.weight', 'mlp.dense.bias', 'entity_transformation.dense.weight', 'entity_transformation.dense.bias', 'entity_transformation.dense2.weight', 'entity_transformation.dense2.bias', 'hn_entity_transformation.dense.weight', 'hn_entity_transformation.dense.bias', 'hn_entity_transformation.dense2.weight', 'hn_entity_transformation.dense2.bias', 'entity_embedding.weight']
+- This IS expected if you are initializing BertForSequenceClassificationWithPooler from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing BertForSequenceClassificationWithPooler from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of BertForSequenceClassificationWithPooler were not initialized from the model checkpoint at ../results/my-unsup-mease-data-typehn-18-langs-avg-xlm-roberta-base-best and are newly initialized: ['embeddings.word_embeddings.weight', 'embeddings.position_embeddings.weight', 'embeddings.token_type_embeddings.weight', 'embeddings.LayerNorm.weight', 'embeddings.LayerNorm.bias', 'encoder.layer.0.attention.self.query.weight', 'encoder.layer.0.attention.self.query.bias', 'encoder.layer.0.attention.self.key.weight', 'encoder.layer.0.attention.self.key.bias', 'encoder.layer.0.attention.self.value.weight', 'encoder.layer.0.attention.self.value.bias', 'encoder.layer.0.attention.output.dense.weight', 'encoder.layer.0.attention.output.dense.bias', 'encoder.layer.0.attention.output.LayerNorm.weight', 'encoder.layer.0.attention.output.LayerNorm.bias', 'encoder.layer.0.intermediate.dense.weight', 'encoder.layer.0.intermediate.dense.bias', 'encoder.layer.0.output.dense.weight', 'encoder.layer.0.output.dense.bias', 'encoder.layer.0.output.LayerNorm.weight', 'encoder.layer.0.output.LayerNorm.bias', 'encoder.layer.1.attention.self.query.weight', 'encoder.layer.1.attention.self.query.bias', 'encoder.layer.1.attention.self.key.weight', 'encoder.layer.1.attention.self.key.bias', 'encoder.layer.1.attention.self.value.weight', 'encoder.layer.1.attention.self.value.bias', 'encoder.layer.1.attention.output.dense.weight', 'encoder.layer.1.attention.output.dense.bias', 'encoder.layer.1.attention.output.LayerNorm.weight', 'encoder.layer.1.attention.output.LayerNorm.bias', 'encoder.layer.1.intermediate.dense.weight', 'encoder.layer.1.intermediate.dense.bias', 'encoder.layer.1.output.dense.weight', 'encoder.layer.1.output.dense.bias', 'encoder.layer.1.output.LayerNorm.weight', 'encoder.layer.1.output.LayerNorm.bias', 'encoder.layer.2.attention.self.query.weight', 'encoder.layer.2.attention.self.query.bias', 'encoder.layer.2.attention.self.key.weight', 'encoder.layer.2.attention.self.key.bias', 'encoder.layer.2.attention.self.value.weight', 'encoder.layer.2.attention.self.value.bias', 'encoder.layer.2.attention.output.dense.weight', 'encoder.layer.2.attention.output.dense.bias', 'encoder.layer.2.attention.output.LayerNorm.weight', 'encoder.layer.2.attention.output.LayerNorm.bias', 'encoder.layer.2.intermediate.dense.weight', 'encoder.layer.2.intermediate.dense.bias', 'encoder.layer.2.output.dense.weight', 'encoder.layer.2.output.dense.bias', 'encoder.layer.2.output.LayerNorm.weight', 'encoder.layer.2.output.LayerNorm.bias', 'encoder.layer.3.attention.self.query.weight', 'encoder.layer.3.attention.self.query.bias', 'encoder.layer.3.attention.self.key.weight', 'encoder.layer.3.attention.self.key.bias', 'encoder.layer.3.attention.self.value.weight', 'encoder.layer.3.attention.self.value.bias', 'encoder.layer.3.attention.output.dense.weight', 'encoder.layer.3.attention.output.dense.bias', 'encoder.layer.3.attention.output.LayerNorm.weight', 'encoder.layer.3.attention.output.LayerNorm.bias', 'encoder.layer.3.intermediate.dense.weight', 'encoder.layer.3.intermediate.dense.bias', 'encoder.layer.3.output.dense.weight', 'encoder.layer.3.output.dense.bias', 'encoder.layer.3.output.LayerNorm.weight', 'encoder.layer.3.output.LayerNorm.bias', 'encoder.layer.4.attention.self.query.weight', 'encoder.layer.4.attention.self.query.bias', 'encoder.layer.4.attention.self.key.weight', 'encoder.layer.4.attention.self.key.bias', 'encoder.layer.4.attention.self.value.weight', 'encoder.layer.4.attention.self.value.bias', 'encoder.layer.4.attention.output.dense.weight', 'encoder.layer.4.attention.output.dense.bias', 'encoder.layer.4.attention.output.LayerNorm.weight', 'encoder.layer.4.attention.output.LayerNorm.bias', 'encoder.layer.4.intermediate.dense.weight', 'encoder.layer.4.intermediate.dense.bias', 'encoder.layer.4.output.dense.weight', 'encoder.layer.4.output.dense.bias', 'encoder.layer.4.output.LayerNorm.weight', 'encoder.layer.4.output.LayerNorm.bias', 'encoder.layer.5.attention.self.query.weight', 'encoder.layer.5.attention.self.query.bias', 'encoder.layer.5.attention.self.key.weight', 'encoder.layer.5.attention.self.key.bias', 'encoder.layer.5.attention.self.value.weight', 'encoder.layer.5.attention.self.value.bias', 'encoder.layer.5.attention.output.dense.weight', 'encoder.layer.5.attention.output.dense.bias', 'encoder.layer.5.attention.output.LayerNorm.weight', 'encoder.layer.5.attention.output.LayerNorm.bias', 'encoder.layer.5.intermediate.dense.weight', 'encoder.layer.5.intermediate.dense.bias', 'encoder.layer.5.output.dense.weight', 'encoder.layer.5.output.dense.bias', 'encoder.layer.5.output.LayerNorm.weight', 'encoder.layer.5.output.LayerNorm.bias', 'encoder.layer.6.attention.self.query.weight', 'encoder.layer.6.attention.self.query.bias', 'encoder.layer.6.attention.self.key.weight', 'encoder.layer.6.attention.self.key.bias', 'encoder.layer.6.attention.self.value.weight', 'encoder.layer.6.attention.self.value.bias', 'encoder.layer.6.attention.output.dense.weight', 'encoder.layer.6.attention.output.dense.bias', 'encoder.layer.6.attention.output.LayerNorm.weight', 'encoder.layer.6.attention.output.LayerNorm.bias', 'encoder.layer.6.intermediate.dense.weight', 'encoder.layer.6.intermediate.dense.bias', 'encoder.layer.6.output.dense.weight', 'encoder.layer.6.output.dense.bias', 'encoder.layer.6.output.LayerNorm.weight', 'encoder.layer.6.output.LayerNorm.bias', 'encoder.layer.7.attention.self.query.weight', 'encoder.layer.7.attention.self.query.bias', 'encoder.layer.7.attention.self.key.weight', 'encoder.layer.7.attention.self.key.bias', 'encoder.layer.7.attention.self.value.weight', 'encoder.layer.7.attention.self.value.bias', 'encoder.layer.7.attention.output.dense.weight', 'encoder.layer.7.attention.output.dense.bias', 'encoder.layer.7.attention.output.LayerNorm.weight', 'encoder.layer.7.attention.output.LayerNorm.bias', 'encoder.layer.7.intermediate.dense.weight', 'encoder.layer.7.intermediate.dense.bias', 'encoder.layer.7.output.dense.weight', 'encoder.layer.7.output.dense.bias', 'encoder.layer.7.output.LayerNorm.weight', 'encoder.layer.7.output.LayerNorm.bias', 'encoder.layer.8.attention.self.query.weight', 'encoder.layer.8.attention.self.query.bias', 'encoder.layer.8.attention.self.key.weight', 'encoder.layer.8.attention.self.key.bias', 'encoder.layer.8.attention.self.value.weight', 'encoder.layer.8.attention.self.value.bias', 'encoder.layer.8.attention.output.dense.weight', 'encoder.layer.8.attention.output.dense.bias', 'encoder.layer.8.attention.output.LayerNorm.weight', 'encoder.layer.8.attention.output.LayerNorm.bias', 'encoder.layer.8.intermediate.dense.weight', 'encoder.layer.8.intermediate.dense.bias', 'encoder.layer.8.output.dense.weight', 'encoder.layer.8.output.dense.bias', 'encoder.layer.8.output.LayerNorm.weight', 'encoder.layer.8.output.LayerNorm.bias', 'encoder.layer.9.attention.self.query.weight', 'encoder.layer.9.attention.self.query.bias', 'encoder.layer.9.attention.self.key.weight', 'encoder.layer.9.attention.self.key.bias', 'encoder.layer.9.attention.self.value.weight', 'encoder.layer.9.attention.self.value.bias', 'encoder.layer.9.attention.output.dense.weight', 'encoder.layer.9.attention.output.dense.bias', 'encoder.layer.9.attention.output.LayerNorm.weight', 'encoder.layer.9.attention.output.LayerNorm.bias', 'encoder.layer.9.intermediate.dense.weight', 'encoder.layer.9.intermediate.dense.bias', 'encoder.layer.9.output.dense.weight', 'encoder.layer.9.output.dense.bias', 'encoder.layer.9.output.LayerNorm.weight', 'encoder.layer.9.output.LayerNorm.bias', 'encoder.layer.10.attention.self.query.weight', 'encoder.layer.10.attention.self.query.bias', 'encoder.layer.10.attention.self.key.weight', 'encoder.layer.10.attention.self.key.bias', 'encoder.layer.10.attention.self.value.weight', 'encoder.layer.10.attention.self.value.bias', 'encoder.layer.10.attention.output.dense.weight', 'encoder.layer.10.attention.output.dense.bias', 'encoder.layer.10.attention.output.LayerNorm.weight', 'encoder.layer.10.attention.output.LayerNorm.bias', 'encoder.layer.10.intermediate.dense.weight', 'encoder.layer.10.intermediate.dense.bias', 'encoder.layer.10.output.dense.weight', 'encoder.layer.10.output.dense.bias', 'encoder.layer.10.output.LayerNorm.weight', 'encoder.layer.10.output.LayerNorm.bias', 'encoder.layer.11.attention.self.query.weight', 'encoder.layer.11.attention.self.query.bias', 'encoder.layer.11.attention.self.key.weight', 'encoder.layer.11.attention.self.key.bias', 'encoder.layer.11.attention.self.value.weight', 'encoder.layer.11.attention.self.value.bias', 'encoder.layer.11.attention.output.dense.weight', 'encoder.layer.11.attention.output.dense.bias', 'encoder.layer.11.attention.output.LayerNorm.weight', 'encoder.layer.11.attention.output.LayerNorm.bias', 'encoder.layer.11.intermediate.dense.weight', 'encoder.layer.11.intermediate.dense.bias', 'encoder.layer.11.output.dense.weight', 'encoder.layer.11.output.dense.bias', 'encoder.layer.11.output.LayerNorm.weight', 'encoder.layer.11.output.LayerNorm.bias', 'pooler.dense.weight', 'pooler.dense.bias', 'classifier.weight', 'classifier.bias']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+COMET INFO: No Comet API Key was found, creating an OfflineExperiment. Set up your API Key to get the full Comet experience https://www.comet.ml/docs/python-sdk/advanced/#python-configuration
+en
+fr
+de
+ja
+zh
+it
+ru
+es
+classifier.weight
+classifier.bias
+
+  0%|          | 0/80 [00:00<?, ?it/s]  1%|▏         | 1/80 [00:00<00:55,  1.44it/s]  2%|▎         | 2/80 [00:00<00:42,  1.83it/s]  4%|▍         | 3/80 [00:01<00:34,  2.26it/s]  5%|▌         | 4/80 [00:01<00:28,  2.71it/s]  6%|▋         | 5/80 [00:01<00:23,  3.15it/s]  8%|▊         | 6/80 [00:01<00:20,  3.54it/s]  9%|▉         | 7/80 [00:01<00:18,  3.89it/s] 10%|█         | 8/80 [00:02<00:17,  4.18it/s] 11%|█▏        | 9/80 [00:02<00:16,  4.41it/s] 12%|█▎        | 10/80 [00:02<00:15,  4.59it/s]                                               {'loss': 24.9578, 'learning_rate': 0.08750000000000001, 'epoch': 0.62}
+ 12%|█▎        | 10/80 [00:02<00:15,  4.59it/s]
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00,  6.10it/s][A
+ 38%|███▊      | 3/8 [00:00<00:01,  4.64it/s][A
+ 50%|█████     | 4/8 [00:01<00:01,  3.96it/s][A
+ 62%|██████▎   | 5/8 [00:01<00:00,  3.60it/s][A
+ 75%|███████▌  | 6/8 [00:01<00:00,  3.39it/s][A
+ 88%|████████▊ | 7/8 [00:02<00:00,  3.24it/s][A
+100%|██████████| 8/8 [00:02<00:00,  3.16it/s][A                                               {'eval_loss': 25.75677490234375, 'eval_accuracy': 0.238, 'eval_runtime': 2.6424, 'eval_samples_per_second': 378.449, 'epoch': 0.62}
+                                             [A
+ 12%|█▎        | 10/80 [00:05<00:15,  4.59it/s]
+100%|██████████| 8/8 [00:02<00:00,  3.16it/s][A
+                                             [ATraceback (most recent call last):
+  File "main.py", line 213, in <module>
+    main()
+  File "main.py", line 191, in main
+    trainer.train()
+  File "/home/fmg/nishikawa/.pyenv/versions/anaconda3-2020.07/lib/python3.8/site-packages/transformers/trainer.py", line 983, in train
+    self._maybe_log_save_evaluate(tr_loss, model, trial, epoch)
+  File "/home/fmg/nishikawa/.pyenv/versions/anaconda3-2020.07/lib/python3.8/site-packages/transformers/trainer.py", line 1062, in _maybe_log_save_evaluate
+    self._save_checkpoint(model, trial, metrics=metrics)
+  File "/home/fmg/nishikawa/.pyenv/versions/anaconda3-2020.07/lib/python3.8/site-packages/transformers/trainer.py", line 1087, in _save_checkpoint
+    self.save_model(output_dir)
+  File "/home/fmg/nishikawa/.pyenv/versions/anaconda3-2020.07/lib/python3.8/site-packages/transformers/trainer.py", line 1378, in save_model
+    self._save(output_dir)
+  File "/home/fmg/nishikawa/.pyenv/versions/anaconda3-2020.07/lib/python3.8/site-packages/transformers/trainer.py", line 1407, in _save
+    os.makedirs(output_dir, exist_ok=True)
+  File "/home/fmg/nishikawa/.pyenv/versions/anaconda3-2020.07/lib/python3.8/os.py", line 223, in makedirs
+    mkdir(name, mode)
+FileNotFoundError: [Errno 2] No such file or directory: './results/checkpoint-10'
+COMET INFO: ----------------------------------
+COMET INFO: Comet.ml OfflineExperiment Summary
+COMET INFO: ----------------------------------
+COMET INFO:   Data:
+COMET INFO:     display_summary_level : 1
+COMET INFO:     url                   : [OfflineExperiment will get URL after upload]
+COMET INFO:   Metrics [count] (min, max):
+COMET INFO:     epoch [2]               : 0.62
+COMET INFO:     eval_accuracy           : 0.238
+COMET INFO:     eval_loss               : 25.75677490234375
+COMET INFO:     eval_runtime            : 2.6424
+COMET INFO:     eval_samples_per_second : 378.449
+COMET INFO:     learning_rate           : 0.08750000000000001
+COMET INFO:     loss [3]                : (0.7249576449394226, 24.9578)
+COMET INFO:   Others:
+COMET INFO:     Created from       : MLFlow auto-logger
+COMET INFO:     offline_experiment : True
+COMET INFO:   Parameters:
+COMET INFO:     _n_gpu                       : 1
+COMET INFO:     _name_or_path                : ../results/my-unsup-mease-data-typehn-18-langs-avg-xlm-roberta-base-best
+COMET INFO:     adafactor                    : 1
+COMET INFO:     adam_beta1                   : 0.9
+COMET INFO:     adam_beta2                   : 0.999
+COMET INFO:     adam_epsilon                 : 1e-08
+COMET INFO:     add_cross_attention          : 1
+COMET INFO:     architectures                : ['RobertaForEACL']
+COMET INFO:     attention_probs_dropout_prob : 0.1
+COMET INFO:     bad_words_ids                : 1
+COMET INFO:     bos_token_id                 : 1
+COMET INFO:     chunk_size_feed_forward      : 1
+COMET INFO:     dataloader_drop_last         : 1
+COMET INFO:     dataloader_num_workers       : 1
+COMET INFO:     dataloader_pin_memory        : True
+COMET INFO:     ddp_find_unused_parameters   : 1
+COMET INFO:     debug                        : 1
+COMET INFO:     decoder_start_token_id       : 1
+COMET INFO:     deepspeed                    : 1
+COMET INFO:     disable_tqdm                 : 1
+COMET INFO:     diversity_penalty            : 1
+COMET INFO:     do_eval                      : 1
+COMET INFO:     do_finetune                  : 1
+COMET INFO:     do_predict                   : 1
+COMET INFO:     do_sample                    : 1
+COMET INFO:     do_train                     : 1
+COMET INFO:     early_stopping               : 1
+COMET INFO:     encoder_no_repeat_ngram_size : 1
+COMET INFO:     eos_token_id                 : 2
+COMET INFO:     eval_accumulation_steps      : 1
+COMET INFO:     eval_steps                   : 10
+COMET INFO:     evaluation_strategy          : steps
+COMET INFO:     finetuning_task              : 1
+COMET INFO:     fp16                         : 1
+COMET INFO:     fp16_backend                 : auto
+COMET INFO:     fp16_opt_level               : O1
+COMET INFO:     gradient_checkpointing       : 1
+COMET INFO:     greater_is_better            : True
+COMET INFO:     group_by_length              : 1
+COMET INFO:     hidden_act                   : gelu
+COMET INFO:     hidden_dropout_prob          : 0.1
+COMET INFO:     hidden_size                  : 768
+COMET INFO:     id2label                     : {"0": "LABEL_0", "1": "LABEL_1", "2": "LABEL_2", "3": "LABEL_3"}
+COMET INFO:     ignore_data_skip             : 1
+COMET INFO:     initializer_range            : 0.02
+COMET INFO:     intermediate_size            : 3072
+COMET INFO:     is_decoder                   : 1
+COMET INFO:     is_encoder_decoder           : 1
+COMET INFO:     label2id                     : {"LABEL_0": 0, "LABEL_1": 1, "LABEL_2": 2, "LABEL_3": 3}
+COMET INFO:     label_names                  : 1
+COMET INFO:     label_smoothing_factor       : 1
+COMET INFO:     layer_norm_eps               : 1e-05
+COMET INFO:     length_penalty               : 1.0
+COMET INFO:     load_best_model_at_end       : True
+COMET INFO:     local_rank                   : -1
+COMET INFO:     logging_dir                  : ./logs
+COMET INFO:     logging_first_step           : 1
+COMET INFO:     logging_steps                : 10
+COMET INFO:     lr_scheduler_type            : linear
+COMET INFO:     max_grad_norm                : 1.0
+COMET INFO:     max_length                   : 20
+COMET INFO:     max_position_embeddings      : 514
+COMET INFO:     max_steps                    : -1
+COMET INFO:     metric_for_best_model        : accuracy
+COMET INFO:     min_length                   : 1
+COMET INFO:     model_type                   : roberta
+COMET INFO:     no_cuda                      : 1
+COMET INFO:     no_repeat_ngram_size         : 1
+COMET INFO:     num_attention_heads          : 12
+COMET INFO:     num_beam_groups              : 1
+COMET INFO:     num_beams                    : 1
+COMET INFO:     num_hidden_layers            : 12
+COMET INFO:     num_return_sequences         : 1
+COMET INFO:     num_train_epochs             : 5
+COMET INFO:     output_attentions            : 1
+COMET INFO:     output_dir                   : ./results
+COMET INFO:     output_hidden_states         : 1
+COMET INFO:     output_past                  : True
+COMET INFO:     output_scores                : 1
+COMET INFO:     overwrite_output_dir         : 1
+COMET INFO:     pad_token_id                 : 1
+COMET INFO:     past_index                   : -1
+COMET INFO:     per_device_eval_batch_size   : 128
+COMET INFO:     per_device_train_batch_size  : 32
+COMET INFO:     per_gpu_eval_batch_size      : 1
+COMET INFO:     per_gpu_train_batch_size     : 1
+COMET INFO:     pooler_type                  : avg
+COMET INFO:     position_embedding_type      : absolute
+COMET INFO:     prediction_loss_only         : 1
+COMET INFO:     prefix                       : 1
+COMET INFO:     problem_type                 : 1
+COMET INFO:     pruned_heads                 : {}
+COMET INFO:     remove_unused_columns        : True
+COMET INFO:     repetition_penalty           : 1.0
+COMET INFO:     report_to                    : ['mlflow']
+COMET INFO:     return_dict                  : True
+COMET INFO:     return_dict_in_generate      : 1
+COMET INFO:     run_name                     : ./results
+COMET INFO:     save_steps                   : 500
+COMET INFO:     save_total_limit             : 1
+COMET INFO:     seed                         : 42
+COMET INFO:     sep_token_id                 : 1
+COMET INFO:     sharded_ddp                  : 1
+COMET INFO:     task_specific_params         : 1
+COMET INFO:     temperature                  : 1.0
+COMET INFO:     tie_encoder_decoder          : 1
+COMET INFO:     tie_word_embeddings          : True
+COMET INFO:     tokenizer_class              : 1
+COMET INFO:     top_k                        : 50
+COMET INFO:     top_p                        : 1.0
+COMET INFO:     torchscript                  : 1
+COMET INFO:     tpu_metrics_debug            : 1
+COMET INFO:     tpu_num_cores                : 1
+COMET INFO:     transformers_version         : 4.3.3
+COMET INFO:     type_vocab_size              : 1
+COMET INFO:     use_bfloat16                 : 1
+COMET INFO:     use_cache                    : True
+COMET INFO:     vocab_size                   : 250002
+COMET INFO:     warmup_steps                 : 1
+COMET INFO:     weight_decay                 : 1
+COMET INFO:     xla_device                   : 1
+COMET INFO:   Uploads:
+COMET INFO:     environment details      : 1
+COMET INFO:     filename                 : 1
+COMET INFO:     git metadata             : 1
+COMET INFO:     git-patch (uncompressed) : 1 (1 KB)
+COMET INFO:     installed packages       : 1
+COMET INFO:     model graph              : 1
+COMET INFO:     os packages              : 1
+COMET INFO:     source_code              : 1
+COMET INFO: ----------------------------------
+COMET INFO: Saving offline stats to disk before program termination (may take several seconds)
+COMET INFO: Starting saving the offline archive
+COMET INFO: To upload this offline experiment, run:
+    comet upload /tmp/tmpr1ky6373/f91e18a60fbe46f0a7d4d1ae072b70f6.zip
+ 12%|█▎        | 10/80 [00:06<00:43,  1.60it/s]
+comet_ml is installed but `COMET_API_KEY` is not set.
+Some weights of the model checkpoint at ../results/my-unsup-mease-data-typehn-18-langs-avg-xlm-roberta-base-best were not used when initializing BertForSequenceClassificationWithPooler: ['roberta.embeddings.position_ids', 'roberta.embeddings.word_embeddings.weight', 'roberta.embeddings.position_embeddings.weight', 'roberta.embeddings.token_type_embeddings.weight', 'roberta.embeddings.LayerNorm.weight', 'roberta.embeddings.LayerNorm.bias', 'roberta.encoder.layer.0.attention.self.query.weight', 'roberta.encoder.layer.0.attention.self.query.bias', 'roberta.encoder.layer.0.attention.self.key.weight', 'roberta.encoder.layer.0.attention.self.key.bias', 'roberta.encoder.layer.0.attention.self.value.weight', 'roberta.encoder.layer.0.attention.self.value.bias', 'roberta.encoder.layer.0.attention.output.dense.weight', 'roberta.encoder.layer.0.attention.output.dense.bias', 'roberta.encoder.layer.0.attention.output.LayerNorm.weight', 'roberta.encoder.layer.0.attention.output.LayerNorm.bias', 'roberta.encoder.layer.0.intermediate.dense.weight', 'roberta.encoder.layer.0.intermediate.dense.bias', 'roberta.encoder.layer.0.output.dense.weight', 'roberta.encoder.layer.0.output.dense.bias', 'roberta.encoder.layer.0.output.LayerNorm.weight', 'roberta.encoder.layer.0.output.LayerNorm.bias', 'roberta.encoder.layer.1.attention.self.query.weight', 'roberta.encoder.layer.1.attention.self.query.bias', 'roberta.encoder.layer.1.attention.self.key.weight', 'roberta.encoder.layer.1.attention.self.key.bias', 'roberta.encoder.layer.1.attention.self.value.weight', 'roberta.encoder.layer.1.attention.self.value.bias', 'roberta.encoder.layer.1.attention.output.dense.weight', 'roberta.encoder.layer.1.attention.output.dense.bias', 'roberta.encoder.layer.1.attention.output.LayerNorm.weight', 'roberta.encoder.layer.1.attention.output.LayerNorm.bias', 'roberta.encoder.layer.1.intermediate.dense.weight', 'roberta.encoder.layer.1.intermediate.dense.bias', 'roberta.encoder.layer.1.output.dense.weight', 'roberta.encoder.layer.1.output.dense.bias', 'roberta.encoder.layer.1.output.LayerNorm.weight', 'roberta.encoder.layer.1.output.LayerNorm.bias', 'roberta.encoder.layer.2.attention.self.query.weight', 'roberta.encoder.layer.2.attention.self.query.bias', 'roberta.encoder.layer.2.attention.self.key.weight', 'roberta.encoder.layer.2.attention.self.key.bias', 'roberta.encoder.layer.2.attention.self.value.weight', 'roberta.encoder.layer.2.attention.self.value.bias', 'roberta.encoder.layer.2.attention.output.dense.weight', 'roberta.encoder.layer.2.attention.output.dense.bias', 'roberta.encoder.layer.2.attention.output.LayerNorm.weight', 'roberta.encoder.layer.2.attention.output.LayerNorm.bias', 'roberta.encoder.layer.2.intermediate.dense.weight', 'roberta.encoder.layer.2.intermediate.dense.bias', 'roberta.encoder.layer.2.output.dense.weight', 'roberta.encoder.layer.2.output.dense.bias', 'roberta.encoder.layer.2.output.LayerNorm.weight', 'roberta.encoder.layer.2.output.LayerNorm.bias', 'roberta.encoder.layer.3.attention.self.query.weight', 'roberta.encoder.layer.3.attention.self.query.bias', 'roberta.encoder.layer.3.attention.self.key.weight', 'roberta.encoder.layer.3.attention.self.key.bias', 'roberta.encoder.layer.3.attention.self.value.weight', 'roberta.encoder.layer.3.attention.self.value.bias', 'roberta.encoder.layer.3.attention.output.dense.weight', 'roberta.encoder.layer.3.attention.output.dense.bias', 'roberta.encoder.layer.3.attention.output.LayerNorm.weight', 'roberta.encoder.layer.3.attention.output.LayerNorm.bias', 'roberta.encoder.layer.3.intermediate.dense.weight', 'roberta.encoder.layer.3.intermediate.dense.bias', 'roberta.encoder.layer.3.output.dense.weight', 'roberta.encoder.layer.3.output.dense.bias', 'roberta.encoder.layer.3.output.LayerNorm.weight', 'roberta.encoder.layer.3.output.LayerNorm.bias', 'roberta.encoder.layer.4.attention.self.query.weight', 'roberta.encoder.layer.4.attention.self.query.bias', 'roberta.encoder.layer.4.attention.self.key.weight', 'roberta.encoder.layer.4.attention.self.key.bias', 'roberta.encoder.layer.4.attention.self.value.weight', 'roberta.encoder.layer.4.attention.self.value.bias', 'roberta.encoder.layer.4.attention.output.dense.weight', 'roberta.encoder.layer.4.attention.output.dense.bias', 'roberta.encoder.layer.4.attention.output.LayerNorm.weight', 'roberta.encoder.layer.4.attention.output.LayerNorm.bias', 'roberta.encoder.layer.4.intermediate.dense.weight', 'roberta.encoder.layer.4.intermediate.dense.bias', 'roberta.encoder.layer.4.output.dense.weight', 'roberta.encoder.layer.4.output.dense.bias', 'roberta.encoder.layer.4.output.LayerNorm.weight', 'roberta.encoder.layer.4.output.LayerNorm.bias', 'roberta.encoder.layer.5.attention.self.query.weight', 'roberta.encoder.layer.5.attention.self.query.bias', 'roberta.encoder.layer.5.attention.self.key.weight', 'roberta.encoder.layer.5.attention.self.key.bias', 'roberta.encoder.layer.5.attention.self.value.weight', 'roberta.encoder.layer.5.attention.self.value.bias', 'roberta.encoder.layer.5.attention.output.dense.weight', 'roberta.encoder.layer.5.attention.output.dense.bias', 'roberta.encoder.layer.5.attention.output.LayerNorm.weight', 'roberta.encoder.layer.5.attention.output.LayerNorm.bias', 'roberta.encoder.layer.5.intermediate.dense.weight', 'roberta.encoder.layer.5.intermediate.dense.bias', 'roberta.encoder.layer.5.output.dense.weight', 'roberta.encoder.layer.5.output.dense.bias', 'roberta.encoder.layer.5.output.LayerNorm.weight', 'roberta.encoder.layer.5.output.LayerNorm.bias', 'roberta.encoder.layer.6.attention.self.query.weight', 'roberta.encoder.layer.6.attention.self.query.bias', 'roberta.encoder.layer.6.attention.self.key.weight', 'roberta.encoder.layer.6.attention.self.key.bias', 'roberta.encoder.layer.6.attention.self.value.weight', 'roberta.encoder.layer.6.attention.self.value.bias', 'roberta.encoder.layer.6.attention.output.dense.weight', 'roberta.encoder.layer.6.attention.output.dense.bias', 'roberta.encoder.layer.6.attention.output.LayerNorm.weight', 'roberta.encoder.layer.6.attention.output.LayerNorm.bias', 'roberta.encoder.layer.6.intermediate.dense.weight', 'roberta.encoder.layer.6.intermediate.dense.bias', 'roberta.encoder.layer.6.output.dense.weight', 'roberta.encoder.layer.6.output.dense.bias', 'roberta.encoder.layer.6.output.LayerNorm.weight', 'roberta.encoder.layer.6.output.LayerNorm.bias', 'roberta.encoder.layer.7.attention.self.query.weight', 'roberta.encoder.layer.7.attention.self.query.bias', 'roberta.encoder.layer.7.attention.self.key.weight', 'roberta.encoder.layer.7.attention.self.key.bias', 'roberta.encoder.layer.7.attention.self.value.weight', 'roberta.encoder.layer.7.attention.self.value.bias', 'roberta.encoder.layer.7.attention.output.dense.weight', 'roberta.encoder.layer.7.attention.output.dense.bias', 'roberta.encoder.layer.7.attention.output.LayerNorm.weight', 'roberta.encoder.layer.7.attention.output.LayerNorm.bias', 'roberta.encoder.layer.7.intermediate.dense.weight', 'roberta.encoder.layer.7.intermediate.dense.bias', 'roberta.encoder.layer.7.output.dense.weight', 'roberta.encoder.layer.7.output.dense.bias', 'roberta.encoder.layer.7.output.LayerNorm.weight', 'roberta.encoder.layer.7.output.LayerNorm.bias', 'roberta.encoder.layer.8.attention.self.query.weight', 'roberta.encoder.layer.8.attention.self.query.bias', 'roberta.encoder.layer.8.attention.self.key.weight', 'roberta.encoder.layer.8.attention.self.key.bias', 'roberta.encoder.layer.8.attention.self.value.weight', 'roberta.encoder.layer.8.attention.self.value.bias', 'roberta.encoder.layer.8.attention.output.dense.weight', 'roberta.encoder.layer.8.attention.output.dense.bias', 'roberta.encoder.layer.8.attention.output.LayerNorm.weight', 'roberta.encoder.layer.8.attention.output.LayerNorm.bias', 'roberta.encoder.layer.8.intermediate.dense.weight', 'roberta.encoder.layer.8.intermediate.dense.bias', 'roberta.encoder.layer.8.output.dense.weight', 'roberta.encoder.layer.8.output.dense.bias', 'roberta.encoder.layer.8.output.LayerNorm.weight', 'roberta.encoder.layer.8.output.LayerNorm.bias', 'roberta.encoder.layer.9.attention.self.query.weight', 'roberta.encoder.layer.9.attention.self.query.bias', 'roberta.encoder.layer.9.attention.self.key.weight', 'roberta.encoder.layer.9.attention.self.key.bias', 'roberta.encoder.layer.9.attention.self.value.weight', 'roberta.encoder.layer.9.attention.self.value.bias', 'roberta.encoder.layer.9.attention.output.dense.weight', 'roberta.encoder.layer.9.attention.output.dense.bias', 'roberta.encoder.layer.9.attention.output.LayerNorm.weight', 'roberta.encoder.layer.9.attention.output.LayerNorm.bias', 'roberta.encoder.layer.9.intermediate.dense.weight', 'roberta.encoder.layer.9.intermediate.dense.bias', 'roberta.encoder.layer.9.output.dense.weight', 'roberta.encoder.layer.9.output.dense.bias', 'roberta.encoder.layer.9.output.LayerNorm.weight', 'roberta.encoder.layer.9.output.LayerNorm.bias', 'roberta.encoder.layer.10.attention.self.query.weight', 'roberta.encoder.layer.10.attention.self.query.bias', 'roberta.encoder.layer.10.attention.self.key.weight', 'roberta.encoder.layer.10.attention.self.key.bias', 'roberta.encoder.layer.10.attention.self.value.weight', 'roberta.encoder.layer.10.attention.self.value.bias', 'roberta.encoder.layer.10.attention.output.dense.weight', 'roberta.encoder.layer.10.attention.output.dense.bias', 'roberta.encoder.layer.10.attention.output.LayerNorm.weight', 'roberta.encoder.layer.10.attention.output.LayerNorm.bias', 'roberta.encoder.layer.10.intermediate.dense.weight', 'roberta.encoder.layer.10.intermediate.dense.bias', 'roberta.encoder.layer.10.output.dense.weight', 'roberta.encoder.layer.10.output.dense.bias', 'roberta.encoder.layer.10.output.LayerNorm.weight', 'roberta.encoder.layer.10.output.LayerNorm.bias', 'roberta.encoder.layer.11.attention.self.query.weight', 'roberta.encoder.layer.11.attention.self.query.bias', 'roberta.encoder.layer.11.attention.self.key.weight', 'roberta.encoder.layer.11.attention.self.key.bias', 'roberta.encoder.layer.11.attention.self.value.weight', 'roberta.encoder.layer.11.attention.self.value.bias', 'roberta.encoder.layer.11.attention.output.dense.weight', 'roberta.encoder.layer.11.attention.output.dense.bias', 'roberta.encoder.layer.11.attention.output.LayerNorm.weight', 'roberta.encoder.layer.11.attention.output.LayerNorm.bias', 'roberta.encoder.layer.11.intermediate.dense.weight', 'roberta.encoder.layer.11.intermediate.dense.bias', 'roberta.encoder.layer.11.output.dense.weight', 'roberta.encoder.layer.11.output.dense.bias', 'roberta.encoder.layer.11.output.LayerNorm.weight', 'roberta.encoder.layer.11.output.LayerNorm.bias', 'roberta.pooler.dense.weight', 'roberta.pooler.dense.bias', 'lm_head.bias', 'lm_head.dense.weight', 'lm_head.dense.bias', 'lm_head.layer_norm.weight', 'lm_head.layer_norm.bias', 'lm_head.decoder.weight', 'lm_head.decoder.bias', 'mlp.dense.weight', 'mlp.dense.bias', 'entity_transformation.dense.weight', 'entity_transformation.dense.bias', 'entity_transformation.dense2.weight', 'entity_transformation.dense2.bias', 'hn_entity_transformation.dense.weight', 'hn_entity_transformation.dense.bias', 'hn_entity_transformation.dense2.weight', 'hn_entity_transformation.dense2.bias', 'entity_embedding.weight']
+- This IS expected if you are initializing BertForSequenceClassificationWithPooler from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing BertForSequenceClassificationWithPooler from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of BertForSequenceClassificationWithPooler were not initialized from the model checkpoint at ../results/my-unsup-mease-data-typehn-18-langs-avg-xlm-roberta-base-best and are newly initialized: ['embeddings.word_embeddings.weight', 'embeddings.position_embeddings.weight', 'embeddings.token_type_embeddings.weight', 'embeddings.LayerNorm.weight', 'embeddings.LayerNorm.bias', 'encoder.layer.0.attention.self.query.weight', 'encoder.layer.0.attention.self.query.bias', 'encoder.layer.0.attention.self.key.weight', 'encoder.layer.0.attention.self.key.bias', 'encoder.layer.0.attention.self.value.weight', 'encoder.layer.0.attention.self.value.bias', 'encoder.layer.0.attention.output.dense.weight', 'encoder.layer.0.attention.output.dense.bias', 'encoder.layer.0.attention.output.LayerNorm.weight', 'encoder.layer.0.attention.output.LayerNorm.bias', 'encoder.layer.0.intermediate.dense.weight', 'encoder.layer.0.intermediate.dense.bias', 'encoder.layer.0.output.dense.weight', 'encoder.layer.0.output.dense.bias', 'encoder.layer.0.output.LayerNorm.weight', 'encoder.layer.0.output.LayerNorm.bias', 'encoder.layer.1.attention.self.query.weight', 'encoder.layer.1.attention.self.query.bias', 'encoder.layer.1.attention.self.key.weight', 'encoder.layer.1.attention.self.key.bias', 'encoder.layer.1.attention.self.value.weight', 'encoder.layer.1.attention.self.value.bias', 'encoder.layer.1.attention.output.dense.weight', 'encoder.layer.1.attention.output.dense.bias', 'encoder.layer.1.attention.output.LayerNorm.weight', 'encoder.layer.1.attention.output.LayerNorm.bias', 'encoder.layer.1.intermediate.dense.weight', 'encoder.layer.1.intermediate.dense.bias', 'encoder.layer.1.output.dense.weight', 'encoder.layer.1.output.dense.bias', 'encoder.layer.1.output.LayerNorm.weight', 'encoder.layer.1.output.LayerNorm.bias', 'encoder.layer.2.attention.self.query.weight', 'encoder.layer.2.attention.self.query.bias', 'encoder.layer.2.attention.self.key.weight', 'encoder.layer.2.attention.self.key.bias', 'encoder.layer.2.attention.self.value.weight', 'encoder.layer.2.attention.self.value.bias', 'encoder.layer.2.attention.output.dense.weight', 'encoder.layer.2.attention.output.dense.bias', 'encoder.layer.2.attention.output.LayerNorm.weight', 'encoder.layer.2.attention.output.LayerNorm.bias', 'encoder.layer.2.intermediate.dense.weight', 'encoder.layer.2.intermediate.dense.bias', 'encoder.layer.2.output.dense.weight', 'encoder.layer.2.output.dense.bias', 'encoder.layer.2.output.LayerNorm.weight', 'encoder.layer.2.output.LayerNorm.bias', 'encoder.layer.3.attention.self.query.weight', 'encoder.layer.3.attention.self.query.bias', 'encoder.layer.3.attention.self.key.weight', 'encoder.layer.3.attention.self.key.bias', 'encoder.layer.3.attention.self.value.weight', 'encoder.layer.3.attention.self.value.bias', 'encoder.layer.3.attention.output.dense.weight', 'encoder.layer.3.attention.output.dense.bias', 'encoder.layer.3.attention.output.LayerNorm.weight', 'encoder.layer.3.attention.output.LayerNorm.bias', 'encoder.layer.3.intermediate.dense.weight', 'encoder.layer.3.intermediate.dense.bias', 'encoder.layer.3.output.dense.weight', 'encoder.layer.3.output.dense.bias', 'encoder.layer.3.output.LayerNorm.weight', 'encoder.layer.3.output.LayerNorm.bias', 'encoder.layer.4.attention.self.query.weight', 'encoder.layer.4.attention.self.query.bias', 'encoder.layer.4.attention.self.key.weight', 'encoder.layer.4.attention.self.key.bias', 'encoder.layer.4.attention.self.value.weight', 'encoder.layer.4.attention.self.value.bias', 'encoder.layer.4.attention.output.dense.weight', 'encoder.layer.4.attention.output.dense.bias', 'encoder.layer.4.attention.output.LayerNorm.weight', 'encoder.layer.4.attention.output.LayerNorm.bias', 'encoder.layer.4.intermediate.dense.weight', 'encoder.layer.4.intermediate.dense.bias', 'encoder.layer.4.output.dense.weight', 'encoder.layer.4.output.dense.bias', 'encoder.layer.4.output.LayerNorm.weight', 'encoder.layer.4.output.LayerNorm.bias', 'encoder.layer.5.attention.self.query.weight', 'encoder.layer.5.attention.self.query.bias', 'encoder.layer.5.attention.self.key.weight', 'encoder.layer.5.attention.self.key.bias', 'encoder.layer.5.attention.self.value.weight', 'encoder.layer.5.attention.self.value.bias', 'encoder.layer.5.attention.output.dense.weight', 'encoder.layer.5.attention.output.dense.bias', 'encoder.layer.5.attention.output.LayerNorm.weight', 'encoder.layer.5.attention.output.LayerNorm.bias', 'encoder.layer.5.intermediate.dense.weight', 'encoder.layer.5.intermediate.dense.bias', 'encoder.layer.5.output.dense.weight', 'encoder.layer.5.output.dense.bias', 'encoder.layer.5.output.LayerNorm.weight', 'encoder.layer.5.output.LayerNorm.bias', 'encoder.layer.6.attention.self.query.weight', 'encoder.layer.6.attention.self.query.bias', 'encoder.layer.6.attention.self.key.weight', 'encoder.layer.6.attention.self.key.bias', 'encoder.layer.6.attention.self.value.weight', 'encoder.layer.6.attention.self.value.bias', 'encoder.layer.6.attention.output.dense.weight', 'encoder.layer.6.attention.output.dense.bias', 'encoder.layer.6.attention.output.LayerNorm.weight', 'encoder.layer.6.attention.output.LayerNorm.bias', 'encoder.layer.6.intermediate.dense.weight', 'encoder.layer.6.intermediate.dense.bias', 'encoder.layer.6.output.dense.weight', 'encoder.layer.6.output.dense.bias', 'encoder.layer.6.output.LayerNorm.weight', 'encoder.layer.6.output.LayerNorm.bias', 'encoder.layer.7.attention.self.query.weight', 'encoder.layer.7.attention.self.query.bias', 'encoder.layer.7.attention.self.key.weight', 'encoder.layer.7.attention.self.key.bias', 'encoder.layer.7.attention.self.value.weight', 'encoder.layer.7.attention.self.value.bias', 'encoder.layer.7.attention.output.dense.weight', 'encoder.layer.7.attention.output.dense.bias', 'encoder.layer.7.attention.output.LayerNorm.weight', 'encoder.layer.7.attention.output.LayerNorm.bias', 'encoder.layer.7.intermediate.dense.weight', 'encoder.layer.7.intermediate.dense.bias', 'encoder.layer.7.output.dense.weight', 'encoder.layer.7.output.dense.bias', 'encoder.layer.7.output.LayerNorm.weight', 'encoder.layer.7.output.LayerNorm.bias', 'encoder.layer.8.attention.self.query.weight', 'encoder.layer.8.attention.self.query.bias', 'encoder.layer.8.attention.self.key.weight', 'encoder.layer.8.attention.self.key.bias', 'encoder.layer.8.attention.self.value.weight', 'encoder.layer.8.attention.self.value.bias', 'encoder.layer.8.attention.output.dense.weight', 'encoder.layer.8.attention.output.dense.bias', 'encoder.layer.8.attention.output.LayerNorm.weight', 'encoder.layer.8.attention.output.LayerNorm.bias', 'encoder.layer.8.intermediate.dense.weight', 'encoder.layer.8.intermediate.dense.bias', 'encoder.layer.8.output.dense.weight', 'encoder.layer.8.output.dense.bias', 'encoder.layer.8.output.LayerNorm.weight', 'encoder.layer.8.output.LayerNorm.bias', 'encoder.layer.9.attention.self.query.weight', 'encoder.layer.9.attention.self.query.bias', 'encoder.layer.9.attention.self.key.weight', 'encoder.layer.9.attention.self.key.bias', 'encoder.layer.9.attention.self.value.weight', 'encoder.layer.9.attention.self.value.bias', 'encoder.layer.9.attention.output.dense.weight', 'encoder.layer.9.attention.output.dense.bias', 'encoder.layer.9.attention.output.LayerNorm.weight', 'encoder.layer.9.attention.output.LayerNorm.bias', 'encoder.layer.9.intermediate.dense.weight', 'encoder.layer.9.intermediate.dense.bias', 'encoder.layer.9.output.dense.weight', 'encoder.layer.9.output.dense.bias', 'encoder.layer.9.output.LayerNorm.weight', 'encoder.layer.9.output.LayerNorm.bias', 'encoder.layer.10.attention.self.query.weight', 'encoder.layer.10.attention.self.query.bias', 'encoder.layer.10.attention.self.key.weight', 'encoder.layer.10.attention.self.key.bias', 'encoder.layer.10.attention.self.value.weight', 'encoder.layer.10.attention.self.value.bias', 'encoder.layer.10.attention.output.dense.weight', 'encoder.layer.10.attention.output.dense.bias', 'encoder.layer.10.attention.output.LayerNorm.weight', 'encoder.layer.10.attention.output.LayerNorm.bias', 'encoder.layer.10.intermediate.dense.weight', 'encoder.layer.10.intermediate.dense.bias', 'encoder.layer.10.output.dense.weight', 'encoder.layer.10.output.dense.bias', 'encoder.layer.10.output.LayerNorm.weight', 'encoder.layer.10.output.LayerNorm.bias', 'encoder.layer.11.attention.self.query.weight', 'encoder.layer.11.attention.self.query.bias', 'encoder.layer.11.attention.self.key.weight', 'encoder.layer.11.attention.self.key.bias', 'encoder.layer.11.attention.self.value.weight', 'encoder.layer.11.attention.self.value.bias', 'encoder.layer.11.attention.output.dense.weight', 'encoder.layer.11.attention.output.dense.bias', 'encoder.layer.11.attention.output.LayerNorm.weight', 'encoder.layer.11.attention.output.LayerNorm.bias', 'encoder.layer.11.intermediate.dense.weight', 'encoder.layer.11.intermediate.dense.bias', 'encoder.layer.11.output.dense.weight', 'encoder.layer.11.output.dense.bias', 'encoder.layer.11.output.LayerNorm.weight', 'encoder.layer.11.output.LayerNorm.bias', 'pooler.dense.weight', 'pooler.dense.bias', 'classifier.weight', 'classifier.bias']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+COMET INFO: No Comet API Key was found, creating an OfflineExperiment. Set up your API Key to get the full Comet experience https://www.comet.ml/docs/python-sdk/advanced/#python-configuration
