@@ -1,5 +1,5 @@
 from transformers import Trainer, TrainingArguments, AutoTokenizer, AutoConfig, XLMRobertaTokenizer
-from bert import BertForSequenceClassificationWithPooler
+from bert import BertForSequenceClassificationWithPooler, RobertaForSequenceClassificationWithPooler
 from sklearn.metrics import accuracy_score
 from data import MLDocParser
 import torch
@@ -147,9 +147,15 @@ def main():
     config.do_finetune = args.do_finetune
     config.problem_type = None
 
-    model = BertForSequenceClassificationWithPooler.from_pretrained(
+    if "xlm" in args.model_name_or_path:
+        model = RobertaForSequenceClassificationWithPooler.from_pretrained(
+            args.model_name_or_path, config=config
+        )
+
+    elif "bert" in args.model_name_or_path:
+        model = BertForSequenceClassificationWithPooler.from_pretrained(
         args.model_name_or_path, config=config
-    )
+        )
 
     if not config.do_finetune:
         for name, param in model.named_parameters():

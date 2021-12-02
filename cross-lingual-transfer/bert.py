@@ -191,8 +191,8 @@ class RobertaForSequenceClassificationWithPooler(RobertaPreTrainedModel):
         if config.do_finetune:
             self.classifier = RobertaClassificationHead(config)
         else:
-            self.classifier = RobertaClassificationHead(config)
-            # self.classifier = nn.Linear(config.hidden_size, config.num_labels)
+            # self.classifier = RobertaClassificationHead(config)
+            self.classifier = nn.Linear(config.hidden_size, config.num_labels)
 
         self.init_weights()
 
