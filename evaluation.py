@@ -37,7 +37,7 @@ def main():
             default='cls', 
             help="Which pooler to use")
     parser.add_argument("--mode", type=str, 
-            choices=['dev', 'test', 'fasttest'],
+            choices=['dev', 'test', 'fasttest', "align_uniform"],
             default='test', 
             help="What evaluation mode to use (dev: fast mode, dev results; test: full mode, test results); fasttest: fast mode, test results")
     parser.add_argument("--task_set", type=str, 
@@ -56,7 +56,6 @@ def main():
         help="mlflow experiment name",
     )
 
-    
     args = parser.parse_args()
     
     # mlflow
@@ -100,6 +99,8 @@ def main():
         params = {'task_path': PATH_TO_DATA, 'usepytorch': True, 'kfold': 10}
         params['classifier'] = {'nhid': 0, 'optim': 'adam', 'batch_size': 64,
                                          'tenacity': 5, 'epoch_size': 4}
+    elif args.mode == "align_uniform":
+        params = {'task_path': PATH_TO_DATA, 'usepytorch': True, 'kfold': 10}
     else:
         raise NotImplementedError
 
@@ -179,6 +180,8 @@ def main():
             task_names.append(task)
             if task in results:
                 scores.append("%.2f" % (results[task]['dev']['spearman'][0] * 100))
+                mlflow_writer.log_metric(f"{task}-alignment", results[task]['dev']['align_loss'])
+                mlflow_writer.log_metric(f"{task}-uniformity", results[task]['dev']['uniform_loss'])
             else:
                 scores.append("0.00")
         print_table(task_names, scores)
@@ -194,6 +197,35 @@ def main():
         task_names.append("Avg.")
         scores.append("%.2f" % (sum([float(score) for score in scores]) / len(scores)))
         print_table(task_names, scores)
+
+    elif args.mode == 'align_uniform':
+        task_names = []
+        scores = []
+        datasets = [
+            "STS.input.track5.en-en.txt",
+            "STS.input.track7.en-de.txt",
+            "STS.input.track8.fr-en.txt",
+            "STS.input.track9.it-en.txt",
+            "STS.input.track10.nl-en.txt"
+        ]
+
+        for dataset in datasets:
+            lang_name = re.findall("STS.input.track\d+.?\.(.+).txt", dataset)[0]
+            if task in results:
+                mlflow_writer.log_metric(lang_name, results[task][dataset]['spearman'].correlation * 100)
+                scores.append("%.2f" % (results[task][dataset]['spearman'].correlation * 100)) 
+                mlflow_writer.log_metric(f"{lang_name}-align", results[task][dataset]['align_loss'])
+                mlflow_writer.log_metric(f"{lang_name}-uniform", results[task][dataset]['uniform_loss'])
+            else:
+                scores.append("0.00")
+            task_names.append(lang_name)
+                
+
+        task_names.append("Avg.")
+        scores.append("%.2f" % (sum([float(score) for score in scores]) / len(scores)))
+        mlflow_writer.log_metric("CL-STS Avg.", sum([float(score) for score in scores]) / len(scores))
+        print_table(task_names, scores)
+
 
     elif args.mode == 'test' or args.mode == 'fasttest':
         print("------ %s ------" % (args.mode))

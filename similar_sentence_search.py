@@ -3,13 +3,14 @@
 
 # import hydra
 # from omegaconf import DictConfig, OmegaConf
-from transformers import AutoModel, AutoTokenizer
+from transformers import AutoModel, AutoTokenizer, XLMRobertaTokenizer
 import torch
 import torch.nn as nn
 import numpy as np
 import os
 from utils.mlflow_writer import MlflowWriter
 import pycountry
+from omegaconf import OmegaConf
 import argparse
 
 from evaluation import print_table
@@ -89,8 +90,15 @@ def main():
         help="Which pooler to use",
     )
     parser.add_argument(
+        "--experiment_name",
+        type=str,
+        default="eval_tatoeba",
+        help="mlflow experiment name",
+    )
+    parser.add_argument(
         # "--langs", type=str, nargs="+", default=["es", "ar", "tr"] 
-        "--langs", type=str, nargs="+", default=["kab","pam","kw","br","mhr"]
+        "--langs", type=str, nargs="+", default=['ar', 'ca', 'cs', 'de', 'eo', 'es', 'fa', 'fr', 'it', 'ja', 'ko', 'nl', 'pl', 'pt', 'ru', 'sv', 'tr']
+        # "--langs", type=str, nargs="+", default=["kab","pam","kw","br","mhr"]
         # "--langs", type=str, nargs="+", default=['kab', 'pam', 'kw', 'br', 'mhr', 'ch', 'csb', 'ang', 'war', 'dsb', 'pms', 'oc', 'lfn', 'hsb', 'awa', 'arz', 'nov', 'nds', 'ie', 'ast', 'fo', 'io', 'wuu', 'ia']
         # "--langs", type=str, nargs="+", default=["en",'be','ja','yi','no','bo','el','tr','tg','ht','zu','sm','th','sl','ig','am','haw','ro','ur','uz','eo','hi','eu','he','ta','it','zh','id','lo','ga','ku','mi','sw','km','xh','so','tk','rw','mt','st','ceb','ny','fy','my','cy','hy','gl','sn','as','mk','ne','sq','af','ru','lb','pa','es','vi','la','de','ca','ug','wo','nl','tl','bn','lv','pl','mn','et','cs','lt','fr','"fi"','ar','tt','sv','ha','ko','az','gd','kk','mg','gu','kn','si','pt','da','jv','te','ml','su','yo','ky','sr','hu','bs','bg','uk','hr','ms','ka','sk','fa','is','or','mr','co',"kab",'pam','kw','br','mhr','ch','csb','ang','war','dsb','pms','oc','lfn','hsb','awa','arz','nov','nds','ie','ast','fo','io','wuu','ia']
         # "--langs", type=str, nargs="+", default=['be', 'ga', 'hy', 'kk', 'oc']
@@ -99,10 +107,20 @@ def main():
 
     args = parser.parse_args()
     print("model_path", args.model_name_or_path)
+    # mlflow
+    cfg = OmegaConf.create({"eval_args": vars(args)})
+    EXPERIMENT_NAME = args.experiment_name
+    tracking_uri = f"/home/fmg/nishikawa/EASE/mlruns"
+    mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri=tracking_uri)
+    mlflow_writer.log_params_from_omegaconf_dict(cfg)
 
     # Load transformers' model checkpoint
     model = AutoModel.from_pretrained(args.model_name_or_path)
-    tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
+
+    if "xlm" in args.model_name_or_path:
+        tokenizer = XLMRobertaTokenizer.from_pretrained(args.model_name_or_path)
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
 
@@ -121,15 +139,16 @@ def main():
     not_exist_langs = set()
 
     for lang in langs:
-        # try:
-        src_path = f"data/tatoeba/v1/tatoeba.{lang}-eng.{lang}"
-        trg_path = f"data/tatoeba/v1/tatoeba.{lang}-eng.eng"
-        dataset[lang] = (load_data(src_path), load_data(trg_path))
-        # except:
-        #     print(f"{lang} doesn't exist.")
-        #     not_exist_langs.add(lang)
+        try:
+            src_path = f"data/tatoeba/v1/tatoeba.{lang}-eng.{lang}"
+            trg_path = f"data/tatoeba/v1/tatoeba.{lang}-eng.eng"
+            dataset[lang] = (load_data(src_path), load_data(trg_path))
+        except:
+            print(f"{lang} doesn't exist.")
+            not_exist_langs.add(lang)
 
     # langs = list(langs - not_exist_langs)
+    langs = sorted(set(langs) - not_exist_langs, key=langs.index)
     lang_to_en_scores = []
     en_to_langs_scores = []
 
@@ -145,23 +164,27 @@ def main():
             == np.arange(len(source_embeddings))
         ).sum() / 10
         lang_to_en_scores.append("%.1f" % result)
+        mlflow_writer.log_metric(f"{lang}_en", result)
         print(result)
 
         result = (
             get_cos_sim_matrix(target_embeddings, source_embeddings).argmax(axis=1)
             == np.arange(len(target_embeddings))
         ).sum() / 10
-        en_to_langs_scores.append("%.1f" % result)
+        en_to_langs_scores.append("%.2f" % result)
+        mlflow_writer.log_metric(f"en_{lang}", result)
         print(result)
 
     langs.append("Avg.")
 
     print("------ %s ------" % ("lang_to_en"))
-    lang_to_en_scores.append("%.1f" % (sum([float(score) for score in lang_to_en_scores]) / len(lang_to_en_scores)))
+    lang_to_en_scores.append("%.2f" % (sum([float(score) for score in lang_to_en_scores]) / len(lang_to_en_scores)))
+    mlflow_writer.log_metric(f"lang_to_en Avg.", (sum([float(score) for score in lang_to_en_scores]) / len(lang_to_en_scores)))
     print_table(langs, lang_to_en_scores)
 
     print("------ %s ------" % ("en_to_lang"))
-    en_to_langs_scores.append("%.1f" % (sum([float(score) for score in en_to_langs_scores]) / len(en_to_langs_scores)))
+    en_to_langs_scores.append("%.2f" % (sum([float(score) for score in en_to_langs_scores]) / len(en_to_langs_scores)))
+    mlflow_writer.log_metric(f"en_to_lang Avg.", (sum([float(score) for score in en_to_langs_scores]) / len(en_to_langs_scores)))
     print_table(langs, en_to_langs_scores)
 
 

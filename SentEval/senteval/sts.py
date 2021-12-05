@@ -21,6 +21,15 @@ from scipy.stats import spearmanr, pearsonr
 
 from senteval.utils import cosine
 from senteval.sick import SICKEval
+import torch
+
+
+def align_loss(x, y, alpha=2):
+    return (x - y).norm(p=2, dim=1).pow(alpha).mean()
+
+
+def uniform_loss(x, t=2):
+    return torch.pdist(x, p=2).pow(2).mul(-t).exp().mean().log()
 
 
 class STSEval(object):
@@ -76,17 +85,36 @@ class STSEval(object):
         results = {}
         all_sys_scores = []
         all_gs_scores = []
+        all_loss_align = []
+        all_loss_uniform = []
         for dataset in self.datasets:
             sys_scores = []
             input1, input2, gs_scores = self.data[dataset]
             for ii in range(0, len(gs_scores), params.batch_size):
                 batch1 = input1[ii : ii + params.batch_size]
                 batch2 = input2[ii : ii + params.batch_size]
+                batch_gs_scores = gs_scores[ii : ii + params.batch_size]  # newly added
 
                 # we assume get_batch already throws out the faulty ones
                 if len(batch1) == len(batch2) and len(batch1) > 0:
                     enc1 = batcher(params, batch1)
                     enc2 = batcher(params, batch2)
+
+                    # calculate align and uniform
+                    pos_indices = [
+                        i
+                        for i in range(len(batch_gs_scores))
+                        if batch_gs_scores[i] >= 4.0
+                    ]
+
+                    normed_enc1 = enc1 / torch.norm(enc1, dim=1).unsqueeze(1)
+                    normed_enc2 = enc2 / torch.norm(enc2, dim=1).unsqueeze(1)
+                    enc1_pos = normed_enc1[pos_indices] 
+                    enc2_pos = normed_enc2[pos_indices] 
+                    loss_align = align_loss(enc1_pos, enc2_pos)
+                    loss_uniform = uniform_loss(torch.cat((normed_enc1, normed_enc2), dim=0))
+                    all_loss_align.append(loss_align)
+                    all_loss_uniform.append(loss_uniform)
 
                     for kk in range(enc2.shape[0]):
                         sys_score = self.similarity(enc1[kk], enc2[kk])
@@ -97,15 +125,13 @@ class STSEval(object):
                 "pearson": pearsonr(sys_scores, gs_scores),
                 "spearman": spearmanr(sys_scores, gs_scores),
                 "nsamples": len(sys_scores),
+                "align_loss": np.mean(all_loss_align),  # newly added
+                "uniform_loss": np.mean(all_loss_uniform),  # newly added
             }
-            logging.debug(
-                "%s : pearson = %.4f, spearman = %.4f"
-                % (
-                    dataset,
-                    results[dataset]["pearson"][0],
-                    results[dataset]["spearman"][0],
-                )
-            )
+            logging.debug('%s : pearson = %.4f, spearman = %.4f, align_loss = %.4f, uniform_loss = %.4f' %
+                        (dataset, results[dataset]['pearson'][0],
+                        results[dataset]['spearman'][0], results[dataset]['align_loss'],
+                        results[dataset]['uniform_loss']))
 
         weights = [results[dset]["nsamples"] for dset in results.keys()]
         list_prs = np.array([results[dset]["pearson"][0] for dset in results.keys()])
@@ -289,28 +315,24 @@ class SICKRelatednessEval(STSEval):
         self.samples += sick_data["X_A"] + sick_data["X_B"]
         return (sick_data["X_A"], sick_data["X_B"], sick_data["y"])
 
+
 class STS17Eval(STSEval):
     def __init__(self, task_path, seed=1111):
-        logging.debug('\n\n***** Transfer task : SemEval17*****\n\n')
+        logging.debug("\n\n***** Transfer task : SemEval17*****\n\n")
         self.seed = seed
         self.data = {}
-        self.datasets = ["STS.input.track1.ar-ar.txt",
-                         "STS.input.track2.ar-en.txt",
-                         "STS.input.track3.es-es.txt",
-                         "STS.input.track4a.es-en.txt",
-                         "STS.input.track5.en-en.txt",
-                    "STS.input.track6.tr-en.txt",
-                    "STS.input.track7.en-de.txt",
-                    "STS.input.track8.fr-en.txt",
-                    "STS.input.track9.it-en.txt",
-                    "STS.input.track10.nl-en.txt"
-                         ]
-        # self.datasets = ["track1.ar-ar",
-        #                  "track2.ar-en",
-        #                  "track3.es-es",
-        #                  "track4a.es-en",
-        #                  "track5.en-en",
-        #                  "track6.tr-en"]
+        self.datasets = [
+            "STS.input.track1.ar-ar.txt",
+            "STS.input.track2.ar-en.txt",
+            "STS.input.track3.es-es.txt",
+            "STS.input.track4a.es-en.txt",
+            "STS.input.track5.en-en.txt",
+            "STS.input.track6.tr-en.txt",
+            "STS.input.track7.en-de.txt",
+            "STS.input.track8.fr-en.txt",
+            "STS.input.track9.it-en.txt",
+            "STS.input.track10.nl-en.txt",
+        ]
 
         for i in self.datasets:
             self.data[i] = self.loadFile(os.path.join(task_path, i))
@@ -323,17 +345,18 @@ class STS17Eval(STSEval):
         gs_scores = []
         sent1 = []
         sent2 = []
-        with io.open(fpath, 'r', encoding='utf-8') as f:
+        with io.open(fpath, "r", encoding="utf-8") as f:
             for line in f:
-                text = line.strip().split('\t')
+                text = line.strip().split("\t")
                 if len(text) != 3:
                     continue
                 sent1.append(text[0].split())
                 sent2.append(text[1].split())
                 gs_scores.append(float(text[2]))
 
-        sorted_data = sorted(zip(sent1, sent2, gs_scores),
-                    key=lambda z: (len(z[0]), len(z[1]), z[2]))
+        sorted_data = sorted(
+            zip(sent1, sent2, gs_scores), key=lambda z: (len(z[0]), len(z[1]), z[2])
+        )
 
         sent1, sent2, gs_scores = map(list, zip(*sorted_data))
         self.samples += sent1 + sent2
@@ -350,7 +373,7 @@ class STS16CLEval(STSEval):
             "news",
         ]
         self.loadFile(taskpath)
-    
+
     def loadFile(self, fpath):
         self.data = {}
         self.samples = []
