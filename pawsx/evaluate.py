@@ -18,6 +18,9 @@ sys.path.append(os.path.abspath(".."))
 from utils.mlflow_writer import MlflowWriter
 
 
+# データセットの場所: https://github.com/google-research-datasets/paws/tree/master/pawsx
+
+
 def data_load(path):
     data = defaultdict(list)
     langs = ["de", "en", "es", "fr", "ja", "ko", "zh"]
@@ -42,7 +45,6 @@ def data_load(path):
 
 
 def batcher(model, tokenizer, sentence, args, device="cuda"):
-    # encode_dict = tokenizer.batch_encode_plus(sentence, pad_to_max_length=True, add_special_tokens=True, return_tensors="pt",)
     batch = tokenizer.batch_encode_plus(
         sentence, return_tensors="pt", padding=True, max_length=512, truncation=True
     )
@@ -138,11 +140,15 @@ def main():
     batch_size = 128
     lang_count = Counter()
 
-    # build embeddings of all candidates
+    # 全ての抽出対象文
     all_sentences = [d[1] for lang in langs for d in data[lang]]
+
+    # 全ての抽出対象文の言語コード一覧
     lang_codes = torch.tensor(
         [idx for idx, lang in enumerate(langs) for d in data[lang]]
     )
+
+    # 全ての抽出対象文のベクトル
     all_target_embeddings = []
     for i in tqdm(range(0, len(all_sentences), batch_size)):
         target_embeddings = batcher(
@@ -151,11 +157,13 @@ def main():
         all_target_embeddings.append(target_embeddings)
     all_target_embeddings = torch.cat(all_target_embeddings, dim=0)
 
-
     for i in tqdm(range(0, len(data[args.source_lang]), batch_size)):
+
+        # バッチサイズ文のクエリベクトル
         query = [d[0] for d in data[args.source_lang][i : i + batch_size]]
         query_embeddings = batcher(model, tokenizer, query, args, device="cuda")
 
+        # 最もクエリとコサイン類似度が高い抽出対象文のidxから言語コード一覧を参照し、言語カウントを増やす
         lang_count.update(
             lang_codes[
                 cossim(
@@ -176,6 +184,8 @@ def main():
 if __name__ == "__main__":
     main()
 
+
+# 解釈1のコード
 #     lang_count.update(
 #         cossim(query_embeddings, all_target_embeddings, dim=2).argmax(1).tolist()
 #     )
