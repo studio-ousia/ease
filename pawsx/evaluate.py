@@ -159,11 +159,11 @@ def main():
 
     for i in tqdm(range(0, len(data[args.source_lang]), batch_size)):
 
-        # バッチサイズ文のクエリベクトル
+        # バッチサイズ分のクエリベクトル
         query = [d[0] for d in data[args.source_lang][i : i + batch_size]]
         query_embeddings = batcher(model, tokenizer, query, args, device="cuda")
 
-        # 最もクエリとコサイン類似度が高い抽出対象文のidxから言語コード一覧を参照し、言語カウントを増やす
+        # 最もクエリとコサイン類似度が高い抽出対象文のidxから言語コード一覧を参照し、バッチサイズ分言語カウントを増やす
         lang_count.update(
             lang_codes[
                 cossim(
