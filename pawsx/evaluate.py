@@ -23,18 +23,19 @@ def data_load(path):
     langs = ["de", "en", "es", "fr", "ja", "ko", "zh"]
     all_read_data = []
     for lang in langs:
-        # if lang == "en":
-        #     lang_path = os.path.join(path, f"{lang}/train.tsv")
-        # else:
-        #     lang_path = os.path.join(path, f"{lang}/translated_train.tsv")
-        lang_path = os.path.join(path, f"{lang}/test_2k.tsv")
+        if lang == "en":
+            lang_path = os.path.join(path, f"{lang}/train.tsv")
+        else:
+            lang_path = os.path.join(path, f"{lang}/translated_train.tsv")
+        # lang_path = os.path.join(path, f"{lang}/test_2k.tsv")
         with open(lang_path, mode="r", newline="", encoding="utf-8") as f:
             tsv_reader = csv.reader(f, delimiter="\t")
             read_data = [row for row in tsv_reader]
         all_read_data.append(read_data)
     all_read_data = list(map(list, zip(*all_read_data)))
     for datas in all_read_data[1:]:
-        if datas[0][-1] == "1" and all([len(d) == 4 for d in datas]):
+        # if datas[0][-1] == "1" and all([len(d) == 4 for d in datas]):
+        if all([len(d) == 4 for d in datas]):
             for lang, d in zip(langs, datas):
                 data[lang].append([d[1], d[2]])
     return data
@@ -137,30 +138,62 @@ def main():
     batch_size = 128
     lang_count = Counter()
 
+    # build embeddings of all candidates
+    all_sentences = [d[1] for lang in langs for d in data[lang]]
+    lang_codes = torch.tensor(
+        [idx for idx, lang in enumerate(langs) for d in data[lang]]
+    )
+    all_target_embeddings = []
+    for i in tqdm(range(0, len(all_sentences), batch_size)):
+        target_embeddings = batcher(
+            model, tokenizer, all_sentences[i : i + batch_size], args, device="cuda"
+        )
+        all_target_embeddings.append(target_embeddings)
+    all_target_embeddings = torch.cat(all_target_embeddings, dim=0)
+
+
     for i in tqdm(range(0, len(data[args.source_lang]), batch_size)):
         query = [d[0] for d in data[args.source_lang][i : i + batch_size]]
-        sentences = [[d[1] for d in data[lang][i : i + batch_size]] for lang in langs]
+        query_embeddings = batcher(model, tokenizer, query, args, device="cuda")
 
-        query_embeddings = batcher(
-            model, tokenizer, query, args, device="cuda"
-        ).unsqueeze(1)
-        all_target_embeddings = []
-        for idx in range(len(langs)):
-            target_embeddings = batcher(
-                model, tokenizer, sentences[idx], args, device="cuda"
-            ).unsqueeze(1)
-            all_target_embeddings.append(target_embeddings)
-        all_target_embeddings = torch.cat(all_target_embeddings, dim=1)
         lang_count.update(
-            cossim(query_embeddings, all_target_embeddings, dim=2).argmax(1).tolist()
+            lang_codes[
+                cossim(
+                    query_embeddings.unsqueeze(0),
+                    all_target_embeddings.unsqueeze(1),
+                    dim=-1,
+                ).argmax(0)
+            ].tolist()
         )
 
     all_sum = np.sum(list(lang_count.values()))
     for idx, lang in enumerate(langs):
         result = (lang_count[idx] / all_sum) * 100
-        print(lang, result)
+        print(lang, "%.2f" % result)
         mlflow_writer.log_metric(lang, result)
 
 
 if __name__ == "__main__":
     main()
+
+#     lang_count.update(
+#         cossim(query_embeddings, all_target_embeddings, dim=2).argmax(1).tolist()
+#     )
+
+# for i in tqdm(range(0, len(data[args.source_lang]), batch_size)):
+#     query = [d[0] for d in data[args.source_lang][i : i + batch_size]]
+#     sentences = [[d[1] for d in data[lang][i : i + batch_size]] for lang in langs]
+
+#     query_embeddings = batcher(
+#         model, tokenizer, query, args, device="cuda"
+#     ).unsqueeze(1)
+#     all_target_embeddings = []
+#     for idx in range(len(langs)):
+#         target_embeddings = batcher(
+#             model, tokenizer, sentences[idx], args, device="cuda"
+#         ).unsqueeze(1)
+#         all_target_embeddings.append(target_embeddings)
+#     all_target_embeddings = torch.cat(all_target_embeddings, dim=1)
+#     lang_count.update(
+#         cossim(query_embeddings, all_target_embeddings, dim=2).argmax(1).tolist()
+#     )
