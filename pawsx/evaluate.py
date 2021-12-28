@@ -26,11 +26,11 @@ def data_load(path):
     langs = ["de", "en", "es", "fr", "ja", "ko", "zh"]
     all_read_data = []
     for lang in langs:
-        if lang == "en":
-            lang_path = os.path.join(path, f"{lang}/train.tsv")
-        else:
-            lang_path = os.path.join(path, f"{lang}/translated_train.tsv")
-        # lang_path = os.path.join(path, f"{lang}/test_2k.tsv")
+        # if lang == "en":
+        #     lang_path = os.path.join(path, f"{lang}/train.tsv")
+        # else:
+        #     lang_path = os.path.join(path, f"{lang}/translated_train.tsv")
+        lang_path = os.path.join(path, f"{lang}/test_2k.tsv")
         with open(lang_path, mode="r", newline="", encoding="utf-8") as f:
             tsv_reader = csv.reader(f, delimiter="\t")
             read_data = [row for row in tsv_reader]
@@ -175,6 +175,7 @@ def main():
         )
 
     all_sum = np.sum(list(lang_count.values()))
+    print(lang_count)
     for idx, lang in enumerate(langs):
         result = (lang_count[idx] / all_sum) * 100
         print(lang, "%.2f" % result)
