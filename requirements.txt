@@ -1,5 +1,5 @@
 transformers==4.2.1
-scipy==1.5.4
+scipy
 datasets==1.2.1
 pandas==1.1.5
 scikit-learn==0.24.0
@@ -7,7 +7,8 @@ prettytable==2.1.0
 gradio
 torch
 setuptools==49.3.0
-comet_ml
+comet_ml==3.23.0
 hydra-core==1.1.0
 omegaconf
 mlflow
+wikipedia2vec
