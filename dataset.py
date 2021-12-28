@@ -163,6 +163,7 @@ class RawDataLoader:
 
                 except FileNotFoundError:
                     print(f'{dataset_path} file not found error!')
+                    return
 
             formatter = WikidataDataFormatter(
                 file_objs,

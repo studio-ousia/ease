@@ -78,12 +78,14 @@ def main():
     
     # Set up the tasks
     if args.task_set == 'sts':
-        args.tasks = ['STS12', 'STS13', 'STS14', 'STS15', 'STS16', 'STSBenchmark', 'SICKRelatedness']
+        args.tasks = ['STSBenchmark', 'SICKRelatedness']
+        if args.mode == 'test' or args.mode == 'fasttest':
+            args.tasks += ['STS12', 'STS13', 'STS14', 'STS15', 'STS16']
     elif args.task_set == 'transfer':
         args.tasks = ['MR', 'CR', 'MPQA', 'SUBJ', 'SST2', 'TREC', 'MRPC']
     elif args.task_set == 'cl-sts':
-        args.tasks = ['STS16CL', 'STS17']
-        # args.tasks = ['STS17']
+        # args.tasks = ['STS16CL', 'STS17']
+        args.tasks = ['STS17']
     elif args.task_set == 'full':
         args.tasks = ['STS12', 'STS13', 'STS14', 'STS15', 'STS16', 'STSBenchmark', 'SICKRelatedness']
         args.tasks += ['MR', 'CR', 'MPQA', 'SUBJ', 'SST2', 'TREC', 'MRPC']
@@ -103,6 +105,8 @@ def main():
         params = {'task_path': PATH_TO_DATA, 'usepytorch': True, 'kfold': 10}
     else:
         raise NotImplementedError
+
+    print(args.tasks)
 
     # SentEval prepare and batcher
     def prepare(params, samples):
@@ -184,6 +188,9 @@ def main():
                 mlflow_writer.log_metric(f"{task}-uniformity", results[task]['dev']['uniform_loss'])
             else:
                 scores.append("0.00")
+
+        task_names.append("Avg.")
+        scores.append("%.2f" % (sum([float(score) for score in scores]) / len(scores)))
         print_table(task_names, scores)
 
         task_names = []
@@ -208,6 +215,8 @@ def main():
             "STS.input.track9.it-en.txt",
             "STS.input.track10.nl-en.txt"
         ]
+
+        print(results[task].keys())
 
         for dataset in datasets:
             lang_name = re.findall("STS.input.track\d+.?\.(.+).txt", dataset)[0]
@@ -264,9 +273,15 @@ def main():
         task_names = []
         scores = []
 
-        for task in ['STS16CL', 'STS17']:
-        # for task in ['STS17']:
+        # for task in ['STS16CL', 'STS17']:
+        for task in ['STS17']:
             if task == "STS17":
+                # datasets = [
+                #     "STS.input.track5.en-en.txt",
+                #     "STS.input.track7.en-de.txt",
+                #     "STS.input.track8.fr-en.txt",
+                #     "STS.input.track9.it-en.txt",
+                #     "STS.input.track10.nl-en.txt"]
                 datasets = [
                     "STS.input.track5.en-en.txt",
                     "STS.input.track1.ar-ar.txt",
