@@ -60,8 +60,9 @@ def filter_entity_link_min_count(data, min_count):
 
 def main():
     parser = argparse.ArgumentParser(description="このプログラムの説明（なくてもよい）")  # 2. パーサを作る
+    parser.add_argument("lang", type=str, default="test")
+    parser.add_argument("data_path", type=str)
     parser.add_argument("--sample_size", type=int, default=1000000)
-    parser.add_argument("--data_path", type=str)
     parser.add_argument("--max_count", type=int, default=10000)
     parser.add_argument("--link_min_count", type=int, default=10)
     args = parser.parse_args()
@@ -73,8 +74,8 @@ def main():
     data = filter_entity_link_min_count(data, args.link_min_count)
     data = filter_size(data, args.sample_size)
 
-    before_pkl_idx = args.data_path.index(".pkl") - 3
-    lang = args.data_path[before_pkl_idx: before_pkl_idx + 3]
+    before_pkl_idx = args.data_path.index(".pkl") - (1 + len(args.lang))
+    lang = args.lang
     
     output_path = (
         args.data_path[:before_pkl_idx]
@@ -84,6 +85,7 @@ def main():
         + str(args.max_count)
         + "_link_min_count_"
         + str(args.link_min_count)
+        + "_"
         + lang
         + ".pkl"
     )

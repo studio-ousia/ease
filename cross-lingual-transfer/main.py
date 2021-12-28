@@ -152,7 +152,7 @@ def main():
             args.model_name_or_path, config=config
         )
 
-    elif "bert" in args.model_name_or_path:
+    elif any([name in args.model_name_or_path for name in ["bert", "LaBSE"]]):
         model = BertForSequenceClassificationWithPooler.from_pretrained(
         args.model_name_or_path, config=config
         )

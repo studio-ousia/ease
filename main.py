@@ -227,6 +227,7 @@ def main(cfg: DictConfig):
     # assert len(train_args.sample_nums) == len(train_args.datasets), 'sample_nums[{0}], datasets[{1}]'.format(len(train_args.sample_nums), len(train_args.datasets))
 
     parser = HfArgumentParser(OurTrainingArguments)
+    # parser = HfArgumentParser(TrainingArguments)
     base_train_args = parser.parse_args_into_dataclasses(
         ["--output_dir", "saved_models", "--evaluation_strategy", "steps"]
     )[0]
@@ -263,6 +264,7 @@ def main(cfg: DictConfig):
     wikipedia_data = []
 
     for dataset, sample_num in zip(train_args.datasets, train_args.sample_nums):
+        print(dataset, sample_num)
         wikipedia_data.extend(
             RawDataLoader.load(
                 cwd,

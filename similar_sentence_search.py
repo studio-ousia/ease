@@ -129,6 +129,7 @@ def main():
         for lang in pycountry.languages
         if hasattr(lang, "alpha_2")
     }
+    lang_3_to_2 = {v:k for k,v in lang_2_to_3.items()}
     langs = [lang_2_to_3[lang] if lang in lang_2_to_3 else lang for lang in args.langs]
     langs = sorted(set(langs), key=langs.index)
 
@@ -149,9 +150,9 @@ def main():
 
     # langs = list(langs - not_exist_langs)
     langs = sorted(set(langs) - not_exist_langs, key=langs.index)
-    lang_to_en_scores = []
-    en_to_langs_scores = []
-
+    # lang_to_en_scores = []
+    # en_to_langs_scores = []
+    scores = []
     for lang in langs:
         print(lang)
         sentence1, sentence2 = dataset[lang]
@@ -159,33 +160,42 @@ def main():
         source_embeddings = batcher(model, tokenizer, sentence1, args, device="cuda")
         target_embeddings = batcher(model, tokenizer, sentence2, args, device="cuda")
 
-        result = (
+        lang_to_en_result = (
             get_cos_sim_matrix(source_embeddings, target_embeddings).argmax(axis=1)
             == np.arange(len(source_embeddings))
         ).sum() / 10
-        lang_to_en_scores.append("%.1f" % result)
-        mlflow_writer.log_metric(f"{lang}_en", result)
-        print(result)
+        # lang_to_en_scores.append("%.1f" % result)
+        # mlflow_writer.log_metric(f"{lang}_en", result)
+        # print(result)
 
-        result = (
+        en_to_lang_result = (
             get_cos_sim_matrix(target_embeddings, source_embeddings).argmax(axis=1)
             == np.arange(len(target_embeddings))
         ).sum() / 10
-        en_to_langs_scores.append("%.2f" % result)
-        mlflow_writer.log_metric(f"en_{lang}", result)
-        print(result)
+
+        scores.append("%.2f" % ((lang_to_en_result + en_to_lang_result) / 2))
+        # en_to_langs_scores.append("%.2f" % result)
+        if lang in lang_3_to_2:
+            mlflow_writer.log_metric(lang_3_to_2[lang], (lang_to_en_result + en_to_lang_result) / 2)
+        else:
+            mlflow_writer.log_metric(lang, (lang_to_en_result + en_to_lang_result) / 2)
+
+        # print(result)
 
     langs.append("Avg.")
+    scores.append("%.2f" % (sum([float(score) for score in scores]) / len(scores)))
+    mlflow_writer.log_metric(f"Avg.", (sum([float(score) for score in scores]) / len(scores)))
+    print_table(langs, scores)
 
-    print("------ %s ------" % ("lang_to_en"))
-    lang_to_en_scores.append("%.2f" % (sum([float(score) for score in lang_to_en_scores]) / len(lang_to_en_scores)))
-    mlflow_writer.log_metric(f"lang_to_en Avg.", (sum([float(score) for score in lang_to_en_scores]) / len(lang_to_en_scores)))
-    print_table(langs, lang_to_en_scores)
+    # print("------ %s ------" % ("lang_to_en"))
+    # lang_to_en_scores.append("%.2f" % (sum([float(score) for score in lang_to_en_scores]) / len(lang_to_en_scores)))
+    # mlflow_writer.log_metric(f"lang_to_en Avg.", (sum([float(score) for score in lang_to_en_scores]) / len(lang_to_en_scores)))
+    # print_table(langs, lang_to_en_scores)
 
-    print("------ %s ------" % ("en_to_lang"))
-    en_to_langs_scores.append("%.2f" % (sum([float(score) for score in en_to_langs_scores]) / len(en_to_langs_scores)))
-    mlflow_writer.log_metric(f"en_to_lang Avg.", (sum([float(score) for score in en_to_langs_scores]) / len(en_to_langs_scores)))
-    print_table(langs, en_to_langs_scores)
+    # print("------ %s ------" % ("en_to_lang"))
+    # en_to_langs_scores.append("%.2f" % (sum([float(score) for score in en_to_langs_scores]) / len(en_to_langs_scores)))
+    # mlflow_writer.log_metric(f"en_to_lang Avg.", (sum([float(score) for score in en_to_langs_scores]) / len(en_to_langs_scores)))
+    # print_table(langs, en_to_langs_scores)
 
 
 if __name__ == "__main__":
