@@ -45,6 +45,9 @@ from transformers.trainer_callback import (
 )
 from transformers.trainer_pt_utils import (
     reissue_pt_warnings,
+    SequentialDistributedSampler,
+    get_tpu_sampler
+
 )
 
 from transformers.utils import logging
@@ -148,6 +151,27 @@ class CLTrainer(Trainer):
 
         self.log(metrics)
         return metrics
+
+    def _get_train_sampler(self) -> Optional[torch.utils.data.sampler.Sampler]:
+        if isinstance(self.train_dataset, torch.utils.data.IterableDataset) or not isinstance(
+            self.train_dataset, collections.abc.Sized
+        ):
+            return None
+        elif is_torch_tpu_available():
+            return get_tpu_sampler(self.train_dataset)
+        else:
+            if self.args.use_monolingual_batch:
+                return (
+                    SequentialSampler(self.train_dataset)
+                    if self.args.local_rank == -1
+                    else SequentialDistributedSampler(self.train_dataset)
+                )
+            else:        
+                return (
+                    RandomSampler(self.train_dataset)
+                    if self.args.local_rank == -1
+                    else DistributedSampler(self.train_dataset)
+                )
 
     def compute_loss(self, model, inputs, return_outputs=False):
         outputs = model(**inputs)

@@ -57,44 +57,4 @@ train_args:
   ignore_data_skip: False
   resume_from_checkpoint: False
   group_by_length: False
-  # warmup_ratio: 0
-  # _n_gpu: 1
-  # adafactor: false
-  # adam_beta1: 0.9
-  # adam_beta2: 0.999
-  # adam_epsilon: 1.0e-08
-  # dataloader_drop_last: false
-  # dataloader_num_workers: 0
-  # debug: false
-  # deepspeed: null
-  # disable_tqdm: false
-  # do_predict: false
-  # eval_accumulation_steps: null
-  # # evaluation_strategy: "no"
-  # fp16_backend: auto
-  # fp16_opt_level: O1
-  # gradient_accumulation_steps: 1
-  # ignore_data_skip: false
-  # label_names: null
-  # label_smoothing_factor: 0.0
-  # local_rank: -1
-  # logging_dir: runs/Sep10_17-58-29_gpuhost06
-  # logging_first_step: false
-  # logging_steps: 500
-  # lr_scheduler_type: linear
-  # max_grad_norm: 1.0
-  # max_steps: -1
-  # no_cuda: false
-  # past_index: -1
-  # per_device_eval_batch_size: 8
-  # per_gpu_eval_batch_size: null
-  # per_gpu_train_batch_size: null
-  # prediction_loss_only: false
-  # remove_unused_columns: true
-  # run_name: results/my-unsup-ease-bert-base-uncased
-  # save_steps: 500
-  # save_total_limit: null
-  # sharded_ddp: false
-  # tpu_metrics_debug: false
-  # tpu_num_cores: null
-  # weight_decay: 0.0
+  use_monolingual_batch: False
