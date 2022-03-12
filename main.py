@@ -125,6 +125,18 @@ class OurTrainingArguments(TrainingArguments):
 
         return device
 
+# 言語ごとに分ける
+import itertools
+def group_by_monolingual_batch(data, train_args):
+    sample_num = train_args.sample_nums[0]
+    bs = train_args.per_device_train_batch_size
+    all_data = []
+    for i, lang in enumerate(train_args.langs):
+        lang_data = random.sample(data[sample_num * i :sample_num * (i + 1)], sample_num)
+        lang_data = [lang_data[i: i + bs] for i in range(0, len(lang_data) - bs, bs)]
+        all_data.extend(lang_data)
+    all_data = random.sample(all_data, len(all_data))
+    return list(itertools.chain.from_iterable(all_data))
 
 def build_entity_vocab(data):
     entities = []
@@ -276,6 +288,8 @@ def main(cfg: DictConfig):
                 seed=train_args.seed
             )
         )
+    if train_args.use_monolingual_batch:
+        wikipedia_data = group_by_monolingual_batch(wikipedia_data, train_args)
 
     # エンティティの語彙を構成
     print("build entity vocab...")

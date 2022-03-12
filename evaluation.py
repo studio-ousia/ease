@@ -276,12 +276,13 @@ def main():
         # for task in ['STS16CL', 'STS17']:
         for task in ['STS17']:
             if task == "STS17":
-                # datasets = [
-                #     "STS.input.track5.en-en.txt",
-                #     "STS.input.track7.en-de.txt",
-                #     "STS.input.track8.fr-en.txt",
-                #     "STS.input.track9.it-en.txt",
-                #     "STS.input.track10.nl-en.txt"]
+
+                alignments = []
+                uniformities = []
+
+                # # mlflow_writer.log_metric(f"{lang_name}-align", results[task][dataset]['align_loss'])
+                # mlflow_writer.log_metric(f"{lang_name}-uniform", results[task][dataset]['uniform_loss'])
+
                 datasets = [
                     "STS.input.track5.en-en.txt",
                     "STS.input.track1.ar-ar.txt",
@@ -299,9 +300,15 @@ def main():
                     if task in results:
                         mlflow_writer.log_metric(lang_name, results[task][dataset]['spearman'].correlation * 100)
                         scores.append("%.2f" % (results[task][dataset]['spearman'].correlation * 100)) 
+
+                        alignments.append(results[task][dataset]['align_loss'])
+                        uniformities.append(results[task][dataset]['uniform_loss'])
                     else:
                         scores.append("0.00")
                     task_names.append(lang_name)
+   
+                mlflow_writer.log_metric("align", np.mean(alignments))
+                mlflow_writer.log_metric("uniform", np.mean(uniformities))
                     
 
             else:
