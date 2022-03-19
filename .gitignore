@@ -9,7 +9,6 @@ results/
 ease/__pycache__
 build_dataset/*txt
 cache_dir/
-text-clustering/
 experiments/
 test*
 ease/test*
