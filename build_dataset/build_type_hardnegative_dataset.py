@@ -1,4 +1,7 @@
-# エンティティの型の基づくnegative sampleつきハイパーリンクwikipediaEACSEデータセットを構築するコード
+"""
+en_wikidata_title_vocab、en_title_to_rdf_ids、rdf_id_to_en_titles、interwiki_db_144
+から該当言語のEASEデータセットを生成
+"""
 
 import os
 import sys
@@ -146,7 +149,12 @@ def process(data):
 
 def main():
 
-    parser = argparse.ArgumentParser(description="このプログラムの説明（なくてもよい）")  # 2. パーサを作る
+    # TODO 入出力
+
+    parser = argparse.ArgumentParser(description="") 
+    parser.add_argument("wikipedia2vec_dump_db_path", type=str, default="/home/fmg/nishikawa/shinra_data/shinra/entity_db/en.db")
+    parser.add_argument("interwiki_db_path", type=str, default="/home/fmg/nishikawa/build_wiki_dbs/interwiki_db_144.pkl")
+    parser.add_argument("output_dir", type=str, default="/home/fmg/nishikawa/EASE/data/")
     parser.add_argument("--lang", type=str, default="en")
     parser.add_argument("--abstract", action="store_true")
     parser.add_argument("--use_first_sentence", action="store_true")
@@ -156,21 +164,21 @@ def main():
 
     print("load files...")
     entity_vocab = pickle_load(
-        "/home/fmg/nishikawa/EASE/data/en_wikidata_title_vocab.pkl"
+        os.path.join(args.output_dir, "en_wikidata_title_vocab.pkl")
     )
     en_title_to_rdf_ids = pickle_load(
-        "/home/fmg/nishikawa/EASE/data/en_title_to_rdf_ids.pkl"
+        os.path.join(args.output_dir, "en_title_to_rdf_ids.pkl")
     )
     rdf_id_to_en_titles = pickle_load(
-        "/home/fmg/nishikawa/EASE/data/rdf_id_to_en_titles.pkl"
+        os.path.join(args.output_dir, "rdf_id_to_en_titles.pkl")
     )
 
     random.seed(42)
-    db_file_path = f"/home/fmg/nishikawa/shinra_data/shinra/entity_db/{args.lang}.db"
-    if not os.path.isfile(db_file_path):
-        db_file_path = f"/home/fmg/nishikawa/build_wiki_dbs/dump_dbs/{args.lang}.db"
+    # db_file_path = f"/home/fmg/nishikawa/shinra_data/shinra/entity_db/{args.lang}.db"
+    # if not os.path.isfile(db_file_path):
+    #     db_file_path = f"/home/fmg/nishikawa/build_wiki_dbs/dump_dbs/{args.lang}.db"
     
-    wiki_db = DumpDB(db_file_path)
+    wiki_db = DumpDB(args.wikipedia2vec_dump_db_path)
 
     print("set tokenizer...")
     sentence_tokenizer = MultilingualSentenceTokenizer(args.lang)
@@ -179,7 +187,7 @@ def main():
     en_title_to_lang_title = dict()
 
     if args.lang != "en":
-        in_file_path = f"/home/fmg/nishikawa/build_wiki_dbs/interwiki_db_144.pkl"
+        in_file_path = args.interwiki_db_path
         interwiki = InterwikiDB.load(in_file_path)
 
         for en_title, idx in tqdm(entity_vocab.items()):
@@ -196,8 +204,12 @@ def main():
     # lang title to en hyperlink en titles
     # en title to same type en titles
 
-    title_to_hyperlink_entities_path = f"/home/fmg/nishikawa/EASE/data/title_to_hyperlink_entities/{args.lang}.pkl"
 
+    title_to_hyperlink_entities_dir_path = os.path.join(args.output_dir, "title_to_hyperlink_entities")
+    if not os.path.isdir(title_to_hyperlink_entities_dir_path):
+        os.mkdir(title_to_hyperlink_entities_dir_path)
+
+    title_to_hyperlink_entities_path = os.path.join(title_to_hyperlink_entities_dir_path, f"{args.lang}.pkl")
 
     if not os.path.isfile(title_to_hyperlink_entities_path):
 
@@ -245,17 +257,18 @@ def main():
 
     print("set title_to_same_type_entities...")
     # en title to same type en titles
+    en_title_to_same_type_entities_path = os.path.join(args.output_dir, "title_to_same_type_entities.pkl")
+    if not os.path.isfile(en_title_to_same_type_entities_path):
 
-    # title_to_same_type_entities = dict()
+        title_to_same_type_entities = dict()
+        for en_title, idx in entity_vocab.items():
+            get_title_to_same_type_entities(title_to_same_type_entities, en_title, en_title_to_rdf_ids, rdf_id_to_en_titles)
 
-    # for en_title, idx in entity_vocab.items():
-    #     get_title_to_same_type_entities(title_to_same_type_entities, en_title, en_title_to_rdf_ids, rdf_id_to_en_titles)
-
-    # pickle_dump(dict(title_to_same_type_entities), "/home/fmg/nishikawa/EASE/data/title_to_same_type_entities.pkl")
-
-    title_to_same_type_entities = pickle_load(
-        "/home/fmg/nishikawa/EASE/data/title_to_same_type_entities.pkl"
-    )
+        pickle_dump(dict(title_to_same_type_entities), en_title_to_same_type_entities_path)
+    else:
+        title_to_same_type_entities = pickle_load(
+            en_title_to_same_type_entities_path
+        )
 
     print("set manager dicts...")
     manager = Manager()
@@ -331,17 +344,11 @@ def main():
     print("processing...")
     start = time.time()
 
+    # TODO multiprocess
+
     for data in tqdm(datas):
         process(data)
     # p.map(process, tqdm(datas))
-    # processes: List[Process] = []
-    # for data in datas:
-    #     p: Process = Process(target=process, args=([data]))
-    #     processes.append(p)
-    #     p.start()
-
-    # for p in tqdm(processes):
-    #     p.join()
     end = time.time()
     # p.close()
 
@@ -361,9 +368,13 @@ def main():
     print(f"error num: {error_num.value}")
 
     print("saving...")
+    # pickle_dump(
+    #     entity_per_sentence,
+    #     os.path.join(args.output_dir, f"wikidata_hyperlinks_with_type_hardnegatives_test_{args.test_mode}_first_sentence_{args.use_first_sentence}_abst_{args.abstract}_paragraph_{args.use_paragraph}_{args.lang}.pkl")
+    # )
     pickle_dump(
         entity_per_sentence,
-        f"../data/wikidata_hyperlinks_with_type_hardnegatives_test_{args.test_mode}_first_sentence_{args.use_first_sentence}_abst_{args.abstract}_paragraph_{args.use_paragraph}_{args.lang}.pkl",
+        os.path.join(args.output_dir, f"ease_dataset_{args.lang}.pkl")
     )
 
 

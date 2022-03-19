@@ -35,7 +35,7 @@ import hydra
 from omegaconf import DictConfig, OmegaConf, open_dict
 import mlflow
 
-from dataset import RawDataLoader
+from dataset import MyDataset, get_dataset
 
 from datasets import load_dataset
 import logging
@@ -126,6 +126,7 @@ class OurTrainingArguments(TrainingArguments):
         return device
 
 # 言語ごとに分ける
+# 
 import itertools
 def group_by_monolingual_batch(data, train_args):
     sample_num = train_args.sample_nums[0]
@@ -138,9 +139,11 @@ def group_by_monolingual_batch(data, train_args):
     all_data = random.sample(all_data, len(all_data))
     return list(itertools.chain.from_iterable(all_data))
 
+
 def build_entity_vocab(data):
     entities = []
-    for title, sentence, hn_titles, masked_sentence in tqdm(data):
+    for d in tqdm(data):
+        title, hn_titles = d["positive_entity"], d["negative_entity"]
         entities.append(title)
         entities.extend(hn_titles)
     entities = set(entities) - set([ENTITY_PAD_MARK])
@@ -154,89 +157,10 @@ def update_args(base_args, input_args):
         base_args.__dict__[key] = value
     return base_args
 
-
-def get_dataset(data, max_seq_length, tokenizer, entity_vocab, masked_sentence_ratio):
-
-    input_ids = []
-    attention_masks = []
-    token_type_ids = []
-    title_ids = []
-    hn_title_ids = []
-    cnt = 0
-
-    for title, sentence, hn_titles, masked_sentence in tqdm(data):
-
-        sent_features = tokenizer(
-            sentence, max_length=max_seq_length, truncation=True, padding="max_length"
-        )
-
-        if (masked_sentence_ratio > 0 and masked_sentence is not None):
-            masked_sent_features = tokenizer(
-                masked_sentence, max_length=max_seq_length, truncation=True, padding="max_length"
-            )
-
-        features = {}
-        if (masked_sentence_ratio > random.random() and masked_sentence is not None):
-            cnt += 1
-            for key in sent_features:
-                features[key] = [masked_sent_features[key], sent_features[key]]
-        else:
-            for key in sent_features:
-                features[key] = [sent_features[key], sent_features[key]]
-
-        if title in entity_vocab:
-            title_ids.append(entity_vocab[title])
-        else:
-            title_ids.append(entity_vocab[ENTITY_PAD_MARK])
-
-        hn_title_ids.append(
-            np.array([entity_vocab[hn_title] if hn_title in entity_vocab else entity_vocab[ENTITY_PAD_MARK] for hn_title in hn_titles], dtype=int)
-        )
-        input_ids.append(features["input_ids"])
-        attention_masks.append(features["attention_mask"])
-        if "token_type_ids" in features:
-            token_type_ids.append(features["token_type_ids"])
-
-
-    print("all data", len(data))
-    # print("hn_title", cnt)
-    # print(cnt / len(data))
-
-    return input_ids, attention_masks, token_type_ids, title_ids, hn_title_ids
-
-
-class MyDataset(torch.utils.data.Dataset):
-    def __init__(
-        self, input_ids, attention_mask, token_type_ids, title_id, hn_title_ids, bert_model
-    ):
-        self.bert_model = bert_model
-        self.input_ids = input_ids
-        self.attention_mask = attention_mask
-        if "roberta" not in self.bert_model:
-            self.token_type_ids = token_type_ids
-        self.title_id = title_id
-        self.hn_title_ids = hn_title_ids
-
-    def __getitem__(self, idx):
-        item = dict()
-        item["input_ids"] = self.input_ids[idx]
-        item["attention_mask"] = self.attention_mask[idx]
-        if "roberta" not in self.bert_model:
-            item["token_type_ids"] = self.token_type_ids[idx]
-        item["title_id"] = self.title_id[idx]
-        item["hn_title_ids"] = self.hn_title_ids[idx]
-        return item
-
-    def __len__(self):
-        return len(self.input_ids)
-
-
 @hydra.main(config_path="conf", config_name="config")
 def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
     model_args, train_args = cfg.model_args, cfg.train_args
-
-    # assert len(train_args.sample_nums) == len(train_args.datasets), 'sample_nums[{0}], datasets[{1}]'.format(len(train_args.sample_nums), len(train_args.datasets))
 
     parser = HfArgumentParser(OurTrainingArguments)
     # parser = HfArgumentParser(TrainingArguments)
@@ -275,21 +199,22 @@ def main(cfg: DictConfig):
     print("loading data...")
     wikipedia_data = []
 
-    for dataset, sample_num in zip(train_args.datasets, train_args.sample_nums):
-        print(dataset, sample_num)
-        wikipedia_data.extend(
-            RawDataLoader.load(
-                cwd,
-                dataset,
-                sample_num=sample_num,
-                hard_negative_num=model_args.hard_negative_num,
-                langs=train_args.langs,
-                min_length=model_args.min_seq_length,
-                seed=train_args.seed
-            )
-        )
-    if train_args.use_monolingual_batch:
-        wikipedia_data = group_by_monolingual_batch(wikipedia_data, train_args)
+    # TODO 修正
+    # rawdataloaderで行っていることはdataset_samplerで解決している
+    # build type hardnegative dataset.pyでdatasetdictで保存するべき
+    
+    # wiki_en or wiki_18 or your dataset path
+    if train_args.dataset_name_or_path == "wiki_en":
+        wikipedia_data = load_dataset("sosuke/ease-dataset-en.json")["train"]
+    elif train_args.dataset_name_or_path == "wiki_18":
+        wikipedia_data = load_dataset("sosuke/ease-dataset-18-langs.json")["train"]
+
+    else:
+        # TODO load from dataset path
+        raise NotImplementedError()
+
+    # if train_args.use_monolingual_batch:
+    #     wikipedia_data = group_by_monolingual_batch(wikipedia_data, train_args)
 
     # エンティティの語彙を構成
     print("build entity vocab...")
@@ -312,6 +237,7 @@ def main(cfg: DictConfig):
     gc.collect()
 
     # エンティティ表現のロード
+    # TODO pathを指定
 
     print("###load entity embedding...")
 
@@ -321,9 +247,7 @@ def main(cfg: DictConfig):
         vector_path = "/home/fmg/nishikawa/EASE/data/enwiki.100.vec"
 
     embedding = Wikipedia2Vec.load(vector_path)
-
     dim_size = embedding.syn0.shape[1]
-    # dim_size = 768
 
     print("###set struct omegaconf")
     OmegaConf.set_struct(model_args, True)
@@ -374,15 +298,6 @@ def main(cfg: DictConfig):
             use_auth_token=True if model_args.use_auth_token else None,
             model_args=model_args,
         )
-
-        # if model_args.do_mlm:
-        #     if "xlm" in model_args.model_name_or_path:
-        #         pretrained_model = BertForPreTraining.from_pretrained("xlm-roberta-base")
-        #     else:
-        #         pretrained_model = BertForPreTraining.from_pretrained("roberta-base")
-
-        #     model.lm_head.load_state_dict(pretrained_model.cls.predictions.state_dict())
-
 
     elif any(model in model_args.model_name_or_path for model in ("bert", "LaBSE")):
 

@@ -1,4 +1,6 @@
-# en_title_to_wikidata_id, wikidata_id_to_rdf_idsを作成するコード
+"""
+latest-all.json.bz2からen_title_to_wikidata_id, wikidata_id_to_rdf_idsを作成するコード
+"""
 
 from collections import defaultdict
 from tqdm import tqdm
@@ -7,17 +9,27 @@ import ujson
 import sys
 import os
 
+
 sys.path.append(os.path.abspath(".."))
 from utils.utils import pickle_dump, pickle_load, save_model
+import argparse
 
 
 def main():
+    parser = argparse.ArgumentParser() 
+    parser.add_argument("wikidata_dump_path", type=str, default="/home/fmg/nishikawa/corpus/latest-all.json.bz2")
+    parser.add_argument("output_dir", type=str, default="/home/fmg/nishikawa/EASE/data/")
+    parser.add_argument("--test_mode", action="store_true")
+    args = parser.parse_args()
+
     wikidata_id_to_rdf_ids = defaultdict(list)
     en_title_to_wikidata_id = dict()
-    wiki_data_file = "/home/fmg/nishikawa/corpus/latest-all.json.bz2"
+    wiki_data_file = args.wikidata_dump_path
 
     with bz2.BZ2File(wiki_data_file) as f:
         for (n, line) in tqdm(enumerate(f)):
+            if args.test_mode:
+                if n >= 10000: break
             line = line.rstrip().decode("utf-8")
             if line in ("[", "]"):
                 continue
@@ -47,11 +59,11 @@ def main():
 
     pickle_dump(
         en_title_to_wikidata_id,
-        "/home/fmg/nishikawa/EASE/data/en_title_to_wikidata_id.pkl",
+        os.path.join(args.output_dir, "en_title_to_wikidata_id.pkl")
     )
     pickle_dump(
         wikidata_id_to_rdf_ids,
-        "/home/fmg/nishikawa/EASE/data/wikidata_id_to_rdf_ids.pkl",
+        os.path.join(args.output_dir, "wikidata_id_to_rdf_ids.pkl")
     )
 
 
