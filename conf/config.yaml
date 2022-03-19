@@ -17,7 +17,7 @@ model_args:
   use_only_ease: False
   max_seq_length: 32
   min_seq_length: 1
-  hard_negative_num: 0
+  hard_negative_num: 1
   entity_emb_dim: 768
   entity_emb_shape: None
   init_wiki2emb: True
@@ -32,17 +32,15 @@ train_args:
   train_saved_model: False
   seed: 42
   learning_rate: 5e-05
-  datasets:
-    - wikidata_hyperlink_type_hn
-  sample_nums:
-    - 1000
+  dataset_name_or_path: wiki_en # wiki_18 or your dataset path
+  wikipedia2vec_path: /home/fmg/nishikawa/multilingual_classification_using_language_link/data/enwiki.768.vec
   langs:
     - "en"
   eval_transfer: False
   do_eval: True
   do_train: True
-  experiment_name: "9/23_ease"
-  output_dir: results/test
+  experiment_name: hoge
+  output_dir: results/hoge
   num_train_epochs: 1
   per_device_train_batch_size: 64
   eval_steps: 125

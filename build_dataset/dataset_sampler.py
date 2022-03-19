@@ -1,4 +1,7 @@
-# エンティティの登場回数・ハードネガティブを考慮してサンプ
+"""
+EASEデータセットから、データセット内の同じエンティティの個数の制限や、
+Wikipediaにおけるリンクの最低登場数の制限を行いサンプリング
+"""
 from tqdm import tqdm
 import random
 import argparse
@@ -44,10 +47,10 @@ def filter_size(data, sample_size):
     return {i: d for i, d in enumerate(data_v)}
 
 
-def filter_entity_link_min_count(data, min_count):
+def filter_entity_link_min_count(data, min_count, output_dir):
     new_data = dict()
     en_title_to_link_count = pickle_load(
-        "/home/fmg/nishikawa/EASE/data/en_title_to_link_count.pkl"
+        os.path.join(output_dir, "en_title_to_link_count.pkl")
     )
     for idx, d in tqdm(data.items()):
         if (
@@ -59,36 +62,39 @@ def filter_entity_link_min_count(data, min_count):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="このプログラムの説明（なくてもよい）")  # 2. パーサを作る
+    parser = argparse.ArgumentParser() 
     parser.add_argument("lang", type=str, default="test")
     parser.add_argument("data_path", type=str)
+    parser.add_argument("output_dir", type=str, default="/home/fmg/nishikawa/EASE/data/")
     parser.add_argument("--sample_size", type=int, default=1000000)
     parser.add_argument("--max_count", type=int, default=10000)
     parser.add_argument("--link_min_count", type=int, default=10)
     args = parser.parse_args()
 
+    #TODO data pathの指定の仕方
     data = pickle_load(args.data_path)
 
     data = filter_hardnegative(data)
     data = filter_entity_max_count(data, args.max_count)
-    data = filter_entity_link_min_count(data, args.link_min_count)
+    data = filter_entity_link_min_count(data, args.link_min_count, args.output_dir)
     data = filter_size(data, args.sample_size)
-
-    before_pkl_idx = args.data_path.index(".pkl") - (1 + len(args.lang))
-    lang = args.lang
+    output_path = os.path.join(args.output_dir, "sampled_ease_dataset_en.pkl")
     
-    output_path = (
-        args.data_path[:before_pkl_idx]
-        + "_size_"
-        + str(args.sample_size)
-        + "_max_count_"
-        + str(args.max_count)
-        + "_link_min_count_"
-        + str(args.link_min_count)
-        + "_"
-        + lang
-        + ".pkl"
-    )
+
+    # before_pkl_idx = args.data_path.index(".pkl") - (1 + len(args.lang))
+    # lang = args.lang
+    # output_path = (
+    #     args.data_path[:before_pkl_idx]
+    #     + "_size_"
+    #     + str(args.sample_size)
+    #     + "_max_count_"
+    #     + str(args.max_count)
+    #     + "_link_min_count_"
+    #     + str(args.link_min_count)
+    #     + "_"
+    #     + lang
+    #     + ".pkl"
+    # )
 
     pickle_dump(data, output_path)
 
