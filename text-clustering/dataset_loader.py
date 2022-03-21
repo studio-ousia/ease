@@ -12,224 +12,71 @@ import csv
 sys.path.append(os.path.abspath("/home/fmg/nishikawa/EASE"))
 from utils.sentence_tokenizer import MultilingualSentenceTokenizer
 
-WHITESPACE_REGEXP = re.compile(r'\s+')
+WHITESPACE_REGEXP = re.compile(r"\s+")
 
-class MLDocParser():
+
+class MLDocParser:
     def __call__(self, file_path: str):
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             for line in f:
-                label, sentence = line.strip().split('\t')
+                label, sentence = line.strip().split("\t")
                 # clean the sentence
-                sentence = re.sub(r'\u3000+', '\u3000', sentence)
-                sentence = re.sub(r' +', ' ', sentence)
-                sentence = re.sub(r'\(c\) Reuters Limited \d\d\d\d', '', sentence)
-#                 sentence = normalize_text(sentence)
+                sentence = re.sub(r"\u3000+", "\u3000", sentence)
+                sentence = re.sub(r" +", " ", sentence)
+                sentence = re.sub(r"\(c\) Reuters Limited \d\d\d\d", "", sentence)
+                #                 sentence = normalize_text(sentence)
                 yield sentence, label
-                
+
+
 def normalize_text(text):
     text = text.lower()
-    text = re.sub(WHITESPACE_REGEXP, ' ', text)
+    text = re.sub(WHITESPACE_REGEXP, " ", text)
     # remove accents: https://stackoverflow.com/a/518232
-    text = ''.join(c for c in unicodedata.normalize('NFD', text) if unicodedata.category(c) != 'Mn')
-    text = unicodedata.normalize('NFC', text)
+    text = "".join(
+        c for c in unicodedata.normalize("NFD", text) if unicodedata.category(c) != "Mn"
+    )
+    text = unicodedata.normalize("NFC", text)
     return text
-                
+
 
 def dataset_load(key):
 
     key_to_data_path = {
-        "Tweet": "data/tweet.txt",
-        'Bio': "data/biomedical.txt",
-        'SO': "data/stackoverflow.txt",
-        'SS': "data/searchsnippets.txt",
-        'AG': "data/agnews.txt",
-        'G-TS': "data/ts.txt",
-        'G-T': "data/t.txt",
-        'G-S': "data/s.txt",
-        "MD-en": "/home/fmg/nishikawa/corpus/mldoc_outputs",
-        "MD-fr": "/home/fmg/nishikawa/corpus/mldoc_outputs",
-        "MD-de": "/home/fmg/nishikawa/corpus/mldoc_outputs",
-        "MD-ja": "/home/fmg/nishikawa/corpus/mldoc_outputs",
-        "MD-zh": "/home/fmg/nishikawa/corpus/mldoc_outputs",
-        "MD-it": "/home/fmg/nishikawa/corpus/mldoc_outputs",
-        "MD-ru": "/home/fmg/nishikawa/corpus/mldoc_outputs",
-        "MD-es": "/home/fmg/nishikawa/corpus/mldoc_outputs",
-        "MD-FS-en": "/home/fmg/nishikawa/corpus/mldoc_outputs",
-        "MD-FS-fr": "/home/fmg/nishikawa/corpus/mldoc_outputs",
-        "MD-FS-de": "/home/fmg/nishikawa/corpus/mldoc_outputs",
-        "MD-FS-ja": "/home/fmg/nishikawa/corpus/mldoc_outputs",
-        "MD-FS-zh": "/home/fmg/nishikawa/corpus/mldoc_outputs",
-        "MD-FS-it": "/home/fmg/nishikawa/corpus/mldoc_outputs",
-        "MD-FS-ru": "/home/fmg/nishikawa/corpus/mldoc_outputs",
-        "MD-FS-es": "/home/fmg/nishikawa/corpus/mldoc_outputs",
-        "WN-T-ar": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-T-ca": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-T-cs": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-T-de": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-T-en": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-T-es": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-T-eo": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-T-fa": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-T-fr": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-T-ko": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-T-ja": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-T-pl": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-T-pt": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-T-ru": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-T-sv": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-T-tr": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-S-ar": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-S-ca": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-S-cs": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-S-de": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-S-es": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-S-eo": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-S-fa": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-S-fr": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-S-ko": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-S-ja": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-S-pl": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-S-pt": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-S-ru": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-S-sv": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-S-tr": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TS-ar": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TS-ca": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TS-cs": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TS-de": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TS-es": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TS-eo": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TS-fa": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TS-fr": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TS-ko": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TS-ja": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TS-pl": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TS-pt": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TS-ru": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TS-sv": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TS-tr": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-FS-ar": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-FS-ca": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-FS-cs": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-FS-de": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-FS-en": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-FS-es": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-FS-eo": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-FS-fa": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-FS-fr": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-FS-ko": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-FS-ja": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-FS-pl": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-FS-pt": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-FS-ru": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-FS-sv": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-FS-tr": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-unified": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TFS-ar": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TFS-ca": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TFS-cs": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TFS-de": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TFS-es": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TFS-eo": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TFS-fa": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TFS-fr": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TFS-ko": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TFS-ja": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TFS-pl": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TFS-pt": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TFS-ru": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TFS-sv": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        "WN-TFS-tr": "/home/fmg/nishikawa/EASE/text-clustering/data/label-unified-wikinews",
-        # "WN-T-en": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-T-ar": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-T-ja": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-T-es": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-T-tr": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-T-it": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-T-ko": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-T-pt": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-T-uk": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-T-cs": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-T-pl": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-T-ca": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-T-fi": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-T-fa": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-T-nl": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-T-hu": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-T-eo": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-T-ru": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-en": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-ar": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-ja": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-es": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-tr": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-it": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-ko": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-pt": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-uk": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-cs": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-pl": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-ca": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-fi": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-fa": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-nl": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-hu": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-eo": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-S-ru": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-en": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-ar": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-ja": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-es": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-tr": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-it": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-ko": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-pt": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-uk": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-cs": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-pl": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-ca": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-fi": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-fa": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-nl": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-hu": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-eo": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        # "WN-TS-ru": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-en": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-ar": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-ja": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-es": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-tr": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-it": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-ko": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-pt": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-uk": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-cs": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-pl": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-ca": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-fi": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-fa": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-nl": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-hu": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-eo": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "WN-ru": "/home/fmg/nishikawa/EASE/text-clustering/data/wikinews",
-        "NC-en": "/home/fmg/nishikawa/news-clustering/dataset/dataset.test.json",
-        "NC-de": "/home/fmg/nishikawa/news-clustering/dataset/dataset.test.json",
-        "NC-es": "/home/fmg/nishikawa/news-clustering/dataset/dataset.test.json",
-        "R8": "/home/fmg/nishikawa/corpus/text_classification/r8-test-stemmed.csv",
-        "R52": "/home/fmg/nishikawa/corpus/text_classification/r52-test-stemmed.csv",
-        "OH": "/home/fmg/nishikawa/corpus/text_classification/oh-test-stemmed.csv",
-
+        "Tweet": "data/monolingual_benchmark/tweet.txt",
+        "Bio": "data/monolingual_benchmark/biomedical.txt",
+        "SO": "data/monolingual_benchmark/stackoverflow.txt",
+        "SS": "data/monolingual_benchmark/searchsnippets.txt",
+        "AG": "data/monolingual_benchmark/agnews.txt",
+        "G-TS": "data/monolingual_benchmark/ts.txt",
+        "G-T": "data/monolingual_benchmark/t.txt",
+        "G-S": "data/monolingual_benchmark/s.txt",
+        "WN-FS-ar": "data/mewsc16",
+        "WN-FS-ca": "data/mewsc16",
+        "WN-FS-cs": "data/mewsc16",
+        "WN-FS-de": "data/mewsc16",
+        "WN-FS-en": "data/mewsc16",
+        "WN-FS-es": "data/mewsc16",
+        "WN-FS-eo": "data/mewsc16",
+        "WN-FS-fa": "data/mewsc16",
+        "WN-FS-fr": "data/mewsc16",
+        "WN-FS-ko": "data/mewsc16",
+        "WN-FS-ja": "data/mewsc16",
+        "WN-FS-pl": "data/mewsc16",
+        "WN-FS-pt": "data/mewsc16",
+        "WN-FS-ru": "data/mewsc16",
+        "WN-FS-sv": "data/mewsc16",
+        "WN-FS-tr": "data/mewsc16",
     }
-    
+
     key_to_label_path = {
-        'Bio': "data/biomedical_label.txt",
-        'SO': "data/stackoverflow_label.txt",
-        'SS': "data/searchsnippets_label.txt",
+        "Bio": "data/biomedical_label.txt",
+        "SO": "data/stackoverflow_label.txt",
+        "SS": "data/searchsnippets_label.txt",
     }
 
     if key in key_to_data_path:
         data_path = key_to_data_path[key]
-    
+
     if key in key_to_label_path:
         label_path = key_to_label_path[key]
 
@@ -241,28 +88,40 @@ def dataset_load(key):
             l_strip = [s.strip() for s in f.readlines()]
         sentences = [ast.literal_eval(d)["text"] for d in l_strip]
         labels = [ast.literal_eval(d)["cluster"] for d in l_strip]
-        
-    elif key in ["Bio", 'SO', 'SS']:
+
+    elif key in ["Bio", "SO", "SS"]:
         with open(data_path) as f:
             sentences = [s.strip() for s in f.readlines()]
         with open(label_path) as f:
             labels = [int(s.strip()) for s in f.readlines()]
-            
-    elif key in ['AG', 'G-TS', 'G-T', 'G-S']:
+
+    elif key in ["AG", "G-TS", "G-T", "G-S"]:
         with open(data_path) as f:
             l_strip = [s.strip() for s in f.readlines()]
         sentences = [d.split("\t")[1] for d in l_strip]
         labels = [int(d.split("\t")[0]) for d in l_strip]
-        
+
     elif key.startswith("MD"):
         lang = key[-2:]
-        lcode_to_lang = {"en" : "english","fr":"french" ,"de":"german","ja":"japanese", "zh":"chinese", "it": "italian", "ru":"russian", "es":"spanish"}
+        lcode_to_lang = {
+            "en": "english",
+            "fr": "french",
+            "de": "german",
+            "ja": "japanese",
+            "zh": "chinese",
+            "it": "italian",
+            "ru": "russian",
+            "es": "spanish",
+        }
         lang = lcode_to_lang[lang]
-        categories = ["CCAT","MCAT","ECAT","GCAT"]
+        categories = ["CCAT", "MCAT", "ECAT", "GCAT"]
         categories_index = {t: i for i, t in enumerate(categories)}
         parser = MLDocParser()
         file_path = f"{data_path}/{lang}.test"
-        sentence_labels = [(sentence, categories_index[label]) for sentence, label in tqdm(parser(file_path))]  
+        sentence_labels = [
+            (sentence, categories_index[label])
+            for sentence, label in tqdm(parser(file_path))
+        ]
         sentences = [sentence for sentence, label in sentence_labels]
         if key.startswith("MD-FS"):
             print("set tokenizer...")
@@ -273,23 +132,47 @@ def dataset_load(key):
                     sentences.append(sentence_tokenizer.tokenize(sentence)[0])
                 except Exception as e:
                     print("=== sentence tokenize error ===")
-            
+
         labels = [label for sentence, label in sentence_labels]
 
     elif key.startswith("WN"):
 
         if key.startswith("WN-unified"):
-            with open('/home/fmg/nishikawa/EASE/text-clustering/wikinews_clustering/en_cat_to_lang_cat.json') as f:
+            with open(
+                "/home/fmg/nishikawa/EASE/text-clustering/wikinews_clustering/en_cat_to_lang_cat.json"
+            ) as f:
                 en_cat_to_lang_cat = json.load(f)
 
             sentences, categories = [], []
 
-
-            for lang in ["en","ar","ja","es","tr","ko","pl","fa","ru","de","fr","ca","cs","eo","pt","sv"]:
+            for lang in [
+                "en",
+                "ar",
+                "ja",
+                "es",
+                "tr",
+                "ko",
+                "pl",
+                "fa",
+                "ru",
+                "de",
+                "fr",
+                "ca",
+                "cs",
+                "eo",
+                "pt",
+                "sv",
+            ]:
                 if lang != "en":
-                    lang_cat_to_en_cat = {lang_dict[lang]:en_cat for en_cat,lang_dict in en_cat_to_lang_cat.items() if lang in lang_dict}
+                    lang_cat_to_en_cat = {
+                        lang_dict[lang]: en_cat
+                        for en_cat, lang_dict in en_cat_to_lang_cat.items()
+                        if lang in lang_dict
+                    }
                 else:
-                    lang_cat_to_en_cat = {en_cat: en_cat for en_cat in en_cat_to_lang_cat.keys() }
+                    lang_cat_to_en_cat = {
+                        en_cat: en_cat for en_cat in en_cat_to_lang_cat.keys()
+                    }
 
                 lang_data_path = data_path + "/" + lang + "_sentences.txt"
                 lang_label_path = data_path + "/" + lang + "_categories.txt"
@@ -299,7 +182,13 @@ def dataset_load(key):
                 with open(lang_label_path) as f:
                     tmp_categories = [s.strip() for s in f.readlines()]
 
-                tmp_sentences, tmp_categories = zip(*[(sentence, lang_cat_to_en_cat[category]) for sentence, category in zip(tmp_sentences, tmp_categories) if category in lang_cat_to_en_cat])
+                tmp_sentences, tmp_categories = zip(
+                    *[
+                        (sentence, lang_cat_to_en_cat[category])
+                        for sentence, category in zip(tmp_sentences, tmp_categories)
+                        if category in lang_cat_to_en_cat
+                    ]
+                )
 
                 sentences.extend(tmp_sentences)
                 categories.extend(tmp_categories)
@@ -329,9 +218,17 @@ def dataset_load(key):
 
             # for sentence tokenizer error
             if key.startswith("WN-FS"):
-                sentences, categories = zip(*[(sentence, category) for sentence, category in zip(sentences, categories) if len(sentence) > 0])
+                sentences, categories = zip(
+                    *[
+                        (sentence, category)
+                        for sentence, category in zip(sentences, categories)
+                        if len(sentence) > 0
+                    ]
+                )
                 sentences, categories = list(sentences), list(categories)
-        category_to_idx = {category:idx for idx, category in enumerate(set(categories))}
+        category_to_idx = {
+            category: idx for idx, category in enumerate(set(categories))
+        }
         labels = [category_to_idx[category] for category in categories]
 
     elif key.startswith("NC"):
@@ -348,22 +245,26 @@ def dataset_load(key):
             data = json.loads(f.read())
 
         sentences = [d["text"] for d in data if d["lang"] == lang]
-        categories = [d['cluster'] for d in data if d["lang"] == lang]
-        category_to_idx = {category:idx for idx, category in enumerate(set(categories))}
+        categories = [d["cluster"] for d in data if d["lang"] == lang]
+        category_to_idx = {
+            category: idx for idx, category in enumerate(set(categories))
+        }
         labels = [category_to_idx[category] for category in categories]
 
     elif key.startswith("20N"):
-        newsgroups_test = fetch_20newsgroups(subset='test')
+        newsgroups_test = fetch_20newsgroups(subset="test")
         sentences = newsgroups_test.data
         labels = newsgroups_test.target
 
-    elif key in ['R8', 'R52', 'OH']:
+    elif key in ["R8", "R52", "OH"]:
         with open(data_path) as f:
             reader = csv.reader(f)
             data = [row for row in reader]
         data = data[1:]
         sentences = [d[0] for d in data]
         categories = [d[-1] for d in data]
-        category_to_idx = {category: idx for idx, category in enumerate(set(categories))}
+        category_to_idx = {
+            category: idx for idx, category in enumerate(set(categories))
+        }
         labels = [category_to_idx[category] for category in categories]
     return sentences, labels, lang_pos
