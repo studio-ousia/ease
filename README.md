@@ -31,4 +31,10 @@ python text-clustering/evaluate.py \
 
 ### Cross-lingual Parallel Matching
 
+```bash
+python parallel-matching/similar_sentence_search.py \
+    --model_name_or_path bert-base-multilingual-cased \ # set your model path
+    --pooler avg # set pooling method
+```
+
 ### Cross-lingual Zero-shot Classification
