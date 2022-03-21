@@ -12,3 +12,7 @@ hydra-core==1.1.0
 omegaconf
 mlflow
 wikipedia2vec
+polyglot
+pyicu
+pycld2
+morfessor

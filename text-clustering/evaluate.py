@@ -38,8 +38,6 @@ def get_label_mapping_dict(list1, list2):
 
 import os
 
-os.chdir("/home/fmg/nishikawa/EASE/text-clustering")
-
 
 def print_table(task_names, scores):
     tb = PrettyTable()
@@ -162,7 +160,8 @@ def main():
     dataset_groups = []
     if args.task_set in ["full", "mono"]:
         # dataset_groups.append(["R8", "R52", "OH", "20N"])
-        dataset_groups.append(["AG", "SS", "SO", "Bio", "Tweet", "G-TS", "G-S", "G-T"])
+        # dataset_groups.append(["AG", "SS", "SO", "Bio", "Tweet", "G-TS", "G-S", "G-T"])
+        dataset_groups.append(["AG"])
 
     if args.task_set in ["full", "cl"]:
 
