@@ -8,12 +8,21 @@ import torch
 import torch.nn as nn
 import numpy as np
 import os
-from utils.mlflow_writer import MlflowWriter
+# from utils.mlflow_writer import MlflowWriter
 import pycountry
 from omegaconf import OmegaConf
 import argparse
+from prettytable import PrettyTable
 
-from evaluation import print_table
+
+import os
+os.chdir("parallel-matching")
+
+def print_table(task_names, scores):
+    tb = PrettyTable()
+    tb.field_names = task_names
+    tb.add_row(scores)
+    print(tb)
 
 # tatoebaのセンテンスをロードする関数
 def load_data(path):
@@ -96,23 +105,18 @@ def main():
         help="mlflow experiment name",
     )
     parser.add_argument(
-        # "--langs", type=str, nargs="+", default=["es", "ar", "tr"] 
         "--langs", type=str, nargs="+", default=['ar', 'ca', 'cs', 'de', 'eo', 'es', 'fa', 'fr', 'it', 'ja', 'ko', 'nl', 'pl', 'pt', 'ru', 'sv', 'tr']
         # "--langs", type=str, nargs="+", default=["kab","pam","kw","br","mhr"]
-        # "--langs", type=str, nargs="+", default=['kab', 'pam', 'kw', 'br', 'mhr', 'ch', 'csb', 'ang', 'war', 'dsb', 'pms', 'oc', 'lfn', 'hsb', 'awa', 'arz', 'nov', 'nds', 'ie', 'ast', 'fo', 'io', 'wuu', 'ia']
-        # "--langs", type=str, nargs="+", default=["en",'be','ja','yi','no','bo','el','tr','tg','ht','zu','sm','th','sl','ig','am','haw','ro','ur','uz','eo','hi','eu','he','ta','it','zh','id','lo','ga','ku','mi','sw','km','xh','so','tk','rw','mt','st','ceb','ny','fy','my','cy','hy','gl','sn','as','mk','ne','sq','af','ru','lb','pa','es','vi','la','de','ca','ug','wo','nl','tl','bn','lv','pl','mn','et','cs','lt','fr','"fi"','ar','tt','sv','ha','ko','az','gd','kk','mg','gu','kn','si','pt','da','jv','te','ml','su','yo','ky','sr','hu','bs','bg','uk','hr','ms','ka','sk','fa','is','or','mr','co',"kab",'pam','kw','br','mhr','ch','csb','ang','war','dsb','pms','oc','lfn','hsb','awa','arz','nov','nds','ie','ast','fo','io','wuu','ia']
-        # "--langs", type=str, nargs="+", default=['be', 'ga', 'hy', 'kk', 'oc']
-        # "--langs", type=str, nargs="+", default=['mhr', 'br', 'kw', 'kzj', 'pam', 'dtp', 'ber', 'kab']
     )
 
     args = parser.parse_args()
     print("model_path", args.model_name_or_path)
     # mlflow
-    cfg = OmegaConf.create({"eval_args": vars(args)})
-    EXPERIMENT_NAME = args.experiment_name
-    tracking_uri = f"/home/fmg/nishikawa/EASE/mlruns"
-    mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri=tracking_uri)
-    mlflow_writer.log_params_from_omegaconf_dict(cfg)
+    # cfg = OmegaConf.create({"eval_args": vars(args)})
+    # EXPERIMENT_NAME = args.experiment_name
+    # tracking_uri = f"/home/fmg/nishikawa/EASE/mlruns"
+    # mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri=tracking_uri)
+    # mlflow_writer.log_params_from_omegaconf_dict(cfg)
 
     # Load transformers' model checkpoint
     model = AutoModel.from_pretrained(args.model_name_or_path)
@@ -141,8 +145,8 @@ def main():
 
     for lang in langs:
         try:
-            src_path = f"data/tatoeba/v1/tatoeba.{lang}-eng.{lang}"
-            trg_path = f"data/tatoeba/v1/tatoeba.{lang}-eng.eng"
+            src_path = f"tatoeba/v1/tatoeba.{lang}-eng.{lang}"
+            trg_path = f"tatoeba/v1/tatoeba.{lang}-eng.eng"
             dataset[lang] = (load_data(src_path), load_data(trg_path))
         except:
             print(f"{lang} doesn't exist.")
@@ -175,28 +179,17 @@ def main():
 
         scores.append("%.2f" % ((lang_to_en_result + en_to_lang_result) / 2))
         # en_to_langs_scores.append("%.2f" % result)
-        if lang in lang_3_to_2:
-            mlflow_writer.log_metric(lang_3_to_2[lang], (lang_to_en_result + en_to_lang_result) / 2)
-        else:
-            mlflow_writer.log_metric(lang, (lang_to_en_result + en_to_lang_result) / 2)
+        # if lang in lang_3_to_2:
+        #     mlflow_writer.log_metric(lang_3_to_2[lang], (lang_to_en_result + en_to_lang_result) / 2)
+        # else:
+        #     mlflow_writer.log_metric(lang, (lang_to_en_result + en_to_lang_result) / 2)
 
         # print(result)
 
     langs.append("Avg.")
     scores.append("%.2f" % (sum([float(score) for score in scores]) / len(scores)))
-    mlflow_writer.log_metric(f"Avg.", (sum([float(score) for score in scores]) / len(scores)))
+    # mlflow_writer.log_metric(f"Avg.", (sum([float(score) for score in scores]) / len(scores)))
     print_table(langs, scores)
-
-    # print("------ %s ------" % ("lang_to_en"))
-    # lang_to_en_scores.append("%.2f" % (sum([float(score) for score in lang_to_en_scores]) / len(lang_to_en_scores)))
-    # mlflow_writer.log_metric(f"lang_to_en Avg.", (sum([float(score) for score in lang_to_en_scores]) / len(lang_to_en_scores)))
-    # print_table(langs, lang_to_en_scores)
-
-    # print("------ %s ------" % ("en_to_lang"))
-    # en_to_langs_scores.append("%.2f" % (sum([float(score) for score in en_to_langs_scores]) / len(en_to_langs_scores)))
-    # mlflow_writer.log_metric(f"en_to_lang Avg.", (sum([float(score) for score in en_to_langs_scores]) / len(en_to_langs_scores)))
-    # print_table(langs, en_to_langs_scores)
-
 
 if __name__ == "__main__":
     main()
