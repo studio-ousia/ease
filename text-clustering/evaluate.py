@@ -35,9 +35,8 @@ def get_label_mapping_dict(list1, list2):
         mapping_dict[classes[l1_idx]] = clusters[l2_idx]
     return mapping_dict
 
-
 import os
-
+os.chdir("text-clustering")
 
 def print_table(task_names, scores):
     tb = PrettyTable()
@@ -160,8 +159,7 @@ def main():
     dataset_groups = []
     if args.task_set in ["full", "mono"]:
         # dataset_groups.append(["R8", "R52", "OH", "20N"])
-        # dataset_groups.append(["AG", "SS", "SO", "Bio", "Tweet", "G-TS", "G-S", "G-T"])
-        dataset_groups.append(["AG"])
+        dataset_groups.append(["AG", "SS", "SO", "Bio", "Tweet", "G-TS", "G-S", "G-T"])
 
     if args.task_set in ["full", "cl"]:
 
