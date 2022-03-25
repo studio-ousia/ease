@@ -21,9 +21,15 @@
 cd SentEval/data/downstream/
 bash download_dataset.sh
 
-## Evaluation
-
 ### Semantic textual similarity
+
+```bash
+python evaluation.py \
+    --model_name_or_path bert-base-uncased \ # set your model path
+    --pooler avg \ # set pooling method
+    --task_set sts \ # sts or cl-sts o
+    --mode test
+```
 
 ### Short text clustering
 
@@ -31,7 +37,7 @@ bash download_dataset.sh
 python text-clustering/evaluate.py \
     --model_name_or_path bert-base-uncased \ # set your model path
     --pooler avg \ # set pooling method
-    --task_set mono \ # mono or cl or full
+    --task_set mono # mono or cl or full
 ```
 
 ### Cross-lingual Parallel Matching
