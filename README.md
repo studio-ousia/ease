@@ -16,6 +16,11 @@
   - [Citation](#citation)
   - [SimCSE Elsewhere](#simcse-elsewhere) -->
 
+## Preparation
+
+cd SentEval/data/downstream/
+bash download_dataset.sh
+
 ## Evaluation
 
 ### Semantic textual similarity
