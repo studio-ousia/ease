@@ -8,7 +8,7 @@ import argparse
 import sys, os
 
 sys.path.append(os.path.abspath(".."))
-from utils.mlflow_writer import MlflowWriter
+# from utils.mlflow_writer import MlflowWriter
 import numpy as np
 
 
@@ -112,13 +112,14 @@ def main():
     torch.manual_seed(args.seed)
     torch.cuda.manual_seed_all(args.seed)
 
-    EXPERIMENT_NAME = args.experiment_name
-    tracking_uri = f"/home/fmg/nishikawa/EASE/mlruns"
-    mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri=tracking_uri)
-    cfg = OmegaConf.create({"eval_args": vars(args)})
-    mlflow_writer.log_params_from_omegaconf_dict(cfg)
+    # EXPERIMENT_NAME = args.experiment_name
+    # tracking_uri = f"/home/fmg/nishikawa/EASE/mlruns"
+    # mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri=tracking_uri)
+    # cfg = OmegaConf.create({"eval_args": vars(args)})
+    # mlflow_writer.log_params_from_omegaconf_dict(cfg)
 
-    dataset_path = "/home/fmg/nishikawa/corpus/mldoc_outputs"
+    # dataset_path = "/home/fmg/nishikawa/corpus/mldoc_outputs"
+    dataset_path = "cross-lingual-transfer/data"
     eval_data = dict()
     eval_langs = ["en", "fr", "de", "ja", "zh", "it", "ru", "es"]
     for lang in eval_langs:
@@ -198,7 +199,7 @@ def main():
 
     res = trainer.evaluate()
     print(res)
-    mlflow_writer.log_metric("en-dev", res["eval_accuracy"])
+    # mlflow_writer.log_metric("en-dev", res["eval_accuracy"])
 
     if not args.dev:
         lang_results = []
@@ -211,8 +212,8 @@ def main():
             res = trainer.evaluate(test_dataset)
             print(trainer.evaluate(test_dataset))
             lang_results.append(res["eval_accuracy"])
-            mlflow_writer.log_metric(lang, res["eval_accuracy"])
-        mlflow_writer.log_metric("Avg.", np.mean(lang_results))
+        #     mlflow_writer.log_metric(lang, res["eval_accuracy"])
+        # mlflow_writer.log_metric("Avg.", np.mean(lang_results))
 
 
 if __name__ == "__main__":
