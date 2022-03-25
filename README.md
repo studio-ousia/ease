@@ -18,8 +18,10 @@
 
 ## Preparation
 
+```bash
 cd SentEval/data/downstream/
 bash download_dataset.sh
+```
 
 ### Semantic textual similarity
 
@@ -49,3 +51,14 @@ python parallel-matching/similar_sentence_search.py \
 ```
 
 ### Cross-lingual Zero-shot Classification
+
+```bash
+cd cross-lingual-transfer/data
+download_dataset.sh
+```
+
+```bash
+python cross-lingual-transfer/main.py
+    --model_name_or_path bert-base-uncased \ # set your model path
+    --pooler avg \ # set pooling method
+```
