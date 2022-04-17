@@ -1,5 +1,3 @@
-from comet_ml import Experiment
-import const
 from dataclasses import dataclass, field
 from typing import Optional, Union, List, Dict, Tuple
 from transformers import (
@@ -61,6 +59,7 @@ from transformers.tokenization_utils_base import (
     PaddingStrategy,
     PreTrainedTokenizerBase,
 )
+
 
 ENTITY_PAD_MARK = "[PAD]"
 
@@ -208,6 +207,8 @@ def main(cfg: DictConfig):
         wikipedia_data = load_dataset("sosuke/ease-dataset-en.json")["train"]
     elif train_args.dataset_name_or_path == "wiki_18":
         wikipedia_data = load_dataset("sosuke/ease-dataset-18-langs.json")["train"]
+    elif train_args.dataset_name_or_path == "test":
+        wikipedia_data = load_dataset("sosuke/ease-dataset-test.json")["train"]
 
     else:
         # TODO load from dataset path
@@ -241,12 +242,8 @@ def main(cfg: DictConfig):
 
     print("###load entity embedding...")
 
-    vector_path = "/home/fmg/nishikawa/multilingual_classification_using_language_link/data/enwiki.768.vec"
 
-    if model_args.entity_emb_dim == 100:
-        vector_path = "/home/fmg/nishikawa/EASE/data/enwiki.100.vec"
-
-    embedding = Wikipedia2Vec.load(vector_path)
+    embedding = Wikipedia2Vec.load(train_args.wikipedia2vec_path)
     dim_size = embedding.syn0.shape[1]
 
     print("###set struct omegaconf")

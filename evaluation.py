@@ -31,6 +31,7 @@ def print_table(task_names, scores):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_name_or_path", type=str, 
+            default="bert-base-uncased",
             help="Transformers' model name or path")
     parser.add_argument("--pooler", type=str, 
             choices=['cls', 'cls_before_pooler', 'avg', 'avg_top2', 'avg_first_last'], 
@@ -59,11 +60,11 @@ def main():
     args = parser.parse_args()
     
     # mlflow
-    cfg = OmegaConf.create({"eval_args": vars(args)})
-    EXPERIMENT_NAME = args.experiment_name
-    tracking_uri = f"/home/fmg/nishikawa/EASE/mlruns"
-    mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri=tracking_uri)
-    mlflow_writer.log_params_from_omegaconf_dict(cfg)
+    # cfg = OmegaConf.create({"eval_args": vars(args)})
+    # EXPERIMENT_NAME = args.experiment_name
+    # tracking_uri = f"/home/fmg/nishikawa/EASE/mlruns"
+    # mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri=tracking_uri)
+    # mlflow_writer.log_params_from_omegaconf_dict(cfg)
 
     # Load transformers' model checkpoint
     print("model_path", args.model_name_or_path)
@@ -94,12 +95,12 @@ def main():
     if args.mode == 'dev' or args.mode == 'fasttest':
         # Fast mode
         params = {'task_path': PATH_TO_DATA, 'usepytorch': True, 'kfold': 5}
-        params['classifier'] = {'nhid': 0, 'optim': 'rmsprop', 'batch_size': 128,
+        params['classifier'] = {'nhid': 0, 'optim': 'rmsprop', 'batch_size': 32,
                                          'tenacity': 3, 'epoch_size': 2}
     elif args.mode == 'test':
         # Full mode
         params = {'task_path': PATH_TO_DATA, 'usepytorch': True, 'kfold': 10}
-        params['classifier'] = {'nhid': 0, 'optim': 'adam', 'batch_size': 64,
+        params['classifier'] = {'nhid': 0, 'optim': 'adam', 'batch_size': 32,
                                          'tenacity': 5, 'epoch_size': 4}
     elif args.mode == "align_uniform":
         params = {'task_path': PATH_TO_DATA, 'usepytorch': True, 'kfold': 10}
@@ -184,8 +185,8 @@ def main():
             task_names.append(task)
             if task in results:
                 scores.append("%.2f" % (results[task]['dev']['spearman'][0] * 100))
-                mlflow_writer.log_metric(f"{task}-alignment", results[task]['dev']['align_loss'])
-                mlflow_writer.log_metric(f"{task}-uniformity", results[task]['dev']['uniform_loss'])
+                # mlflow_writer.log_metric(f"{task}-alignment", results[task]['dev']['align_loss'])
+                # mlflow_writer.log_metric(f"{task}-uniformity", results[task]['dev']['uniform_loss'])
             else:
                 scores.append("0.00")
 
@@ -221,10 +222,10 @@ def main():
         for dataset in datasets:
             lang_name = re.findall("STS.input.track\d+.?\.(.+).txt", dataset)[0]
             if task in results:
-                mlflow_writer.log_metric(lang_name, results[task][dataset]['spearman'].correlation * 100)
+                # mlflow_writer.log_metric(lang_name, results[task][dataset]['spearman'].correlation * 100)
                 scores.append("%.2f" % (results[task][dataset]['spearman'].correlation * 100)) 
-                mlflow_writer.log_metric(f"{lang_name}-align", results[task][dataset]['align_loss'])
-                mlflow_writer.log_metric(f"{lang_name}-uniform", results[task][dataset]['uniform_loss'])
+                # mlflow_writer.log_metric(f"{lang_name}-align", results[task][dataset]['align_loss'])
+                # mlflow_writer.log_metric(f"{lang_name}-uniform", results[task][dataset]['uniform_loss'])
             else:
                 scores.append("0.00")
             task_names.append(lang_name)
@@ -232,7 +233,7 @@ def main():
 
         task_names.append("Avg.")
         scores.append("%.2f" % (sum([float(score) for score in scores]) / len(scores)))
-        mlflow_writer.log_metric("CL-STS Avg.", sum([float(score) for score in scores]) / len(scores))
+        # mlflow_writer.log_metric("CL-STS Avg.", sum([float(score) for score in scores]) / len(scores))
         print_table(task_names, scores)
 
 
@@ -246,15 +247,15 @@ def main():
             if task in results:
                 if task in ['STS12', 'STS13', 'STS14', 'STS15', 'STS16']:
                     scores.append("%.2f" % (results[task]['all']['spearman']['all'] * 100))
-                    mlflow_writer.log_metric(task, results[task]['all']['spearman']['all'] * 100)
+                    # mlflow_writer.log_metric(task, results[task]['all']['spearman']['all'] * 100)
                 else:
                     scores.append("%.2f" % (results[task]['test']['spearman'].correlation * 100))
-                    mlflow_writer.log_metric(task, results[task]['test']['spearman'].correlation * 100)
+                    # mlflow_writer.log_metric(task, results[task]['test']['spearman'].correlation * 100)
             else:
                 scores.append("0.00")
         task_names.append("Avg.")
         scores.append("%.2f" % (sum([float(score) for score in scores]) / len(scores)))
-        mlflow_writer.log_metric("STS-Avg.", sum([float(score) for score in scores]) / len(scores))
+        # mlflow_writer.log_metric("STS-Avg.", sum([float(score) for score in scores]) / len(scores))
         print_table(task_names, scores)
 
         task_names = []
@@ -298,7 +299,7 @@ def main():
                 for dataset in datasets:
                     lang_name = re.findall("STS.input.track\d+.?\.(.+).txt", dataset)[0]
                     if task in results:
-                        mlflow_writer.log_metric(lang_name, results[task][dataset]['spearman'].correlation * 100)
+                        # mlflow_writer.log_metric(lang_name, results[task][dataset]['spearman'].correlation * 100)
                         scores.append("%.2f" % (results[task][dataset]['spearman'].correlation * 100)) 
 
                         alignments.append(results[task][dataset]['align_loss'])
@@ -307,22 +308,22 @@ def main():
                         scores.append("0.00")
                     task_names.append(lang_name)
    
-                mlflow_writer.log_metric("align", np.mean(alignments))
-                mlflow_writer.log_metric("uniform", np.mean(uniformities))
+                # mlflow_writer.log_metric("align", np.mean(alignments))
+                # mlflow_writer.log_metric("uniform", np.mean(uniformities))
                     
 
             else:
                 task_names.append(task)
                 if task in results:
                     scores.append("%.2f" % (results[task]['all']['spearman']['all'] * 100))
-                    mlflow_writer.log_metric(task, results[task]['all']['spearman']['all'] * 100)
+                    # mlflow_writer.log_metric(task, results[task]['all']['spearman']['all'] * 100)
                 else:
                     scores.append("0.00")
 
 
         task_names.append("Avg.")
         scores.append("%.2f" % (sum([float(score) for score in scores]) / len(scores)))
-        mlflow_writer.log_metric("CL-STS Avg.", sum([float(score) for score in scores]) / len(scores))
+        # mlflow_writer.log_metric("CL-STS Avg.", sum([float(score) for score in scores]) / len(scores))
         print_table(task_names, scores)
 
 

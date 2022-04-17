@@ -1,7 +1,6 @@
 def warn(*args, **kwargs):
     pass
 
-
 import warnings
 
 warnings.warn = warn
@@ -34,9 +33,6 @@ def get_label_mapping_dict(list1, list2):
     for l1_idx, l2_idx in idx_pairs:
         mapping_dict[classes[l1_idx]] = clusters[l2_idx]
     return mapping_dict
-
-import os
-os.chdir("text-clustering")
 
 def print_table(task_names, scores):
     tb = PrettyTable()
@@ -143,8 +139,7 @@ def main():
     # mlflow
     cfg = OmegaConf.create({"eval_args": vars(args)})
     EXPERIMENT_NAME = args.experiment_name
-    tracking_uri = f"/home/fmg/nishikawa/EASE/mlruns"
-    mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri=tracking_uri)
+    mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri="mlruns")
     mlflow_writer.log_params_from_omegaconf_dict(cfg)
 
     # Load transformers' model checkpoint

@@ -8,8 +8,7 @@ import os
 from sklearn.datasets import fetch_20newsgroups
 import csv
 
-
-sys.path.append(os.path.abspath("/home/fmg/nishikawa/EASE"))
+sys.path.append(os.path.abspath(os.getcwd()))
 from utils.sentence_tokenizer import MultilingualSentenceTokenizer
 
 WHITESPACE_REGEXP = re.compile(r"\s+")
@@ -42,36 +41,36 @@ def normalize_text(text):
 def dataset_load(key):
 
     key_to_data_path = {
-        "Tweet": "data/monolingual_benchmark/tweet.txt",
-        "Bio": "data/monolingual_benchmark/biomedical.txt",
-        "SO": "data/monolingual_benchmark/stackoverflow.txt",
-        "SS": "data/monolingual_benchmark/searchsnippets.txt",
-        "AG": "data/monolingual_benchmark/agnews.txt",
-        "G-TS": "data/monolingual_benchmark/ts.txt",
-        "G-T": "data/monolingual_benchmark/t.txt",
-        "G-S": "data/monolingual_benchmark/s.txt",
-        "WN-FS-ar": "data/mewsc16",
-        "WN-FS-ca": "data/mewsc16",
-        "WN-FS-cs": "data/mewsc16",
-        "WN-FS-de": "data/mewsc16",
-        "WN-FS-en": "data/mewsc16",
-        "WN-FS-es": "data/mewsc16",
-        "WN-FS-eo": "data/mewsc16",
-        "WN-FS-fa": "data/mewsc16",
-        "WN-FS-fr": "data/mewsc16",
-        "WN-FS-ko": "data/mewsc16",
-        "WN-FS-ja": "data/mewsc16",
-        "WN-FS-pl": "data/mewsc16",
-        "WN-FS-pt": "data/mewsc16",
-        "WN-FS-ru": "data/mewsc16",
-        "WN-FS-sv": "data/mewsc16",
-        "WN-FS-tr": "data/mewsc16",
+        "Tweet": "text-clustering/data/monolingual_benchmark/tweet.txt",
+        "Bio": "text-clustering/data/monolingual_benchmark/biomedical.txt",
+        "SO": "text-clustering/data/monolingual_benchmark/stackoverflow.txt",
+        "SS": "text-clustering/data/monolingual_benchmark/searchsnippets.txt",
+        "AG": "text-clustering/data/monolingual_benchmark/agnews.txt",
+        "G-TS": "text-clustering/data/monolingual_benchmark/ts.txt",
+        "G-T": "text-clustering/data/monolingual_benchmark/t.txt",
+        "G-S": "text-clustering/data/monolingual_benchmark/s.txt",
+        "WN-FS-ar": "text-clustering/data/mewsc16",
+        "WN-FS-ca": "text-clustering/data/mewsc16",
+        "WN-FS-cs": "text-clustering/data/mewsc16",
+        "WN-FS-de": "text-clustering/data/mewsc16",
+        "WN-FS-en": "text-clustering/data/mewsc16",
+        "WN-FS-es": "text-clustering/data/mewsc16",
+        "WN-FS-eo": "text-clustering/data/mewsc16",
+        "WN-FS-fa": "text-clustering/data/mewsc16",
+        "WN-FS-fr": "text-clustering/data/mewsc16",
+        "WN-FS-ko": "text-clustering/data/mewsc16",
+        "WN-FS-ja": "text-clustering/data/mewsc16",
+        "WN-FS-pl": "text-clustering/data/mewsc16",
+        "WN-FS-pt": "text-clustering/data/mewsc16",
+        "WN-FS-ru": "text-clustering/data/mewsc16",
+        "WN-FS-sv": "text-clustering/data/mewsc16",
+        "WN-FS-tr": "text-clustering/data/mewsc16",
     }
 
     key_to_label_path = {
-        "Bio": "data/biomedical_label.txt",
-        "SO": "data/stackoverflow_label.txt",
-        "SS": "data/searchsnippets_label.txt",
+        "Bio": "text-clustering/data/monolingual_benchmark/biomedical_label.txt",
+        "SO": "text-clustering/data/monolingual_benchmark/stackoverflow_label.txt",
+        "SS": "text-clustering/data/monolingual_benchmark/searchsnippets_label.txt",
     }
 
     if key in key_to_data_path:

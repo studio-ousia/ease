@@ -1,8 +1,8 @@
 transformers==4.2.1
 scipy
-datasets==1.2.1
+datasets==2.0.0
 pandas==1.1.5
-scikit-learn==0.24.0
+scikit-learn==0.22.2
 prettytable==2.1.0
 gradio
 torch
@@ -16,3 +16,6 @@ polyglot
 pyicu
 pycld2
 morfessor
+coclust
+munkres
+pycountry
