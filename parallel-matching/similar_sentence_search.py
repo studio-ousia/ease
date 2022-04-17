@@ -1,8 +1,6 @@
 # Tatoebaで評価を行うコード
 # コサイン類似度が最も高い文が対訳文かどうか
 
-# import hydra
-# from omegaconf import DictConfig, OmegaConf
 from transformers import AutoModel, AutoTokenizer, XLMRobertaTokenizer
 import torch
 import torch.nn as nn

@@ -134,10 +134,6 @@ class STSEval(object):
                         results[dataset]['align_loss'],
                         results[dataset]['uniform_loss'])
                         )
-            # logging.debug('%s : pearson = %.4f, spearman = %.4f' %
-            #             (dataset, results[dataset]['pearson'][0],
-            #             results[dataset]['spearman'][0])
-            #             )
 
         weights = [results[dset]["nsamples"] for dset in results.keys()]
         list_prs = np.array([results[dset]["pearson"][0] for dset in results.keys()])

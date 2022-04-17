@@ -66,10 +66,6 @@ ENTITY_PAD_MARK = "[PAD]"
 
 @dataclass
 class OurTrainingArguments(TrainingArguments):
-    # Evaluation
-    ## By default, we evaluate STS (dev) during training (for selecting best checkpoints) and evaluate
-    ## both STS and transfer tasks (dev) at the end of training. Using --eval_transfer will allow evaluating
-    ## both STS and transfer tasks (dev) during training.
     eval_transfer: bool = field(
         default=False,
         metadata={"help": "Evaluate transfer task dev sets (in validation)."},
@@ -86,24 +82,9 @@ class OurTrainingArguments(TrainingArguments):
             device = xm.xla_device()
             self._n_gpu = 0
         elif self.local_rank == -1:
-            # if n_gpu is > 1 we'll use nn.DataParallel.
-            # If you only want to use a specific subset of GPUs use `CUDA_VISIBLE_DEVICES=0`
-            # Explicitly set CUDA to the first (index 0) CUDA device, otherwise `set_device` will
-            # trigger an error that a device index is missing. Index 0 takes into account the
-            # GPUs available in the environment, so `CUDA_VISIBLE_DEVICES=1,2` with `cuda:0`
-            # will use the first GPU in that env, i.e. GPU#1
             device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-            # Sometimes the line in the postinit has not been run before we end up here, so just checking we're not at
-            # the default value.
             self._n_gpu = torch.cuda.device_count()
         else:
-            # Here, we'll use torch.distributed.
-            # Initializes the distributed backend which will take care of synchronizing nodes/GPUs
-            #
-            # deepspeed performs its own DDP internally, and requires the program to be started with:
-            # deepspeed  ./program.py
-            # rather than:
-            # python -m torch.distributed.launch --nproc_per_node=2 ./program.py
             if self.deepspeed:
                 from .integrations import is_deepspeed_available
 
@@ -123,21 +104,6 @@ class OurTrainingArguments(TrainingArguments):
             torch.cuda.set_device(device)
 
         return device
-
-# 言語ごとに分ける
-# 
-import itertools
-def group_by_monolingual_batch(data, train_args):
-    sample_num = train_args.sample_nums[0]
-    bs = train_args.per_device_train_batch_size
-    all_data = []
-    for i, lang in enumerate(train_args.langs):
-        lang_data = random.sample(data[sample_num * i :sample_num * (i + 1)], sample_num)
-        lang_data = [lang_data[i: i + bs] for i in range(0, len(lang_data) - bs, bs)]
-        all_data.extend(lang_data)
-    all_data = random.sample(all_data, len(all_data))
-    return list(itertools.chain.from_iterable(all_data))
-
 
 def build_entity_vocab(data):
     entities = []
@@ -167,7 +133,6 @@ def main(cfg: DictConfig):
         ["--output_dir", "saved_models", "--evaluation_strategy", "steps"]
     )[0]
     train_args = update_args(base_train_args, train_args)
-    train_args.greater_is_better = True
     train_args.output_dir = os.path.join(cwd, train_args.output_dir)
 
     EXPERIMENT_NAME = train_args.experiment_name
@@ -198,10 +163,6 @@ def main(cfg: DictConfig):
     print("loading data...")
     wikipedia_data = []
 
-    # TODO 修正
-    # rawdataloaderで行っていることはdataset_samplerで解決している
-    # build type hardnegative dataset.pyでdatasetdictで保存するべき
-    
     # wiki_en or wiki_18 or your dataset path
     if train_args.dataset_name_or_path == "wiki_en":
         wikipedia_data = load_dataset("sosuke/ease-dataset-en.json")["train"]
@@ -214,10 +175,7 @@ def main(cfg: DictConfig):
         # TODO load from dataset path
         raise NotImplementedError()
 
-    # if train_args.use_monolingual_batch:
-    #     wikipedia_data = group_by_monolingual_batch(wikipedia_data, train_args)
-
-    # エンティティの語彙を構成
+    # build entity vocab
     print("build entity vocab...")
     if train_args.train_saved_model:
          entity_vocab = pickle_load(os.path.join(model_args.model_name_or_path, "entity_vocab.pkl"))
@@ -233,22 +191,15 @@ def main(cfg: DictConfig):
         input_ids, attention_masks, token_type_ids, title_id, hn_title_ids, model_args.model_name_or_path
     )
 
-    print("### del wikipedia data")
     del wikipedia_data
     gc.collect()
 
-    # エンティティ表現のロード
-    # TODO pathを指定
-
-    print("###load entity embedding...")
-
-
+    # load pretrained entity embeddings
     embedding = Wikipedia2Vec.load(train_args.wikipedia2vec_path)
     dim_size = embedding.syn0.shape[1]
 
-    print("###set struct omegaconf")
+    # set struct omegaconf
     OmegaConf.set_struct(model_args, True)
-    print("###Done set struct omegaconf")
     with open_dict(model_args):
         model_args.entity_emb_shape = (len(entity_vocab), dim_size)
 
@@ -257,8 +208,7 @@ def main(cfg: DictConfig):
     )
     print(model_args.entity_emb_shape)
 
-    print("###init entity embedding")
-    # for pad
+    # init entity embeddings
     entity_embeddings[0] = np.zeros(dim_size)
     cnt = 0
 
@@ -273,7 +223,6 @@ def main(cfg: DictConfig):
         print(cnt)
 
 
-    # モデルのロード
     config_kwargs = {
         "cache_dir": model_args.cache_dir,
         "revision": model_args.model_revision,
@@ -281,8 +230,6 @@ def main(cfg: DictConfig):
     }
 
     config = AutoConfig.from_pretrained(model_args.model_name_or_path, **config_kwargs)
-
-    print("###load model")
 
     if "roberta" in model_args.model_name_or_path:
 
@@ -321,7 +268,6 @@ def main(cfg: DictConfig):
     model.entity_embedding.weight = nn.Parameter(torch.FloatTensor(entity_embeddings))
     model.entity_embedding.weight.requires_grad = True
 
-    print("### del entity embeddings")
     del entity_embeddings
     gc.collect()
 
@@ -356,7 +302,6 @@ def main(cfg: DictConfig):
                 "mlm_input_ids",
                 "mlm_labels",
             ]
-            # special_keys = ['input_ids', 'attention_mask', 'token_type_ids', 'mlm_input_ids', 'mlm_labels', 'title_id']
             bs = len(features)
             if bs > 0:
                 num_sent = len(features[0]["input_ids"])
@@ -451,8 +396,6 @@ def main(cfg: DictConfig):
             # The rest of the time (10% of the time) we keep the masked input tokens unchanged
             return inputs, labels
 
-    print("###set trainer")
-
     trainer = CLTrainer(
         model=model,
         args=train_args,
@@ -464,7 +407,6 @@ def main(cfg: DictConfig):
     trainer.model_args = model_args
 
     if train_args.do_train:
-        print("###train start")
         train_result = trainer.train(model_path=model_path)
         trainer.save_model()  # Saves the tokenizer too for easy upload
 
@@ -477,13 +419,10 @@ def main(cfg: DictConfig):
                     logger.info(f"  {key} = {value}")
                     writer.write(f"{key} = {value}\n")
 
-    print("### del train dataset")
     del train_dataset
     gc.collect()
 
     if train_args.do_eval:
-        print("###evaluate start")
-
         logger.info("*** Evaluate ***")
         results = trainer.evaluate(eval_senteval_transfer=False)
 
@@ -495,22 +434,18 @@ def main(cfg: DictConfig):
                     logger.info(f"  {key} = {value}")
                     writer.write(f"{key} = {value}\n")
 
-        # MLflowに記録
+        # save to Mlflow
         mlflow_writer.log_metric("eval_stsb_spearman", results["eval_stsb_spearman"])
         mlflow_writer.log_metric("eval_sickr_spearman", results["eval_sickr_spearman"])
         mlflow_writer.log_metric("eval_avg_sts", results["eval_avg_sts"])
 
-    # entity_vocabを保存
     pickle_dump(entity_vocab, os.path.join(train_args.output_dir, "entity_vocab.pkl"))
 
-    # Hydraの成果物をArtifactに保存
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), ".hydra/config.yaml"))
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), ".hydra/hydra.yaml"))
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), ".hydra/overrides.yaml"))
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), "main.log"))
 
-
-    print("### del trainer")
     del trainer, model, tokenizer
     gc.collect()
 

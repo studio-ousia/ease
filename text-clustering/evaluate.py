@@ -1,10 +1,3 @@
-def warn(*args, **kwargs):
-    pass
-
-import warnings
-
-warnings.warn = warn
-
 from transformers import AutoModel, AutoTokenizer, XLMRobertaTokenizer
 from coclust.evaluation.external import accuracy
 from sklearn.cluster import KMeans
