@@ -8,15 +8,13 @@ import torch
 import torch.nn as nn
 import numpy as np
 import os
-# from utils.mlflow_writer import MlflowWriter
 import pycountry
 from omegaconf import OmegaConf
 import argparse
 from prettytable import PrettyTable
-
-
-import os
-os.chdir("parallel-matching")
+import sys
+sys.path.append(os.path.abspath(os.getcwd()))
+from utils.mlflow_writer import MlflowWriter
 
 def print_table(task_names, scores):
     tb = PrettyTable()
@@ -89,7 +87,7 @@ def get_cos_sim_matrix(matrix1, matrix2):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--model_name_or_path", type=str, help="Transformers' model name or path", default="bert-base-uncased"
+        "--model_name_or_path", type=str, help="Transformers' model name or path", default="bert-base-multilingual-cased"
     )
     parser.add_argument(
         "--pooler",
@@ -112,11 +110,10 @@ def main():
     args = parser.parse_args()
     print("model_path", args.model_name_or_path)
     # mlflow
-    # cfg = OmegaConf.create({"eval_args": vars(args)})
-    # EXPERIMENT_NAME = args.experiment_name
-    # tracking_uri = f"/home/fmg/nishikawa/EASE/mlruns"
-    # mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri=tracking_uri)
-    # mlflow_writer.log_params_from_omegaconf_dict(cfg)
+    cfg = OmegaConf.create({"eval_args": vars(args)})
+    EXPERIMENT_NAME = args.experiment_name
+    mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri="mlruns")
+    mlflow_writer.log_params_from_omegaconf_dict(cfg)
 
     # Load transformers' model checkpoint
     model = AutoModel.from_pretrained(args.model_name_or_path)
@@ -145,8 +142,8 @@ def main():
 
     for lang in langs:
         try:
-            src_path = f"tatoeba/v1/tatoeba.{lang}-eng.{lang}"
-            trg_path = f"tatoeba/v1/tatoeba.{lang}-eng.eng"
+            src_path = f"parallel-matching/tatoeba/v1/tatoeba.{lang}-eng.{lang}"
+            trg_path = f"parallel-matching/tatoeba/v1/tatoeba.{lang}-eng.eng"
             dataset[lang] = (load_data(src_path), load_data(trg_path))
         except:
             print(f"{lang} doesn't exist.")
@@ -154,8 +151,8 @@ def main():
 
     # langs = list(langs - not_exist_langs)
     langs = sorted(set(langs) - not_exist_langs, key=langs.index)
-    # lang_to_en_scores = []
-    # en_to_langs_scores = []
+    lang_to_en_scores = []
+    en_to_langs_scores = []
     scores = []
     for lang in langs:
         print(lang)
@@ -168,9 +165,6 @@ def main():
             get_cos_sim_matrix(source_embeddings, target_embeddings).argmax(axis=1)
             == np.arange(len(source_embeddings))
         ).sum() / 10
-        # lang_to_en_scores.append("%.1f" % result)
-        # mlflow_writer.log_metric(f"{lang}_en", result)
-        # print(result)
 
         en_to_lang_result = (
             get_cos_sim_matrix(target_embeddings, source_embeddings).argmax(axis=1)
@@ -178,17 +172,15 @@ def main():
         ).sum() / 10
 
         scores.append("%.2f" % ((lang_to_en_result + en_to_lang_result) / 2))
-        # en_to_langs_scores.append("%.2f" % result)
-        # if lang in lang_3_to_2:
-        #     mlflow_writer.log_metric(lang_3_to_2[lang], (lang_to_en_result + en_to_lang_result) / 2)
-        # else:
-        #     mlflow_writer.log_metric(lang, (lang_to_en_result + en_to_lang_result) / 2)
 
-        # print(result)
+        if lang in lang_3_to_2:
+            mlflow_writer.log_metric(lang_3_to_2[lang], (lang_to_en_result + en_to_lang_result) / 2)
+        else:
+            mlflow_writer.log_metric(lang, (lang_to_en_result + en_to_lang_result) / 2)
 
     langs.append("Avg.")
     scores.append("%.2f" % (sum([float(score) for score in scores]) / len(scores)))
-    # mlflow_writer.log_metric(f"Avg.", (sum([float(score) for score in scores]) / len(scores)))
+    mlflow_writer.log_metric(f"Avg.", (sum([float(score) for score in scores]) / len(scores)))
     print_table(langs, scores)
 
 if __name__ == "__main__":

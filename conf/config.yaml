@@ -1,6 +1,6 @@
 model_args:
   model_name_or_path: "bert-base-uncased" # bert-base-multilingual-cased
-  cache_dir: /home/fmg/nishikawa/EASE/cache_dir
+  cache_dir: EASE/cache_dir
   model_revision: "main"
   use_auth_token: False
   simcse_temp: 0.05
@@ -33,7 +33,7 @@ train_args:
   seed: 42
   learning_rate: 5e-05
   dataset_name_or_path: wiki_en # wiki_18 or your dataset path
-  wikipedia2vec_path: /home/fmg/nishikawa/multilingual_classification_using_language_link/data/enwiki.768.vec
+  wikipedia2vec_path: /home/nchaso/data/enwiki.fp16.768.vec
   langs:
     - "en"
   eval_transfer: False
@@ -42,7 +42,7 @@ train_args:
   experiment_name: hoge
   output_dir: results/hoge
   num_train_epochs: 1
-  per_device_train_batch_size: 64
+  per_device_train_batch_size: 8
   eval_steps: 125
   logging_steps: 125
   fp16: True
@@ -50,7 +50,7 @@ train_args:
   greater_is_better: True
   metric_for_best_model: stsb_spearman # avg_sts
   load_best_model_at_end: True
-  gradient_accumulation_steps: 2
+  gradient_accumulation_steps: 16
   warmup_steps: 500
   ignore_data_skip: False
   resume_from_checkpoint: False
