@@ -43,6 +43,7 @@ bash download_all.sh
 ## Evaluation
 
 We provide evaluation codes for sentence embeddings including Short Text Clustering, Cross-lingual Parallel Matching and Cross-lingual Text Classification.
+
 Set your model or path of tranformers-based checkpoint (`--model_name_or_path`),
 pooling method type (`--pooler`), and what set of tasks (`--task_set`).
 See the example codes below.
@@ -84,6 +85,7 @@ Please refer to each evaluation code for detailed descriptions of arguments.
 
 
 You can train an EASE model in a monolingual setting using English Wikipedia sentences or in a multilingual setting using Wikipedia sentences in 18 languages.
+
 We provide example trainig scripts for both monolingual ([train_monolingual_ease.sh](https://github.com/Sosuke115/EASE/blob/main/train_monolingual_ease.sh)) and multilingual ([train_multilingual_ease.sh](https://github.com/Sosuke115/EASE/blob/main/train_multilingual_ease.sh)) setting.
 <!-- TODO link -->
 
