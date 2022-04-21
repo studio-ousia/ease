@@ -2,6 +2,7 @@ import numpy as np
 import re
 from tqdm import tqdm
 
+
 class GloveSentenceEncoder:
     def __init__(self, glove_vector_path):
         self.glove_embedding = self.read_embedding(glove_vector_path)
@@ -9,9 +10,7 @@ class GloveSentenceEncoder:
 
     def read_embedding(self, path):
         glove_embedding = {}
-        with open(
-            path, encoding="utf-8"
-        ) as f:
+        with open(path, encoding="utf-8") as f:
             for line in f:
                 values = line.split()
                 word = values[0]
@@ -26,8 +25,11 @@ class GloveSentenceEncoder:
 
     def encode_sentence(self, text):
         words = self.text_to_words(text)
-        embeddings = [self.glove_embedding[w] for w in words if w in self.glove_embedding]
-        if len(embeddings) == 0: return np.zeros(self.dim)
+        embeddings = [
+            self.glove_embedding[w] for w in words if w in self.glove_embedding
+        ]
+        if len(embeddings) == 0:
+            return np.zeros(self.dim)
         return np.mean(embeddings, axis=0)
 
     def encode_sentences(self, sentences):

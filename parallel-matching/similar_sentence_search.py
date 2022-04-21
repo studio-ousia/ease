@@ -11,14 +11,17 @@ from omegaconf import OmegaConf
 import argparse
 from prettytable import PrettyTable
 import sys
+
 sys.path.append(os.path.abspath(os.getcwd()))
 from utils.mlflow_writer import MlflowWriter
+
 
 def print_table(task_names, scores):
     tb = PrettyTable()
     tb.field_names = task_names
     tb.add_row(scores)
     print(tb)
+
 
 # tatoebaのセンテンスをロードする関数
 def load_data(path):
@@ -45,22 +48,31 @@ def batcher(model, tokenizer, sentence, args, device="cuda"):
         hidden_states = outputs.hidden_states
 
     # Apply different poolers
-    if args.pooler == 'cls':
+    if args.pooler == "cls":
         # There is a linear+activation layer after CLS representation
         return pooler_output.cpu()
-    elif args.pooler == 'cls_before_pooler':
+    elif args.pooler == "cls_before_pooler":
         return last_hidden[:, 0].cpu()
     elif args.pooler == "avg":
-        return ((last_hidden * batch['attention_mask'].unsqueeze(-1)).sum(1) / batch['attention_mask'].sum(-1).unsqueeze(-1)).cpu()
+        return (
+            (last_hidden * batch["attention_mask"].unsqueeze(-1)).sum(1)
+            / batch["attention_mask"].sum(-1).unsqueeze(-1)
+        ).cpu()
     elif args.pooler == "avg_first_last":
         first_hidden = hidden_states[0]
         last_hidden = hidden_states[-1]
-        pooled_result = ((first_hidden + last_hidden) / 2.0 * batch['attention_mask'].unsqueeze(-1)).sum(1) / batch['attention_mask'].sum(-1).unsqueeze(-1)
+        pooled_result = (
+            (first_hidden + last_hidden) / 2.0 * batch["attention_mask"].unsqueeze(-1)
+        ).sum(1) / batch["attention_mask"].sum(-1).unsqueeze(-1)
         return pooled_result.cpu()
     elif args.pooler == "avg_top2":
         second_last_hidden = hidden_states[-2]
         last_hidden = hidden_states[-1]
-        pooled_result = ((last_hidden + second_last_hidden) / 2.0 * batch['attention_mask'].unsqueeze(-1)).sum(1) / batch['attention_mask'].sum(-1).unsqueeze(-1)
+        pooled_result = (
+            (last_hidden + second_last_hidden)
+            / 2.0
+            * batch["attention_mask"].unsqueeze(-1)
+        ).sum(1) / batch["attention_mask"].sum(-1).unsqueeze(-1)
         return pooled_result.cpu()
     else:
         raise NotImplementedError
@@ -85,7 +97,10 @@ def get_cos_sim_matrix(matrix1, matrix2):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--model_name_or_path", type=str, help="Transformers' model name or path", default="bert-base-multilingual-cased"
+        "--model_name_or_path",
+        type=str,
+        help="Transformers' model name or path",
+        default="bert-base-multilingual-cased",
     )
     parser.add_argument(
         "--pooler",
@@ -101,7 +116,28 @@ def main():
         help="mlflow experiment name",
     )
     parser.add_argument(
-        "--langs", type=str, nargs="+", default=['ar', 'ca', 'cs', 'de', 'eo', 'es', 'fa', 'fr', 'it', 'ja', 'ko', 'nl', 'pl', 'pt', 'ru', 'sv', 'tr']
+        "--langs",
+        type=str,
+        nargs="+",
+        default=[
+            "ar",
+            "ca",
+            "cs",
+            "de",
+            "eo",
+            "es",
+            "fa",
+            "fr",
+            "it",
+            "ja",
+            "ko",
+            "nl",
+            "pl",
+            "pt",
+            "ru",
+            "sv",
+            "tr",
+        ]
         # "--langs", type=str, nargs="+", default=["kab","pam","kw","br","mhr"]
     )
 
@@ -128,7 +164,7 @@ def main():
         for lang in pycountry.languages
         if hasattr(lang, "alpha_2")
     }
-    lang_3_to_2 = {v:k for k,v in lang_2_to_3.items()}
+    lang_3_to_2 = {v: k for k, v in lang_2_to_3.items()}
     langs = [lang_2_to_3[lang] if lang in lang_2_to_3 else lang for lang in args.langs]
     langs = sorted(set(langs), key=langs.index)
 
@@ -172,14 +208,19 @@ def main():
         scores.append("%.2f" % ((lang_to_en_result + en_to_lang_result) / 2))
 
         if lang in lang_3_to_2:
-            mlflow_writer.log_metric(lang_3_to_2[lang], (lang_to_en_result + en_to_lang_result) / 2)
+            mlflow_writer.log_metric(
+                lang_3_to_2[lang], (lang_to_en_result + en_to_lang_result) / 2
+            )
         else:
             mlflow_writer.log_metric(lang, (lang_to_en_result + en_to_lang_result) / 2)
 
     langs.append("Avg.")
     scores.append("%.2f" % (sum([float(score) for score in scores]) / len(scores)))
-    mlflow_writer.log_metric(f"Avg.", (sum([float(score) for score in scores]) / len(scores)))
+    mlflow_writer.log_metric(
+        f"Avg.", (sum([float(score) for score in scores]) / len(scores))
+    )
     print_table(langs, scores)
+
 
 if __name__ == "__main__":
     main()

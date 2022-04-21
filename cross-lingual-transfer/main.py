@@ -1,5 +1,14 @@
-from transformers import Trainer, TrainingArguments, AutoTokenizer, AutoConfig, XLMRobertaTokenizer
-from bert import BertForSequenceClassificationWithPooler, RobertaForSequenceClassificationWithPooler
+from transformers import (
+    Trainer,
+    TrainingArguments,
+    AutoTokenizer,
+    AutoConfig,
+    XLMRobertaTokenizer,
+)
+from bert import (
+    BertForSequenceClassificationWithPooler,
+    RobertaForSequenceClassificationWithPooler,
+)
 from sklearn.metrics import accuracy_score
 from data import MLDocParser
 import torch
@@ -127,7 +136,6 @@ def main():
     train_texts, train_labels = eval_data["en"]["train"]
     val_texts, val_labels = eval_data["en"]["dev"]
 
-
     if "xlm" in args.model_name_or_path:
         tokenizer = XLMRobertaTokenizer.from_pretrained(args.model_name_or_path)
     else:
@@ -153,11 +161,10 @@ def main():
 
     elif any([name in args.model_name_or_path for name in ["bert", "LaBSE"]]):
         model = BertForSequenceClassificationWithPooler.from_pretrained(
-        args.model_name_or_path, config=config
+            args.model_name_or_path, config=config
         )
     else:
         raise NotImplementedError
-
 
     if not config.do_finetune:
         for name, param in model.named_parameters():

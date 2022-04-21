@@ -4,6 +4,7 @@ import sys
 import random
 import torch
 from tqdm import tqdm
+
 # from datasets import load_dataset
 import gc
 import os
@@ -21,7 +22,11 @@ def get_dataset(data, max_seq_length, tokenizer, entity_vocab, masked_sentence_r
     hn_title_ids = []
 
     for d in tqdm(data):
-        title, sentence, hn_titles = d["positive_entity"], d["text"], d["negative_entity"]
+        title, sentence, hn_titles = (
+            d["positive_entity"],
+            d["text"],
+            d["negative_entity"],
+        )
 
         # TODO how to choose hn title
         # TODO fix bug for multiple hardnegatives
@@ -41,7 +46,15 @@ def get_dataset(data, max_seq_length, tokenizer, entity_vocab, masked_sentence_r
             title_ids.append(entity_vocab[ENTITY_PAD_MARK])
 
         hn_title_ids.append(
-            np.array([entity_vocab[hn_title] if hn_title in entity_vocab else entity_vocab[ENTITY_PAD_MARK] for hn_title in hn_titles], dtype=int)
+            np.array(
+                [
+                    entity_vocab[hn_title]
+                    if hn_title in entity_vocab
+                    else entity_vocab[ENTITY_PAD_MARK]
+                    for hn_title in hn_titles
+                ],
+                dtype=int,
+            )
         )
         input_ids.append(features["input_ids"])
         attention_masks.append(features["attention_mask"])
@@ -49,9 +62,16 @@ def get_dataset(data, max_seq_length, tokenizer, entity_vocab, masked_sentence_r
             token_type_ids.append(features["token_type_ids"])
     return input_ids, attention_masks, token_type_ids, title_ids, hn_title_ids
 
+
 class MyDataset(torch.utils.data.Dataset):
     def __init__(
-        self, input_ids, attention_mask, token_type_ids, title_id, hn_title_ids, bert_model
+        self,
+        input_ids,
+        attention_mask,
+        token_type_ids,
+        title_id,
+        hn_title_ids,
+        bert_model,
     ):
         self.bert_model = bert_model
         self.input_ids = input_ids
@@ -73,6 +93,7 @@ class MyDataset(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.input_ids)
+
 
 # sizeまでPAD_MARKで埋める
 def add_padding(data_list, size):
@@ -150,7 +171,7 @@ class WikidataDataFormatter(AbstractDataFormatter):
                                 ),
                                 self.hard_negative_num,
                             ),
-                            masked_sentence
+                            masked_sentence,
                         )
                     )
             res.extend(random.sample(lang_res, min(len(lang_res), self.sample_num)))
@@ -172,7 +193,7 @@ class SimCSEDataFormatter(AbstractDataFormatter):
                 )
             )
         res = random.sample(res, min(len(res), self.sample_num))
-        
+
         return res
 
 
@@ -214,7 +235,6 @@ class RawDataLoader:
                 # else:
                 #     dataset_path = f"data/wikidata_hyperlinks_with_type_hardnegatives_test_False_first_sentence_False_abst_False_{lang}.pkl"
 
-
                 if dataset == "wikidata_hyperlink_type_hn_paragraph":
                     dataset_path = f"data/wikidata_hyperlinks_with_type_hardnegatives_test_False_first_sentence_False_abst_False_paragraph_True_size_1000000_max_count_10000_link_min_count_10_{lang}.pkl"
 
@@ -227,7 +247,7 @@ class RawDataLoader:
                     file_objs.append(pickle_load(dataset_path))
 
                 except FileNotFoundError:
-                    print(f'{dataset_path} file not found error!')
+                    print(f"{dataset_path} file not found error!")
                     return
 
             formatter = WikidataDataFormatter(
@@ -236,7 +256,7 @@ class RawDataLoader:
                 hard_negative_num,
                 min_length,
             )
-        
+
         elif dataset == "wikipedia_random":
             print(f"langs: {langs}")
             file_objs = []

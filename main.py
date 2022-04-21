@@ -16,7 +16,13 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 from scipy.spatial.distance import cosine
-from transformers import AutoModel, AutoTokenizer, AutoConfig, AdamW, XLMRobertaTokenizer
+from transformers import (
+    AutoModel,
+    AutoTokenizer,
+    AutoConfig,
+    AdamW,
+    XLMRobertaTokenizer,
+)
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from wikipedia2vec import Wikipedia2Vec
 
@@ -105,6 +111,7 @@ class OurTrainingArguments(TrainingArguments):
 
         return device
 
+
 def build_entity_vocab(data):
     entities = []
     for d in tqdm(data):
@@ -121,6 +128,7 @@ def update_args(base_args, input_args):
     for key, value in dict(input_args).items():
         base_args.__dict__[key] = value
     return base_args
+
 
 @hydra.main(config_path="conf", config_name="config")
 def main(cfg: DictConfig):
@@ -147,7 +155,6 @@ def main(cfg: DictConfig):
     torch.manual_seed(train_args.seed)
     torch.cuda.manual_seed_all(train_args.seed)
 
-
     # トークナイザ
     tokenizer_kwargs = {
         "cache_dir": model_args.cache_dir,
@@ -159,20 +166,27 @@ def main(cfg: DictConfig):
     if "xlm" in model_args.model_name_or_path:
         tokenizer = XLMRobertaTokenizer.from_pretrained(model_args.model_name_or_path)
     else:
-        tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path, **tokenizer_kwargs)
-
+        tokenizer = AutoTokenizer.from_pretrained(
+            model_args.model_name_or_path, **tokenizer_kwargs
+        )
 
     print("loading data...")
     wikipedia_data = []
 
     # wiki_en or wiki_18 or your dataset path
     if train_args.dataset_name_or_path == "wiki_en":
-        wikipedia_data = load_dataset('json', data_files=os.path.join(cwd,'data/ease-dataset-en.json'))["train"]
+        wikipedia_data = load_dataset(
+            "json", data_files=os.path.join(cwd, "data/ease-dataset-en.json")
+        )["train"]
     elif train_args.dataset_name_or_path == "wiki_18":
-        wikipedia_data = load_dataset('json', data_files=os.path.join(cwd,'data/ease-dataset-18-langs.json'))["train"]
+        wikipedia_data = load_dataset(
+            "json", data_files=os.path.join(cwd, "data/ease-dataset-18-langs.json")
+        )["train"]
     elif train_args.dataset_name_or_path == "test":
-         wikipedia_data = load_dataset('json', data_files=os.path.join(cwd,'data/ease-dataset-test.json'))["train"]
-        
+        wikipedia_data = load_dataset(
+            "json", data_files=os.path.join(cwd, "data/ease-dataset-test.json")
+        )["train"]
+
     else:
         # TODO load from dataset path
         raise NotImplementedError()
@@ -180,17 +194,28 @@ def main(cfg: DictConfig):
     # build entity vocab
     print("build entity vocab...")
     if train_args.train_saved_model:
-         entity_vocab = pickle_load(os.path.join(model_args.model_name_or_path, "entity_vocab.pkl"))
+        entity_vocab = pickle_load(
+            os.path.join(model_args.model_name_or_path, "entity_vocab.pkl")
+        )
     else:
         entity_vocab = build_entity_vocab(wikipedia_data)
 
     print(f"entities: {len(entity_vocab)}")
     print("get_dataset...")
     input_ids, attention_masks, token_type_ids, title_id, hn_title_ids = get_dataset(
-        wikipedia_data, model_args.max_seq_length, tokenizer, entity_vocab, model_args.masked_sentence_ratio
+        wikipedia_data,
+        model_args.max_seq_length,
+        tokenizer,
+        entity_vocab,
+        model_args.masked_sentence_ratio,
     )
     train_dataset = MyDataset(
-        input_ids, attention_masks, token_type_ids, title_id, hn_title_ids, model_args.model_name_or_path
+        input_ids,
+        attention_masks,
+        token_type_ids,
+        title_id,
+        hn_title_ids,
+        model_args.model_name_or_path,
     )
 
     del wikipedia_data
@@ -223,7 +248,6 @@ def main(cfg: DictConfig):
             except KeyError:
                 pass
         print(cnt)
-
 
     config_kwargs = {
         "cache_dir": model_args.cache_dir,
@@ -259,12 +283,15 @@ def main(cfg: DictConfig):
 
         if model_args.do_mlm:
             if "multilingual" in model_args.model_name_or_path:
-                pretrained_model = BertForPreTraining.from_pretrained("bert-base-multilingual-cased")
+                pretrained_model = BertForPreTraining.from_pretrained(
+                    "bert-base-multilingual-cased"
+                )
             else:
-                pretrained_model = BertForPreTraining.from_pretrained("bert-base-uncased")
+                pretrained_model = BertForPreTraining.from_pretrained(
+                    "bert-base-uncased"
+                )
 
             model.lm_head.load_state_dict(pretrained_model.cls.predictions.state_dict())
-
 
     model.resize_token_embeddings(len(tokenizer))
     model.entity_embedding.weight = nn.Parameter(torch.FloatTensor(entity_embeddings))

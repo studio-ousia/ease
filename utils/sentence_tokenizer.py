@@ -36,6 +36,7 @@ class BaseSentenceTokenizer(metaclass=ABCMeta):
         """
         pass
 
+
 # class MosesSentenceTokenizer(BaseSentenceTokenizer):
 #     # コンストラクタ
 #     def __init__(self, lang):
@@ -107,7 +108,9 @@ class BaseSentenceTokenizer(metaclass=ABCMeta):
 import polyglot
 from polyglot.text import Text
 from polyglot.detect.base import logger as polyglot_logger
+
 polyglot_logger.setLevel("ERROR")
+
 
 class PolyglotSentenceTokenizer(BaseSentenceTokenizer):
 

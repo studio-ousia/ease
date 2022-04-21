@@ -27,6 +27,7 @@ def get_label_mapping_dict(list1, list2):
         mapping_dict[classes[l1_idx]] = clusters[l2_idx]
     return mapping_dict
 
+
 def print_table(task_names, scores):
     tb = PrettyTable()
     tb.field_names = task_names

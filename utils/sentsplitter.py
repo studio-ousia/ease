@@ -46,17 +46,14 @@ class MosesSentenceSplitter(ToolWrapper):
 
     def __init__(self, lang="en", more=True):
         self.lang = lang
-        program = path.join(
-            path.dirname(__file__),
-            "split-sentences.perl"
-        )
+        program = path.join(path.dirname(__file__), "split-sentences.perl")
         argv = ["perl", program, "-q", "-b", "-l", self.lang]
         if more:
             argv.append("-m")
         super().__init__(argv)
 
     def __str__(self):
-        return "MosesSentenceSplitter(lang=\"{lang}\")".format(lang=self.lang)
+        return 'MosesSentenceSplitter(lang="{lang}")'.format(lang=self.lang)
 
     def __call__(self, paragraph):
         """Splits sentences within a paragraph.
@@ -111,6 +108,7 @@ def main():
     if args["--selftest"]:
         import doctest
         import mosestokenizer.sentsplitter
+
         doctest.testmod(mosestokenizer.sentsplitter)
         if not args["<lang>"]:
             sys.exit(0)
