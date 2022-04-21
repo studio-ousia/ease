@@ -127,8 +127,10 @@ def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
     model_args, train_args = cfg.model_args, cfg.train_args
 
+    # TODO refactoring
     parser = HfArgumentParser(OurTrainingArguments)
-    # parser = HfArgumentParser(TrainingArguments)
+    # base_train_args = parser.parse_args_into_dataclasses()
+    # # parser = HfArgumentParser(TrainingArguments)
     base_train_args = parser.parse_args_into_dataclasses(
         ["--output_dir", "saved_models", "--evaluation_strategy", "steps"]
     )[0]
@@ -165,12 +167,12 @@ def main(cfg: DictConfig):
 
     # wiki_en or wiki_18 or your dataset path
     if train_args.dataset_name_or_path == "wiki_en":
-        wikipedia_data = load_dataset("sosuke/ease-dataset-en.json")["train"]
+        wikipedia_data = load_dataset('json', data_files=os.path.join(cwd,'data/ease-dataset-en.json'))["train"]
     elif train_args.dataset_name_or_path == "wiki_18":
-        wikipedia_data = load_dataset("sosuke/ease-dataset-18-langs.json")["train"]
+        wikipedia_data = load_dataset('json', data_files=os.path.join(cwd,'data/ease-dataset-18-langs.json'))["train"]
     elif train_args.dataset_name_or_path == "test":
-        wikipedia_data = load_dataset("sosuke/ease-dataset-test.json")["train"]
-
+         wikipedia_data = load_dataset('json', data_files=os.path.join(cwd,'data/ease-dataset-test.json'))["train"]
+        
     else:
         # TODO load from dataset path
         raise NotImplementedError()
@@ -195,7 +197,7 @@ def main(cfg: DictConfig):
     gc.collect()
 
     # load pretrained entity embeddings
-    embedding = Wikipedia2Vec.load(train_args.wikipedia2vec_path)
+    embedding = Wikipedia2Vec.load(os.path.join(cwd, train_args.wikipedia2vec_path))
     dim_size = embedding.syn0.shape[1]
 
     # set struct omegaconf

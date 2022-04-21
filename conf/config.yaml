@@ -32,8 +32,9 @@ train_args:
   train_saved_model: False
   seed: 42
   learning_rate: 5e-05
-  dataset_name_or_path: wiki_en # wiki_18 or your dataset path
-  wikipedia2vec_path: /home/nchaso/data/enwiki.fp16.768.vec
+  # dataset_name_or_path: wiki_en # wiki_18 or your dataset path
+  dataset_name_or_path: test
+  wikipedia2vec_path: data/enwiki.fp16.768.vec
   langs:
     - "en"
   eval_transfer: False

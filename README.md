@@ -3,27 +3,16 @@
 EASE is a novel method for learning sentence embeddings via contrastive learning between sentences and their related entities proposed in out paper EASE: Entity-Aware Contrastive Learning of Sentence Embedding.
 This repository contains the source code to train the model and evaluate it with downstream tasks.
 
+<!-- TODO NAACL2022の記述 -->
+
 <img src="figure/ease.png" width="70%">
 
-
-## Quick Links
-
-
-  - [Model List](#model-list)
-  - [Training](#training)
-    - [Preparation](#preparation)
-  - [Evaluation](#evaluation)
-    - [Semantic Textual Similarity](#sts)
-    - [Short Text Clustering](#stc)
-    - [Cross-lingual Parallel Matching](#clpm)
-    - [Cross-lingual Text Classification](#cltc)
-  - [MewsC-16](#mewsc-16)
-  - [Citation](#citation)
-
-## Model List
+## Released Models
 
 Our published models are listed as follows.
+You can use these models by using [HuggingFace's Transformers](https://github.com/huggingface/transformers).
 
+<!-- huggingface libriryで使えるよ -->
 
 
 |              **Monolingual Models**             | **Avg. STS** | **Avg. STC** |
@@ -35,103 +24,144 @@ Our published models are listed as follows.
 |     [sosuke/ease-xlm-roberta-base](https://huggingface.co/sosuke/ease-xlm-roberta-base)     |   57.1 | 35.4 |
 
 
-## Training
+## Installation
 
-##### Preparation
+<!-- Python 3.7.6 -->
 
 Run the following script to install the dependent libraries.
 ```bash
 pip install -r requirements.txt
 ```
 
-Before training, please download the training and evaluation datasets.
+Before training, please download the datasets for training and evaluation.
 ```bash
 bash download_all.sh
 ```
 <!-- TODO check download_all.sh -->
 
-Please see the example scripts to train an EASE model.
-
-Hydra利用しているよ
-config見てね
 
 ## Evaluation
 
-
+We provide evaluation codes for sentence embeddings including Short Text Clustering, Cross-lingual Parallel Matching and Cross-lingual Text Classification.
+Set your model or path of tranformers-based checkpoint (`--model_name_or_path`),
+pooling method type (`--pooler`), and what set of tasks (`--task_set`).
+See the example codes below.
 
 ##### Semantic Textual Similarity
-
 ```bash
 python evaluation.py \
-    --model_name_or_path bert-base-uncased \ # set your model path
-    --pooler avg \ # set pooling method
-    --task_set sts \ # sts or cl-sts o
-    --mode test
+    --model_name_or_path sosuke/ease-bert-base-multilingual-cased \ 
+    --pooler avg \ 
+    --task_set cl-sts 
 ```
 
 ##### Short Text Clustering
-
 ```bash
 python text-clustering/evaluate.py \
-    --model_name_or_path bert-base-uncased \ # set your model path
-    --pooler avg \ # set pooling method
-    --task_set mono # mono or cl or full
+    --model_name_or_path sosuke/ease-bert-base-multilingual-cased \
+    --pooler avg \ 
+    --task_set cl
 ```
 
 ##### Cross-lingual Parallel Matching
-
 ```bash
 python parallel-matching/similar_sentence_search.py \
-    --model_name_or_path bert-base-multilingual-cased \ # set your model path
-    --pooler avg # set pooling method
+    --model_name_or_path sosuke/ease-bert-base-multilingual-cased \ 
+    --pooler avg 
 ```
 
 ##### Cross-lingual Text Classification
-
 ```bash
-cd cross-lingual-transfer/data
-download_dataset.sh
+python cross-lingual-transfer/main.py \
+    --model_name_or_path sosuke/ease-bert-base-multilingual-cased \ 
+    --pooler avg
 ```
 
-```bash
-python cross-lingual-transfer/main.py
-    --model_name_or_path bert-base-multilingual-cased \ # set your model path
-    --pooler avg \ # set pooling method
-```
+Please refer to each evaluation code for detailed descriptions of arguments.
+
+
+## Training
+
+
+You can train an EASE model in a monolingual setting using English Wikipedia sentences or in a multilingual setting using Wikipedia sentences in 18 languages.
+We provide example trainig scripts for both monolingual ([train_monolingual_ease.sh](https://github.com/Sosuke115/EASE/blob/main/train_monolingual_ease.sh)) and multilingual ([train_multilingual_ease.sh](https://github.com/Sosuke115/EASE/blob/main/train_multilingual_ease.sh)) setting.
+<!-- TODO link -->
+
+
 
 ## MewsC-16
 
 We constructed [MewsC-16](https://github.com/Sosuke115/EASE/tree/main/text-clustering/data/mewsc16) (**M**ultilingual Short Text **C**lustering Dataset for N**ews** in **16** languages) from Wikinews.
 The dataset contains topic sentences from Wikinews articles in 13 categories and 16 languages. More detailed information is available in our paper, Appendix E.
 
+<!-- TODO link -->
 <!-- TODO reproduction code -->
 
 ##### Statistics
 
-<table align="left">
-  <tr>
-    <td>1番目</td>
-  </tr>
+<table border=0><tr><td> 
+<table border>
+<tr>
+<th>Language </th><th> sentences </th><th> label types</th>
+</tr>
+<tr  align="right">
+<td>ar </td><td>2,224 </td><td>11 </td>
+</tr>
+<tr  align="right">
+<td>ca </td><td>3,310 </td><td>11 </td>
+</tr>
+<tr  align="right">
+<td>cs </td><td>1,534 </td><td>9 </td>
+</tr>
+<tr  align="right">
+<td>de </td><td>6,398 </td><td>8 </td>
+</tr>
+<tr  align="right">
+<td>en </td><td>12,892 </td><td>13 </td>
+</tr>
+<tr  align="right">
+<td>eo </td><td>227 </td><td>8 </td>
+</tr>
+<tr  align="right">
+<td>es </td><td>6,415 </td><td>11 </td>
+</tr>
+<tr  align="right">
+<td>fa </td><td> 773</td><td>9 </td>
+</tr>
 </table>
-<table>
-  <tr>
-    <td>2番目</td>
-  </tr>
+</td>
+<td valign="top"> 
+<table border>
+<tr>
+<th>Language </th><th> sentences </th><th> label types</th>
+</tr>
+<tr  align="right">
+<td>fr </td><td>10,697 </td><td>13 </td>
+</tr>
+<tr  align="right">
+<td>ja </td><td>1,984 </td><td>12 </td>
+</tr>
+<tr  align="right">
+<td>ko </td><td>344 </td><td>10 </td>
+</tr>
+<tr  align="right">
+<td>pl </td><td>7,247 </td><td>11</td>
+</tr>
+<tr  align="right">
+<td>pt </td><td>8,921 </td><td>11 </td>
+</tr>
+<tr  align="right">
+<td>ru </td><td>1,406 </td><td>12 </td>
+</tr>
+<tr  align="right">
+<td>sv </td><td>584 </td><td>7 </td>
+</tr>
+<tr  align="right">
+<td>tr </td><td> 459</td><td>7 </td>
+</tr>
+
 </table>
-
-| Language | Code | Docs  | Mentions | Unique Entities | Entities outside En-Wiki |
-|----------|------|-------|----------|-----------------|--------------------------|
-| Japanese | ja   | 3410  | 34463    | 13663           | 3384                     |
-| German   | de   | 13703 | 65592    | 23086           | 3054                     |
-| Spanish  | es   | 10284 | 56716    | 22077           | 1805                     |
-| Arabic   | ar   | 1468  | 7367     | 2232            | 141                      |
-| Serbian  | sr   | 15011 | 35669    | 4332            | 269                      |
-| Turkish  | tr   | 997   | 5811     | 2630            | 157                      |
-| Persian  | fa   | 165   | 535      | 385             | 12                       |
-| Tamil    | ta   | 1000  | 2692     | 1041            | 20                       |
-| English  | en   | 12679 | 80242    | 38697           | 14                       |
-| Total    |      | 58717 | 289087   | 82162           | 8807                     |
-
+</td></tr></table> 
 
 ## Citation
 [TBA]
