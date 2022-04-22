@@ -25,7 +25,7 @@ from dataset import MyDataset, get_dataset
 from ease.ease_models import BertForEACL, RobertaForEACL
 from ease.trainers import CLTrainer
 from utils.mlflow_writer import MlflowWriter
-from utils.utils import pickle_dump, pickle_load
+from utils.utils import pickle_dump, pickle_load, update_args
 
 logger = logging.getLogger(__name__)
 
@@ -91,12 +91,6 @@ def build_entity_vocab(data):
     return entity_vocab
 
 
-def update_args(base_args, input_args):
-    for key, value in dict(input_args).items():
-        base_args.__dict__[key] = value
-    return base_args
-
-
 @hydra.main(config_path="conf", config_name="config")
 def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
@@ -104,8 +98,6 @@ def main(cfg: DictConfig):
 
     # TODO refactoring
     parser = HfArgumentParser(OurTrainingArguments)
-    # base_train_args = parser.parse_args_into_dataclasses()
-    # # parser = HfArgumentParser(TrainingArguments)
     base_train_args = parser.parse_args_into_dataclasses(
         ["--output_dir", "saved_models", "--evaluation_strategy", "steps"]
     )[0]
@@ -122,7 +114,6 @@ def main(cfg: DictConfig):
     torch.manual_seed(train_args.seed)
     torch.cuda.manual_seed_all(train_args.seed)
 
-    # トークナイザ
     tokenizer_kwargs = {
         "cache_dir": model_args.cache_dir,
         "use_fast": True,
@@ -140,7 +131,7 @@ def main(cfg: DictConfig):
     print("loading data...")
     wikipedia_data = []
 
-    # wiki_en or wiki_18 or your dataset path
+    # wiki_en or wiki_18
     if train_args.dataset_name_or_path == "wiki_en":
         wikipedia_data = load_dataset(
             "json", data_files=os.path.join(cwd, "data/ease-dataset-en.json")
@@ -155,11 +146,10 @@ def main(cfg: DictConfig):
         )["train"]
 
     else:
-        # TODO load from dataset path
+        # TODO load from your dataset
         raise NotImplementedError()
 
     # build entity vocab
-    print("build entity vocab...")
     if train_args.train_saved_model:
         entity_vocab = pickle_load(
             os.path.join(model_args.model_name_or_path, "entity_vocab.pkl")
@@ -168,7 +158,6 @@ def main(cfg: DictConfig):
         entity_vocab = build_entity_vocab(wikipedia_data)
 
     print(f"entities: {len(entity_vocab)}")
-    print("get_dataset...")
     input_ids, attention_masks, token_type_ids, title_id, hn_title_ids = get_dataset(
         wikipedia_data,
         model_args.max_seq_length,
@@ -202,12 +191,10 @@ def main(cfg: DictConfig):
     )
     print(model_args.entity_emb_shape)
 
-    # init entity embeddings
+    # initialize entity embeddings
     entity_embeddings[0] = np.zeros(dim_size)
     cnt = 0
-
     if model_args.init_wiki2emb:
-        print("init wiki2vec")
         for entity, index in tqdm(entity_vocab.items()):
             try:
                 entity_embeddings[index] = embedding.get_entity_vector(entity)
@@ -221,7 +208,6 @@ def main(cfg: DictConfig):
         "revision": model_args.model_revision,
         "use_auth_token": True if model_args.use_auth_token else None,
     }
-
     config = AutoConfig.from_pretrained(model_args.model_name_or_path, **config_kwargs)
 
     if "roberta" in model_args.model_name_or_path:
@@ -405,9 +391,7 @@ def main(cfg: DictConfig):
     if train_args.do_train:
         train_result = trainer.train(model_path=model_path)
         trainer.save_model()  # Saves the tokenizer too for easy upload
-
         output_train_file = os.path.join(train_args.output_dir, "train_results.txt")
-
         if trainer.is_world_process_zero():
             with open(output_train_file, "w") as writer:
                 logger.info("***** Train results *****")
@@ -421,7 +405,6 @@ def main(cfg: DictConfig):
     if train_args.do_eval:
         logger.info("*** Evaluate ***")
         results = trainer.evaluate(eval_senteval_transfer=False)
-
         output_eval_file = os.path.join(train_args.output_dir, "eval_results.txt")
         if trainer.is_world_process_zero():
             with open(output_eval_file, "w") as writer:
@@ -441,9 +424,6 @@ def main(cfg: DictConfig):
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), ".hydra/hydra.yaml"))
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), ".hydra/overrides.yaml"))
     mlflow_writer.log_artifact(os.path.join(os.getcwd(), "main.log"))
-
-    del trainer, model, tokenizer
-    gc.collect()
 
 
 if __name__ == "__main__":
