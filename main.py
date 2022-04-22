@@ -1,71 +1,41 @@
 from dataclasses import dataclass, field
-from typing import Optional, Union, List, Dict, Tuple
-from transformers import (
-    CONFIG_MAPPING,
-    MODEL_FOR_MASKED_LM_MAPPING,
-    HfArgumentParser,
-    BertForPreTraining,
-)
-from torch.utils.data import TensorDataset, random_split
+from typing import Dict, List, Optional, Tuple, Union
+
+from transformers import (CONFIG_MAPPING, MODEL_FOR_MASKED_LM_MAPPING,
+                          BertForPreTraining, HfArgumentParser)
 
 MODEL_CONFIG_CLASSES = list(MODEL_FOR_MASKED_LM_MAPPING.keys())
 MODEL_TYPES = tuple(conf.model_type for conf in MODEL_CONFIG_CLASSES)
 
+import logging
 import os
-from tqdm import tqdm
+import random
+
+import hydra
+import numpy as np
 import torch
 import torch.nn as nn
-from scipy.spatial.distance import cosine
-from transformers import (
-    AutoModel,
-    AutoTokenizer,
-    AutoConfig,
-    AdamW,
-    XLMRobertaTokenizer,
-)
-from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
+from datasets import load_dataset
+from omegaconf import DictConfig, OmegaConf, open_dict
+from tqdm import tqdm
+from transformers import AutoConfig, AutoTokenizer, XLMRobertaTokenizer
 from wikipedia2vec import Wikipedia2Vec
 
+from dataset import MyDataset, get_dataset
 from ease.ease_models import BertForEACL, RobertaForEACL
 from ease.trainers import CLTrainer
-
-from utils.utils import pickle_dump, pickle_load, save_model
 from utils.mlflow_writer import MlflowWriter
-
-import pprint
-import random
-import numpy as np
-import hydra
-from omegaconf import DictConfig, OmegaConf, open_dict
-import mlflow
-
-from dataset import MyDataset, get_dataset
-
-from datasets import load_dataset
-import logging
+from utils.utils import pickle_dump, pickle_load
 
 logger = logging.getLogger(__name__)
 
-from transformers import (
-    default_data_collator,
-    TrainingArguments,
-)
-
 import gc
 
-
-from transformers.file_utils import (
-    cached_property,
-    torch_required,
-    is_torch_available,
-    is_torch_tpu_available,
-)
-from transformers.tokenization_utils_base import (
-    BatchEncoding,
-    PaddingStrategy,
-    PreTrainedTokenizerBase,
-)
-
+from transformers import TrainingArguments
+from transformers.file_utils import (cached_property, is_torch_tpu_available,
+                                     torch_required)
+from transformers.tokenization_utils_base import (PaddingStrategy,
+                                                  PreTrainedTokenizerBase)
 
 ENTITY_PAD_MARK = "[PAD]"
 
@@ -83,9 +53,6 @@ class OurTrainingArguments(TrainingArguments):
         logger.info("PyTorch: setting up devices")
         if self.no_cuda:
             device = torch.device("cpu")
-            self._n_gpu = 0
-        elif is_torch_tpu_available():
-            device = xm.xla_device()
             self._n_gpu = 0
         elif self.local_rank == -1:
             device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

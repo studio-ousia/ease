@@ -1,19 +1,20 @@
-from transformers import AutoModel, AutoTokenizer, XLMRobertaTokenizer
-from coclust.evaluation.external import accuracy
-from sklearn.cluster import KMeans
+import argparse
+
+import numpy as np
 import torch
 import torch.nn as nn
-import numpy as np
-import argparse
-from dataset_loader import dataset_load
-from prettytable import PrettyTable
-from tqdm import tqdm
-from omegaconf import OmegaConf
-from utils.mlflow_writer import MlflowWriter
-from utils.glove import GloveSentenceEncoder
-
-from sklearn.metrics.cluster import contingency_matrix
+from coclust.evaluation.external import accuracy
 from munkres import Munkres
+from omegaconf import OmegaConf
+from prettytable import PrettyTable
+from sklearn.cluster import KMeans
+from sklearn.metrics.cluster import contingency_matrix
+from tqdm import tqdm
+from transformers import AutoModel, AutoTokenizer, XLMRobertaTokenizer
+from utils.glove import GloveSentenceEncoder
+from utils.mlflow_writer import MlflowWriter
+
+from dataset_loader import dataset_load
 
 
 def get_label_mapping_dict(list1, list2):

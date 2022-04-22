@@ -1,16 +1,14 @@
-# Tatoebaで評価を行うコード
-# コサイン類似度が最も高い文が対訳文かどうか
+import argparse
+import os
+import sys
 
-from transformers import AutoModel, AutoTokenizer, XLMRobertaTokenizer
+import numpy as np
+import pycountry
 import torch
 import torch.nn as nn
-import numpy as np
-import os
-import pycountry
 from omegaconf import OmegaConf
-import argparse
 from prettytable import PrettyTable
-import sys
+from transformers import AutoModel, AutoTokenizer, XLMRobertaTokenizer
 
 sys.path.append(os.path.abspath(os.getcwd()))
 from utils.mlflow_writer import MlflowWriter
@@ -23,7 +21,6 @@ def print_table(task_names, scores):
     print(tb)
 
 
-# tatoebaのセンテンスをロードする関数
 def load_data(path):
     with open(path) as f:
         l_strip = [s.strip() for s in f.readlines()]

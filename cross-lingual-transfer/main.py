@@ -1,21 +1,17 @@
-from transformers import (
-    Trainer,
-    TrainingArguments,
-    AutoTokenizer,
-    AutoConfig,
-    XLMRobertaTokenizer,
-)
-from bert import (
-    BertForSequenceClassificationWithPooler,
-    RobertaForSequenceClassificationWithPooler,
-)
-from sklearn.metrics import accuracy_score
-from data import MLDocParser
+import argparse
+import os
+import sys
+
+import numpy as np
 import torch
 from omegaconf import OmegaConf
-import argparse
-import sys, os
-import numpy as np
+from sklearn.metrics import accuracy_score
+from transformers import (AutoConfig, AutoTokenizer, Trainer,
+                          TrainingArguments, XLMRobertaTokenizer)
+
+from bert import (BertForSequenceClassificationWithPooler,
+                  RobertaForSequenceClassificationWithPooler)
+from data import MLDocParser
 
 sys.path.append(os.path.abspath(os.getcwd()))
 from utils.mlflow_writer import MlflowWriter

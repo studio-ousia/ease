@@ -1,14 +1,17 @@
-import sys
-import io, os
-import re
-import numpy as np
-import logging
 import argparse
-from prettytable import PrettyTable
+import io
+import logging
+import os
+import re
+import sys
+
+import numpy as np
 import torch
 import transformers
-from transformers import AutoModel, AutoTokenizer, XLMRobertaTokenizer
 from omegaconf import OmegaConf
+from prettytable import PrettyTable
+from transformers import AutoModel, AutoTokenizer, XLMRobertaTokenizer
+
 from utils.mlflow_writer import MlflowWriter
 
 # Set up logger

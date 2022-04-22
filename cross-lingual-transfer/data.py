@@ -1,28 +1,25 @@
-from sklearn.utils import shuffle
-import pickle
-import torch
-from torch.autograd import Variable
-import torch.optim as optim
-import torch.nn as nn
-import numpy as np
 import copy
-import os
-import shutil
 import importlib
-import random
+import json
 import logging
 import os
+import pickle
 import random
 import re
+import shutil
 import unicodedata
 from collections import Counter, defaultdict
-import numpy as np
-from tqdm import tqdm
-import torch
 from xml.etree import ElementTree
-import json
+
+import numpy as np
+import torch
+import torch.nn as nn
+import torch.optim as optim
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn.utils import shuffle
+from torch.autograd import Variable
+from tqdm import tqdm
 
 PAD_TOKEN = "<PAD>"
 WHITESPACE_REGEXP = re.compile(r"\s+")

@@ -1,12 +1,13 @@
 import ast
-import unicodedata
-from tqdm import tqdm
-import re
-import json
-import sys
-import os
-from sklearn.datasets import fetch_20newsgroups
 import csv
+import json
+import os
+import re
+import sys
+import unicodedata
+
+from sklearn.datasets import fetch_20newsgroups
+from tqdm import tqdm
 
 sys.path.append(os.path.abspath(os.getcwd()))
 from utils.sentence_tokenizer import MultilingualSentenceTokenizer
