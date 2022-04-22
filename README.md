@@ -4,8 +4,9 @@ EASE is a novel method for learning sentence embeddings via contrastive learning
 This repository contains the source code to train the model and evaluate it with downstream tasks.
 
 <!-- TODO NAACL2022の記述 -->
-
+<p align="center">
 <img src="figure/ease.png" width="70%">
+</p>
 
 ## Released Models
 
