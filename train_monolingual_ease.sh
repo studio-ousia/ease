@@ -8,12 +8,3 @@ python main.py \
     train_args.output_dir=result/my-ease-bert-base-uncased \
     train_args.per_device_train_batch_size=8 \
     train_args.gradient_accumulation_steps=16
-
-
-
-
-
-
-
-
-
