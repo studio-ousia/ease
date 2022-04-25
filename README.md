@@ -43,11 +43,11 @@ bash download_all.sh
 
 ## Evaluation
 
-We provide evaluation codes for sentence embeddings including Short Text Clustering, Cross-lingual Parallel Matching and Cross-lingual Text Classification.
+We provide evaluation code for sentence embeddings including Short Text Clustering, Cross-lingual Parallel Matching and Cross-lingual Text Classification.
 
 Set your model or path of tranformers-based checkpoint (`--model_name_or_path`),
 pooling method type (`--pooler`), and what set of tasks (`--task_set`).
-See the example codes below.
+See the example code below.
 
 ##### Semantic Textual Similarity
 ```bash
