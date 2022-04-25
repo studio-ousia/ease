@@ -153,18 +153,18 @@ class CLTrainer(Trainer):
         elif is_torch_tpu_available():
             return get_tpu_sampler(self.train_dataset)
         else:
-            if self.args.use_monolingual_batch:
-                return (
-                    SequentialSampler(self.train_dataset)
-                    if self.args.local_rank == -1
-                    else SequentialDistributedSampler(self.train_dataset)
-                )
-            else:
-                return (
-                    RandomSampler(self.train_dataset)
-                    if self.args.local_rank == -1
-                    else DistributedSampler(self.train_dataset)
-                )
+            # if self.args.use_monolingual_batch:
+            #     return (
+            #         SequentialSampler(self.train_dataset)
+            #         if self.args.local_rank == -1
+            #         else SequentialDistributedSampler(self.train_dataset)
+            #     )
+            # else:
+            return (
+                RandomSampler(self.train_dataset)
+                if self.args.local_rank == -1
+                else DistributedSampler(self.train_dataset)
+            )
 
     def compute_loss(self, model, inputs, return_outputs=False):
         outputs = model(**inputs)

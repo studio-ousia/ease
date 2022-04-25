@@ -42,9 +42,17 @@ ENTITY_PAD_MARK = "[PAD]"
 
 @dataclass
 class OurTrainingArguments(TrainingArguments):
+    
+    resume_from_checkpoint: bool = field(
+        default=False,
+    )
+    
+    group_by_length: bool = field(
+        default=False,
+    )
+    
     eval_transfer: bool = field(
         default=False,
-        metadata={"help": "Evaluate transfer task dev sets (in validation)."},
     )
 
     @cached_property
@@ -94,17 +102,13 @@ def build_entity_vocab(data):
 @hydra.main(config_path="conf", config_name="config")
 def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
-    model_args, train_args = cfg.model_args, cfg.train_args
-
-    # TODO refactoring
-    parser = HfArgumentParser(OurTrainingArguments)
-    base_train_args = parser.parse_args_into_dataclasses(
-        ["--output_dir", "saved_models", "--evaluation_strategy", "steps"]
-    )[0]
-    train_args = update_args(base_train_args, train_args)
+    model_args, data_args, train_args = cfg.model_args, cfg.data_args, cfg.train_args
+    train_args = OurTrainingArguments(
+            **train_args
+    )
     train_args.output_dir = os.path.join(cwd, train_args.output_dir)
 
-    EXPERIMENT_NAME = train_args.experiment_name
+    EXPERIMENT_NAME = data_args.experiment_name
     tracking_uri = f"file:{cwd}/mlruns"
     mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri=tracking_uri)
     mlflow_writer.log_params_from_omegaconf_dict(cfg)
@@ -132,15 +136,15 @@ def main(cfg: DictConfig):
     wikipedia_data = []
 
     # wiki_en or wiki_18
-    if train_args.dataset_name_or_path == "wiki_en":
+    if data_args.dataset_name_or_path == "wiki_en":
         wikipedia_data = load_dataset(
             "json", data_files=os.path.join(cwd, "data/ease-dataset-en.json")
         )["train"]
-    elif train_args.dataset_name_or_path == "wiki_18":
+    elif data_args.dataset_name_or_path == "wiki_18":
         wikipedia_data = load_dataset(
             "json", data_files=os.path.join(cwd, "data/ease-dataset-18-langs.json")
         )["train"]
-    elif train_args.dataset_name_or_path == "test":
+    elif data_args.dataset_name_or_path == "test":
         wikipedia_data = load_dataset(
             "json", data_files=os.path.join(cwd, "data/ease-dataset-test.json")
         )["train"]
@@ -150,7 +154,7 @@ def main(cfg: DictConfig):
         raise NotImplementedError()
 
     # build entity vocab
-    if train_args.train_saved_model:
+    if train_args.resume_from_checkpoint:
         entity_vocab = pickle_load(
             os.path.join(model_args.model_name_or_path, "entity_vocab.pkl")
         )
@@ -158,6 +162,8 @@ def main(cfg: DictConfig):
         entity_vocab = build_entity_vocab(wikipedia_data)
 
     print(f"entities: {len(entity_vocab)}")
+    
+    # TODO この関数内でdatasetを返した方が良い
     input_ids, attention_masks, token_type_ids, title_id, hn_title_ids = get_dataset(
         wikipedia_data,
         model_args.max_seq_length,
@@ -178,20 +184,19 @@ def main(cfg: DictConfig):
     gc.collect()
 
     # load pretrained entity embeddings
-    embedding = Wikipedia2Vec.load(os.path.join(cwd, train_args.wikipedia2vec_path))
+    embedding = Wikipedia2Vec.load(os.path.join(cwd, data_args.wikipedia2vec_path))
     dim_size = embedding.syn0.shape[1]
 
-    # set struct omegaconf
+    # set entity emb shape
     OmegaConf.set_struct(model_args, True)
     with open_dict(model_args):
         model_args.entity_emb_shape = (len(entity_vocab), dim_size)
-
-    entity_embeddings = np.random.uniform(
-        low=-0.05, high=0.05, size=model_args.entity_emb_shape
-    )
     print(model_args.entity_emb_shape)
 
     # initialize entity embeddings
+    entity_embeddings = np.random.uniform(
+        low=-0.05, high=0.05, size=model_args.entity_emb_shape
+    )
     entity_embeddings[0] = np.zeros(dim_size)
     cnt = 0
     if model_args.init_wiki2emb:

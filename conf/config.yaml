@@ -28,19 +28,20 @@ model_args:
   use_mlp_forcibly: False
   use_entity_to_sentence_loss: False
 
-train_args:
-  train_saved_model: False
-  seed: 42
-  learning_rate: 3e-05
+data_args:
   dataset_name_or_path: test # wiki_en or wiki_18
   wikipedia2vec_path: data/enwiki.fp16.768.vec
-  langs:
-    - "en"
+  experiment_name: test
+
+train_args:
+  resume_from_checkpoint: False
+  group_by_length: False
   eval_transfer: False
+  seed: 42
+  learning_rate: 3e-05
   do_eval: True
   do_train: True
-  experiment_name: test
-  output_dir: result/test
+  output_dir: results/test
   num_train_epochs: 1
   per_device_train_batch_size: 8
   gradient_accumulation_steps: 16
@@ -53,6 +54,4 @@ train_args:
   load_best_model_at_end: True
   warmup_steps: 500
   ignore_data_skip: False
-  resume_from_checkpoint: False
-  group_by_length: False
-  use_monolingual_batch: False
+
