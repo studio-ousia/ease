@@ -1,6 +1,6 @@
 ## EASE: Entity-Aware Contrastive Learning of Sentence Embedding
 
-EASE is a novel method for learning sentence embeddings via contrastive learning between sentences and their related entities proposed in out paper EASE: Entity-Aware Contrastive Learning of Sentence Embedding.
+EASE is a novel method for learning sentence embeddings via contrastive learning between sentences and their related entities proposed in our paper EASE: Entity-Aware Contrastive Learning of Sentence Embedding.
 This repository contains the source code to train the model and evaluate it with downstream tasks.
 
 <!-- TODO NAACL2022の記述 -->
@@ -87,7 +87,7 @@ Please refer to each evaluation code for detailed descriptions of arguments.
 
 You can train an EASE model in a monolingual setting using English Wikipedia sentences or in a multilingual setting using Wikipedia sentences in 18 languages.
 
-We provide example trainig scripts for both monolingual ([train_monolingual_ease.sh](https://github.com/Sosuke115/EASE/blob/main/train_monolingual_ease.sh)) and multilingual ([train_multilingual_ease.sh](https://github.com/Sosuke115/EASE/blob/main/train_multilingual_ease.sh)) setting.
+We provide example trainig scripts for both monolingual ([train_monolingual_ease.sh](https://github.com/Sosuke115/EASE/blob/main/train_monolingual_ease.sh)) and multilingual ([train_multilingual_ease.sh](https://github.com/Sosuke115/EASE/blob/main/train_multilingual_ease.sh)) settings.
 <!-- TODO link -->
 
 
