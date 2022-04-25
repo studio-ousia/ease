@@ -43,7 +43,7 @@ bash download_all.sh
 
 ## Evaluation
 
-We provide evaluation code for sentence embeddings including Short Text Clustering, Cross-lingual Parallel Matching and Cross-lingual Text Classification.
+We provide evaluation code for sentence embeddings including Semantic Textual Similarity ([STS 2012-2016](https://aclanthology.org/S16-1081/), [STS Benchmark](https://aclanthology.org/S17-2001/), [SICK-elatedness](http://www.lrec-conf.org/proceedings/lrec2014/pdf/363_Paper.pdf), and [the extended version of STS 2017 dataset](https://aclanthology.org/2020.emnlp-main.365/)), Short Text Clustering ([Eight STC benchmarks](https://aclanthology.org/2021.emnlp-main.467/) and [MewsC-16](#mewsc-16)), Cross-lingual Parallel Matching ([Tatoeba](https://direct.mit.edu/tacl/article/doi/10.1162/tacl_a_00288/43523/Massively-Multilingual-Sentence-Embeddings-for)) and Cross-lingual Text Classification ([MLDoc](https://aclanthology.org/L18-1560/)).
 
 Set your model or path of tranformers-based checkpoint (`--model_name_or_path`),
 pooling method type (`--pooler`), and what set of tasks (`--task_set`).
