@@ -15,6 +15,7 @@ from utils.glove import GloveSentenceEncoder
 from utils.mlflow_writer import MlflowWriter
 
 from dataset_loader import dataset_load
+from utils.utils import get_mlflow_writer
 
 
 def get_label_mapping_dict(list1, list2):
@@ -132,10 +133,7 @@ def main():
     print("model_path", args.model_name_or_path)
 
     # mlflow
-    cfg = OmegaConf.create({"eval_args": vars(args)})
-    EXPERIMENT_NAME = args.experiment_name
-    mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri="mlruns")
-    mlflow_writer.log_params_from_omegaconf_dict(cfg)
+    mlflow_writer = get_mlflow_writer(args.experiment_name, "mlruns", OmegaConf.create({"eval_args": vars(args)}))
 
     # Load transformers' model checkpoint
     if args.model_name_or_path != "glove":

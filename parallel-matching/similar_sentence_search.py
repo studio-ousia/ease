@@ -10,6 +10,8 @@ from omegaconf import OmegaConf
 from prettytable import PrettyTable
 from transformers import AutoModel, AutoTokenizer, XLMRobertaTokenizer
 
+from utils.utils import get_mlflow_writer
+
 sys.path.append(os.path.abspath(os.getcwd()))
 from utils.mlflow_writer import MlflowWriter
 
@@ -141,10 +143,7 @@ def main():
     args = parser.parse_args()
     print("model_path", args.model_name_or_path)
     # mlflow
-    cfg = OmegaConf.create({"eval_args": vars(args)})
-    EXPERIMENT_NAME = args.experiment_name
-    mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri="mlruns")
-    mlflow_writer.log_params_from_omegaconf_dict(cfg)
+    mlflow_writer = get_mlflow_writer(args.experiment_name, "mlruns", OmegaConf.create({"eval_args": vars(args)}))
 
     # Load transformers' model checkpoint
     model = AutoModel.from_pretrained(args.model_name_or_path)
@@ -182,8 +181,6 @@ def main():
 
     # langs = list(langs - not_exist_langs)
     langs = sorted(set(langs) - not_exist_langs, key=langs.index)
-    lang_to_en_scores = []
-    en_to_langs_scores = []
     scores = []
     for lang in langs:
         print(lang)

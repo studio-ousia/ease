@@ -25,7 +25,7 @@ from dataset import MyDataset, get_dataset
 from ease.ease_models import BertForEACL, RobertaForEACL
 from ease.trainers import CLTrainer
 from utils.mlflow_writer import MlflowWriter
-from utils.utils import pickle_dump, pickle_load, update_args
+from utils.utils import get_mlflow_writer, pickle_dump, pickle_load, update_args
 
 logger = logging.getLogger(__name__)
 
@@ -107,22 +107,19 @@ def main(cfg: DictConfig):
             **train_args
     )
     train_args.output_dir = os.path.join(cwd, train_args.output_dir)
-
-    EXPERIMENT_NAME = data_args.experiment_name
-    tracking_uri = f"file:{cwd}/mlruns"
-    mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri=tracking_uri)
-    mlflow_writer.log_params_from_omegaconf_dict(cfg)
+    mlflow_writer = get_mlflow_writer(data_args.experiment_name, f"file:{cwd}/mlruns", cfg)
 
     random.seed(train_args.seed)
     np.random.seed(train_args.seed)
     torch.manual_seed(train_args.seed)
     torch.cuda.manual_seed_all(train_args.seed)
-
+    
+    # tokenizer
     tokenizer_kwargs = {
         "cache_dir": model_args.cache_dir,
         "use_fast": True,
         "revision": "main",
-        "use_auth_token": True if False else None,
+        "use_auth_token": None,
     }
 
     if "xlm" in model_args.model_name_or_path:

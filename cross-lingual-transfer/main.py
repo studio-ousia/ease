@@ -12,6 +12,7 @@ from transformers import (AutoConfig, AutoTokenizer, Trainer,
 from bert import (BertForSequenceClassificationWithPooler,
                   RobertaForSequenceClassificationWithPooler)
 from data import MLDocParser
+from utils.utils import get_mlflow_writer
 
 sys.path.append(os.path.abspath(os.getcwd()))
 from utils.mlflow_writer import MlflowWriter
@@ -117,10 +118,7 @@ def main():
     torch.manual_seed(args.seed)
     torch.cuda.manual_seed_all(args.seed)
 
-    EXPERIMENT_NAME = args.experiment_name
-    mlflow_writer = MlflowWriter(EXPERIMENT_NAME, tracking_uri="mlruns")
-    cfg = OmegaConf.create({"eval_args": vars(args)})
-    mlflow_writer.log_params_from_omegaconf_dict(cfg)
+    mlflow_writer = get_mlflow_writer(args.experiment_name, "mlruns", OmegaConf.create({"eval_args": vars(args)}))
 
     dataset_path = "cross-lingual-transfer/data"
     eval_data = dict()
