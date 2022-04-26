@@ -160,21 +160,12 @@ def main(cfg: DictConfig):
 
     print(f"entities: {len(entity_vocab)}")
     
-    # TODO この関数内でdatasetを返した方が良い
-    input_ids, attention_masks, token_type_ids, title_id, hn_title_ids = get_dataset(
+    train_dataset = get_dataset(
         wikipedia_data,
         model_args.max_seq_length,
         tokenizer,
         entity_vocab,
-        model_args.masked_sentence_ratio,
-    )
-    train_dataset = MyDataset(
-        input_ids,
-        attention_masks,
-        token_type_ids,
-        title_id,
-        hn_title_ids,
-        model_args.model_name_or_path,
+        model_args,
     )
 
     del wikipedia_data
@@ -247,7 +238,9 @@ def main(cfg: DictConfig):
                 )
 
             model.lm_head.load_state_dict(pretrained_model.cls.predictions.state_dict())
-
+            
+    
+    # TODO init weight?
     model.resize_token_embeddings(len(tokenizer))
     model.entity_embedding.weight = nn.Parameter(torch.FloatTensor(entity_embeddings))
     model.entity_embedding.weight.requires_grad = True
