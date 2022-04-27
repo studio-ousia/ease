@@ -15,7 +15,7 @@ from utils.glove import GloveSentenceEncoder
 from utils.mlflow_writer import MlflowWriter
 
 from dataset_loader import dataset_load
-from utils.utils import get_mlflow_writer
+from utils.utils import get_mlflow_writer, print_table
 
 
 def get_label_mapping_dict(list1, list2):
@@ -28,14 +28,6 @@ def get_label_mapping_dict(list1, list2):
     for l1_idx, l2_idx in idx_pairs:
         mapping_dict[classes[l1_idx]] = clusters[l2_idx]
     return mapping_dict
-
-
-def print_table(task_names, scores):
-    tb = PrettyTable()
-    tb.field_names = task_names
-    tb.add_row(scores)
-    print(tb)
-
 
 def batcher(model, tokenizer, sentence, args, device="cuda"):
     # encode_dict = tokenizer.batch_encode_plus(sentence, pad_to_max_length=True, add_special_tokens=True, return_tensors="pt",)

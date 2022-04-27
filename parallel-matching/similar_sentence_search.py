@@ -10,17 +10,10 @@ from omegaconf import OmegaConf
 from prettytable import PrettyTable
 from transformers import AutoModel, AutoTokenizer, XLMRobertaTokenizer
 
-from utils.utils import get_mlflow_writer
+from utils.utils import get_mlflow_writer, print_table
 
 sys.path.append(os.path.abspath(os.getcwd()))
 from utils.mlflow_writer import MlflowWriter
-
-
-def print_table(task_names, scores):
-    tb = PrettyTable()
-    tb.field_names = task_names
-    tb.add_row(scores)
-    print(tb)
 
 
 def load_data(path):
@@ -77,19 +70,11 @@ def batcher(model, tokenizer, sentence, args, device="cuda"):
         raise NotImplementedError
 
 
-# 二つの行列のコサイン類似度行列を作成
+# calculate cosine sim matrix
 def get_cos_sim_matrix(matrix1, matrix2):
-    """
-    item-feature 行列が与えられた際に
-    item 間コサイン類似度行列を求める関数
-    """
-    d = np.dot(matrix1, matrix2.T)  # item-vector 同士の内積を要素とする行列
-
-    # コサイン類似度の分母に入れるための、各 item-vector の大きさの平方根
+    d = np.dot(matrix1, matrix2.T)
     norm1 = (matrix1 * matrix1).sum(axis=1, keepdims=True) ** 0.5
     norm2 = (matrix2 * matrix2).sum(axis=1, keepdims=True) ** 0.5
-
-    # それぞれの item の大きさの平方根で割っている（なんだかスマート！）
     return d / (np.dot(norm1, norm2.T))
 
 
@@ -164,10 +149,7 @@ def main():
     langs = [lang_2_to_3[lang] if lang in lang_2_to_3 else lang for lang in args.langs]
     langs = sorted(set(langs), key=langs.index)
 
-    # 言語ごとにデータを取得
     dataset = dict()
-
-    # 存在しない言語群
     not_exist_langs = set()
 
     for lang in langs:
@@ -179,7 +161,6 @@ def main():
             print(f"{lang} doesn't exist.")
             not_exist_langs.add(lang)
 
-    # langs = list(langs - not_exist_langs)
     langs = sorted(set(langs) - not_exist_langs, key=langs.index)
     scores = []
     for lang in langs:

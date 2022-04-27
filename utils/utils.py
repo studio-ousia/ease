@@ -4,6 +4,7 @@ import torch
 import os
 from utils.mlflow_writer import MlflowWriter
 import random
+from prettytable import PrettyTable
 
 
 def set_seeds(seed):
@@ -50,3 +51,9 @@ def update_args(base_args, input_args):
     for key, value in dict(input_args).items():
         base_args.__dict__[key] = value
     return base_args
+
+def print_table(task_names, scores):
+    tb = PrettyTable()
+    tb.field_names = task_names
+    tb.add_row(scores)
+    print(tb)

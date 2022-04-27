@@ -1,12 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple, Union
 
-from transformers import (
-    CONFIG_MAPPING,
-    MODEL_FOR_MASKED_LM_MAPPING,
-    BertForPreTraining,
-    HfArgumentParser,
-)
+from transformers import MODEL_FOR_MASKED_LM_MAPPING, BertForPreTraining
 
 MODEL_CONFIG_CLASSES = list(MODEL_FOR_MASKED_LM_MAPPING.keys())
 MODEL_TYPES = tuple(conf.model_type for conf in MODEL_CONFIG_CLASSES)
@@ -27,20 +22,12 @@ from wikipedia2vec import Wikipedia2Vec
 from dataset import get_dataset
 from ease.ease_models import BertForEACL, RobertaForEACL
 from ease.trainers import CLTrainer
-from utils.utils import (
-    get_mlflow_writer,
-    pickle_dump,
-    pickle_load,
-    set_seeds,
-)
+from utils.utils import get_mlflow_writer, pickle_dump, pickle_load, set_seeds
 
 logger = logging.getLogger(__name__)
 
 from transformers import TrainingArguments
-from transformers.file_utils import (
-    cached_property,
-    torch_required,
-)
+from transformers.file_utils import cached_property, torch_required
 from transformers.tokenization_utils_base import (
     PaddingStrategy,
     PreTrainedTokenizerBase,
@@ -187,7 +174,9 @@ def main(cfg: DictConfig):
     }
 
     if "xlm" in model_args.model_name_or_path:
-        tokenizer = XLMRobertaTokenizer.from_pretrained(model_args.model_name_or_path)
+        tokenizer = XLMRobertaTokenizer.from_pretrained(
+            model_args.model_name_or_path, **tokenizer_kwargs
+        )
     else:
         tokenizer = AutoTokenizer.from_pretrained(
             model_args.model_name_or_path, **tokenizer_kwargs

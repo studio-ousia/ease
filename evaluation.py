@@ -13,7 +13,7 @@ from prettytable import PrettyTable
 from transformers import AutoModel, AutoTokenizer, XLMRobertaTokenizer
 
 from utils.mlflow_writer import MlflowWriter
-from utils.utils import get_mlflow_writer
+from utils.utils import get_mlflow_writer, print_table
 
 # Set up logger
 logging.basicConfig(format="%(asctime)s : %(message)s", level=logging.DEBUG)
@@ -25,14 +25,6 @@ PATH_TO_DATA = "./SentEval/data"
 # Import SentEval
 sys.path.insert(0, PATH_TO_SENTEVAL)
 import senteval
-
-
-def print_table(task_names, scores):
-    tb = PrettyTable()
-    tb.field_names = task_names
-    tb.add_row(scores)
-    print(tb)
-
 
 def main():
     parser = argparse.ArgumentParser()
