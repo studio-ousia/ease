@@ -273,18 +273,6 @@ def main(cfg: DictConfig):
             model_args=model_args,
         )
 
-        if model_args.do_mlm:
-            if "multilingual" in model_args.model_name_or_path:
-                pretrained_model = BertForPreTraining.from_pretrained(
-                    "bert-base-multilingual-cased"
-                )
-            else:
-                pretrained_model = BertForPreTraining.from_pretrained(
-                    "bert-base-uncased"
-                )
-
-            model.lm_head.load_state_dict(pretrained_model.cls.predictions.state_dict())
-
     model.resize_token_embeddings(len(tokenizer))
     model.init_entity_embedding(entity_embeddings)
 
