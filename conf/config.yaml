@@ -7,7 +7,6 @@ model_args:
   ease_temp: 100
   pooler_type: "cls_before_pooler" # cls or avg
   hard_negative_weight: 1.0
-  do_mlm: False
   mlp_only_train: True
   mlm_loss_ratio: 0
   ease_loss_ratio: 0.01
@@ -27,6 +26,7 @@ model_args:
   use_equal_loss: False
   use_mlp_forcibly: False
   use_entity_to_sentence_loss: False
+
 
 data_args:
   dataset_name_or_path: test # wiki_en or wiki_18

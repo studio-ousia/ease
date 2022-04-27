@@ -3,11 +3,21 @@ import numpy as np
 import torch
 import os
 from utils.mlflow_writer import MlflowWriter
+import random
+
+
+def set_seeds(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
 
 def get_mlflow_writer(experiment_name, tracking_uri, cfg):
     mlflow_writer = MlflowWriter(experiment_name, tracking_uri=tracking_uri)
     mlflow_writer.log_params_from_omegaconf_dict(cfg)
     return mlflow_writer
+
 
 def pickle_dump(obj, path):
     with open(path, mode="wb") as f:

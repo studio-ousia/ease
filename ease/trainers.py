@@ -8,8 +8,7 @@ import sys
 import time
 import warnings
 from pathlib import Path
-from typing import (TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple,
-                    Union)
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
 
 import torch
 import torch.nn as nn
@@ -19,27 +18,45 @@ from torch.utils.data.dataset import Dataset
 from torch.utils.data.distributed import DistributedSampler
 from torch.utils.data.sampler import RandomSampler, SequentialSampler
 from transformers import Trainer
-from transformers.data.data_collator import (DataCollator,
-                                             DataCollatorWithPadding,
-                                             default_data_collator)
-from transformers.file_utils import (WEIGHTS_NAME, is_apex_available,
-                                     is_datasets_available, is_in_notebook,
-                                     is_torch_tpu_available)
+from transformers.data.data_collator import (
+    DataCollator,
+    DataCollatorWithPadding,
+    default_data_collator,
+)
+from transformers.file_utils import (
+    WEIGHTS_NAME,
+    is_apex_available,
+    is_datasets_available,
+    is_in_notebook,
+    is_torch_tpu_available,
+)
 from transformers.modeling_utils import PreTrainedModel
-from transformers.trainer_callback import (CallbackHandler,
-                                           DefaultFlowCallback,
-                                           PrinterCallback, ProgressCallback,
-                                           TrainerCallback, TrainerControl,
-                                           TrainerState)
-from transformers.trainer_pt_utils import (SequentialDistributedSampler,
-                                           get_tpu_sampler,
-                                           reissue_pt_warnings)
-from transformers.trainer_utils import (PREFIX_CHECKPOINT_DIR, BestRun,
-                                        EvalPrediction, HPSearchBackend,
-                                        PredictionOutput, TrainOutput,
-                                        default_compute_objective,
-                                        default_hp_space, set_seed,
-                                        speed_metrics)
+from transformers.trainer_callback import (
+    CallbackHandler,
+    DefaultFlowCallback,
+    PrinterCallback,
+    ProgressCallback,
+    TrainerCallback,
+    TrainerControl,
+    TrainerState,
+)
+from transformers.trainer_pt_utils import (
+    SequentialDistributedSampler,
+    get_tpu_sampler,
+    reissue_pt_warnings,
+)
+from transformers.trainer_utils import (
+    PREFIX_CHECKPOINT_DIR,
+    BestRun,
+    EvalPrediction,
+    HPSearchBackend,
+    PredictionOutput,
+    TrainOutput,
+    default_compute_objective,
+    default_hp_space,
+    set_seed,
+    speed_metrics,
+)
 from transformers.training_args import ParallelMode, TrainingArguments
 from transformers.utils import logging
 

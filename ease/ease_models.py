@@ -5,12 +5,19 @@ import torch.nn.functional as F
 import transformers
 from transformers.activations import gelu
 from transformers.modeling_outputs import (
-    BaseModelOutputWithPoolingAndCrossAttentions, SequenceClassifierOutput)
-from transformers.models.bert.modeling_bert import (BertLMPredictionHead,
-                                                    BertModel,
-                                                    BertPreTrainedModel)
+    BaseModelOutputWithPoolingAndCrossAttentions,
+    SequenceClassifierOutput,
+)
+from transformers.models.bert.modeling_bert import (
+    BertLMPredictionHead,
+    BertModel,
+    BertPreTrainedModel,
+)
 from transformers.models.roberta.modeling_roberta import (
-    RobertaLMHead, RobertaModel, RobertaPreTrainedModel)
+    RobertaLMHead,
+    RobertaModel,
+    RobertaPreTrainedModel,
+)
 
 
 class MLPLayer(nn.Module):
@@ -150,9 +157,6 @@ def cl_init(cls, config):
     cls.entity_embedding.weight.requires_grad = True
 
     cls.init_weights()
-
-
-## contrastive learning学習
 
 
 def cl_forward(
@@ -443,6 +447,12 @@ class BertForEACL(BertPreTrainedModel):
         self.lm_head = BertLMPredictionHead(config)
         cl_init(self, config)
 
+    def init_entity_embedding(self, entity_embeddings):
+        self.entity_embedding.weight = nn.Parameter(
+            torch.FloatTensor(entity_embeddings)
+        )
+        self.entity_embedding.weight.requires_grad = True
+
     def forward(
         self,
         input_ids=None,
@@ -505,8 +515,13 @@ class RobertaForEACL(RobertaPreTrainedModel):
         self.model_args = model_kargs["model_args"]
         self.roberta = RobertaModel(config)
         self.lm_head = RobertaLMHead(config)
-
         cl_init(self, config)
+
+    def init_entity_embedding(self, entity_embeddings):
+        self.entity_embedding.weight = nn.Parameter(
+            torch.FloatTensor(entity_embeddings)
+        )
+        self.entity_embedding.weight.requires_grad = True
 
     def forward(
         self,
