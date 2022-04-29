@@ -1,21 +1,22 @@
+import os
+import sys
 import argparse
-
 import numpy as np
 import torch
 import torch.nn as nn
 from coclust.evaluation.external import accuracy
 from munkres import Munkres
 from omegaconf import OmegaConf
-from prettytable import PrettyTable
 from sklearn.cluster import KMeans
 from sklearn.metrics.cluster import contingency_matrix
 from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer, XLMRobertaTokenizer
-from utils.glove import GloveSentenceEncoder
-from utils.mlflow_writer import MlflowWriter
 
 from dataset_loader import dataset_load
+
+sys.path.append(os.path.abspath(os.getcwd()))
 from utils.utils import get_mlflow_writer, print_table
+from utils.glove import GloveSentenceEncoder
 
 
 def get_label_mapping_dict(list1, list2):
@@ -164,7 +165,7 @@ def main():
                 "WN-FS-tr",
             ]
         )
-    batch_size = 256
+    batch_size = 128
 
     results = []
 
@@ -180,7 +181,8 @@ def main():
             sentence_embeddings = []
 
             if args.model_name_or_path == "glove":
-
+                
+                #TODO refactoring
                 glove_sentence_encoder = GloveSentenceEncoder(
                     "/home/fmg/nishikawa/corpus/glove/glove.6B.300d.txt"
                 )

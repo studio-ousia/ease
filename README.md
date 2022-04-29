@@ -59,7 +59,7 @@ python evaluation.py \
 
 ##### Short Text Clustering
 ```bash
-python text-clustering/evaluate.py \
+python downstreams/text-clustering/evaluation.py \
     --model_name_or_path sosuke/ease-bert-base-multilingual-cased \
     --pooler avg \ 
     --task_set cl
@@ -67,14 +67,14 @@ python text-clustering/evaluate.py \
 
 ##### Cross-lingual Parallel Matching
 ```bash
-python parallel-matching/similar_sentence_search.py \
+python downstreams/parallel-matching/evaluation.py \
     --model_name_or_path sosuke/ease-bert-base-multilingual-cased \ 
     --pooler avg 
 ```
 
 ##### Cross-lingual Text Classification
 ```bash
-python cross-lingual-transfer/main.py \
+python downstreams/cross-lingual-transfer/evaluation.py \
     --model_name_or_path sosuke/ease-bert-base-multilingual-cased \ 
     --pooler avg
 ```

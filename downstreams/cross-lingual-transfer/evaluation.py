@@ -12,10 +12,10 @@ from transformers import (AutoConfig, AutoTokenizer, Trainer,
 from bert import (BertForSequenceClassificationWithPooler,
                   RobertaForSequenceClassificationWithPooler)
 from data import MLDocParser
-from utils.utils import get_mlflow_writer
 
 sys.path.append(os.path.abspath(os.getcwd()))
 from utils.mlflow_writer import MlflowWriter
+from utils.utils import get_mlflow_writer, set_seeds
 
 
 def load_mldoc_data(dataset_path, lang):
@@ -113,14 +113,12 @@ def main():
     parser.add_argument("--do_finetune", action="store_true")
 
     args = parser.parse_args()
-
-    np.random.seed(args.seed)
-    torch.manual_seed(args.seed)
-    torch.cuda.manual_seed_all(args.seed)
+    
+    set_seeds(args.seed)
 
     mlflow_writer = get_mlflow_writer(args.experiment_name, "mlruns", OmegaConf.create({"eval_args": vars(args)}))
 
-    dataset_path = "cross-lingual-transfer/data"
+    dataset_path = "downstreams/cross-lingual-transfer/data"
     eval_data = dict()
     eval_langs = ["en", "fr", "de", "ja", "zh", "it", "ru", "es"]
     for lang in eval_langs:

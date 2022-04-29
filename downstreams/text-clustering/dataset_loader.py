@@ -9,9 +9,6 @@ import unicodedata
 from sklearn.datasets import fetch_20newsgroups
 from tqdm import tqdm
 
-sys.path.append(os.path.abspath(os.getcwd()))
-from utils.sentence_tokenizer import MultilingualSentenceTokenizer
-
 WHITESPACE_REGEXP = re.compile(r"\s+")
 
 
@@ -40,38 +37,40 @@ def normalize_text(text):
 
 
 def dataset_load(key):
+    
+    print(os.getcwd())
 
     key_to_data_path = {
-        "Tweet": "text-clustering/data/monolingual_benchmark/tweet.txt",
-        "Bio": "text-clustering/data/monolingual_benchmark/biomedical.txt",
-        "SO": "text-clustering/data/monolingual_benchmark/stackoverflow.txt",
-        "SS": "text-clustering/data/monolingual_benchmark/searchsnippets.txt",
-        "AG": "text-clustering/data/monolingual_benchmark/agnews.txt",
-        "G-TS": "text-clustering/data/monolingual_benchmark/ts.txt",
-        "G-T": "text-clustering/data/monolingual_benchmark/t.txt",
-        "G-S": "text-clustering/data/monolingual_benchmark/s.txt",
-        "WN-FS-ar": "text-clustering/data/mewsc16",
-        "WN-FS-ca": "text-clustering/data/mewsc16",
-        "WN-FS-cs": "text-clustering/data/mewsc16",
-        "WN-FS-de": "text-clustering/data/mewsc16",
-        "WN-FS-en": "text-clustering/data/mewsc16",
-        "WN-FS-es": "text-clustering/data/mewsc16",
-        "WN-FS-eo": "text-clustering/data/mewsc16",
-        "WN-FS-fa": "text-clustering/data/mewsc16",
-        "WN-FS-fr": "text-clustering/data/mewsc16",
-        "WN-FS-ko": "text-clustering/data/mewsc16",
-        "WN-FS-ja": "text-clustering/data/mewsc16",
-        "WN-FS-pl": "text-clustering/data/mewsc16",
-        "WN-FS-pt": "text-clustering/data/mewsc16",
-        "WN-FS-ru": "text-clustering/data/mewsc16",
-        "WN-FS-sv": "text-clustering/data/mewsc16",
-        "WN-FS-tr": "text-clustering/data/mewsc16",
+        "Tweet": "downstreams/text-clustering/data/monolingual_benchmark/tweet.txt",
+        "Bio": "downstreams/text-clustering/data/monolingual_benchmark/biomedical.txt",
+        "SO": "downstreams/text-clustering/data/monolingual_benchmark/stackoverflow.txt",
+        "SS": "downstreams/text-clustering/data/monolingual_benchmark/searchsnippets.txt",
+        "AG": "downstreams/text-clustering/data/monolingual_benchmark/agnews.txt",
+        "G-TS": "downstreams/text-clustering/data/monolingual_benchmark/ts.txt",
+        "G-T": "downstreams/text-clustering/data/monolingual_benchmark/t.txt",
+        "G-S": "downstreams/text-clustering/data/monolingual_benchmark/s.txt",
+        "WN-FS-ar": "downstreams/text-clustering/data/mewsc16",
+        "WN-FS-ca": "downstreams/text-clustering/data/mewsc16",
+        "WN-FS-cs": "downstreams/text-clustering/data/mewsc16",
+        "WN-FS-de": "downstreams/text-clustering/data/mewsc16",
+        "WN-FS-en": "downstreams/text-clustering/data/mewsc16",
+        "WN-FS-es": "downstreams/text-clustering/data/mewsc16",
+        "WN-FS-eo": "downstreams/text-clustering/data/mewsc16",
+        "WN-FS-fa": "downstreams/text-clustering/data/mewsc16",
+        "WN-FS-fr": "downstreams/text-clustering/data/mewsc16",
+        "WN-FS-ko": "downstreams/text-clustering/data/mewsc16",
+        "WN-FS-ja": "downstreams/text-clustering/data/mewsc16",
+        "WN-FS-pl": "downstreams/text-clustering/data/mewsc16",
+        "WN-FS-pt": "downstreams/text-clustering/data/mewsc16",
+        "WN-FS-ru": "downstreams/text-clustering/data/mewsc16",
+        "WN-FS-sv": "downstreams/text-clustering/data/mewsc16",
+        "WN-FS-tr": "downstreams/text-clustering/data/mewsc16",
     }
 
     key_to_label_path = {
-        "Bio": "text-clustering/data/monolingual_benchmark/biomedical_label.txt",
-        "SO": "text-clustering/data/monolingual_benchmark/stackoverflow_label.txt",
-        "SS": "text-clustering/data/monolingual_benchmark/searchsnippets_label.txt",
+        "Bio": "downstreams/text-clustering/data/monolingual_benchmark/biomedical_label.txt",
+        "SO": "downstreams/text-clustering/data/monolingual_benchmark/stackoverflow_label.txt",
+        "SS": "downstreams/text-clustering/data/monolingual_benchmark/searchsnippets_label.txt",
     }
 
     if key in key_to_data_path:
@@ -100,40 +99,6 @@ def dataset_load(key):
             l_strip = [s.strip() for s in f.readlines()]
         sentences = [d.split("\t")[1] for d in l_strip]
         labels = [int(d.split("\t")[0]) for d in l_strip]
-
-    elif key.startswith("MD"):
-        lang = key[-2:]
-        lcode_to_lang = {
-            "en": "english",
-            "fr": "french",
-            "de": "german",
-            "ja": "japanese",
-            "zh": "chinese",
-            "it": "italian",
-            "ru": "russian",
-            "es": "spanish",
-        }
-        lang = lcode_to_lang[lang]
-        categories = ["CCAT", "MCAT", "ECAT", "GCAT"]
-        categories_index = {t: i for i, t in enumerate(categories)}
-        parser = MLDocParser()
-        file_path = f"{data_path}/{lang}.test"
-        sentence_labels = [
-            (sentence, categories_index[label])
-            for sentence, label in tqdm(parser(file_path))
-        ]
-        sentences = [sentence for sentence, label in sentence_labels]
-        if key.startswith("MD-FS"):
-            print("set tokenizer...")
-            sentence_tokenizer = MultilingualSentenceTokenizer(lang)
-            sentences = []
-            for sentence, label in sentence_labels:
-                try:
-                    sentences.append(sentence_tokenizer.tokenize(sentence)[0])
-                except Exception as e:
-                    print("=== sentence tokenize error ===")
-
-        labels = [label for sentence, label in sentence_labels]
 
     elif key.startswith("WN"):
 
@@ -226,43 +191,6 @@ def dataset_load(key):
                     ]
                 )
                 sentences, categories = list(sentences), list(categories)
-        category_to_idx = {
-            category: idx for idx, category in enumerate(set(categories))
-        }
-        labels = [category_to_idx[category] for category in categories]
-
-    elif key.startswith("NC"):
-        # https://arxiv.org/pdf/1809.00540.pdf
-        lang = key[-2:]
-        if lang == "en":
-            lang = "eng"
-        elif lang == "de":
-            lang = "deu"
-        elif lang == "es":
-            lang = "spa"
-
-        with open(data_path) as f:
-            data = json.loads(f.read())
-
-        sentences = [d["text"] for d in data if d["lang"] == lang]
-        categories = [d["cluster"] for d in data if d["lang"] == lang]
-        category_to_idx = {
-            category: idx for idx, category in enumerate(set(categories))
-        }
-        labels = [category_to_idx[category] for category in categories]
-
-    elif key.startswith("20N"):
-        newsgroups_test = fetch_20newsgroups(subset="test")
-        sentences = newsgroups_test.data
-        labels = newsgroups_test.target
-
-    elif key in ["R8", "R52", "OH"]:
-        with open(data_path) as f:
-            reader = csv.reader(f)
-            data = [row for row in reader]
-        data = data[1:]
-        sentences = [d[0] for d in data]
-        categories = [d[-1] for d in data]
         category_to_idx = {
             category: idx for idx, category in enumerate(set(categories))
         }

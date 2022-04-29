@@ -10,10 +10,9 @@ from omegaconf import OmegaConf
 from prettytable import PrettyTable
 from transformers import AutoModel, AutoTokenizer, XLMRobertaTokenizer
 
-from utils.utils import get_mlflow_writer, print_table
 
 sys.path.append(os.path.abspath(os.getcwd()))
-from utils.mlflow_writer import MlflowWriter
+from utils.utils import get_mlflow_writer, print_table
 
 
 def load_data(path):
@@ -154,8 +153,8 @@ def main():
 
     for lang in langs:
         try:
-            src_path = f"parallel-matching/tatoeba/v1/tatoeba.{lang}-eng.{lang}"
-            trg_path = f"parallel-matching/tatoeba/v1/tatoeba.{lang}-eng.eng"
+            src_path = f"downstreams/parallel-matching/tatoeba/v1/tatoeba.{lang}-eng.{lang}"
+            trg_path = f"downstreams/parallel-matching/tatoeba/v1/tatoeba.{lang}-eng.eng"
             dataset[lang] = (load_data(src_path), load_data(trg_path))
         except:
             print(f"{lang} doesn't exist.")
