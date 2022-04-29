@@ -25,6 +25,38 @@ You can use these models by using [HuggingFace's Transformers](https://github.co
 |     [sosuke/ease-xlm-roberta-base](https://huggingface.co/sosuke/ease-xlm-roberta-base)     |   57.1 | 35.4 |
 
 
+## Use EASE with Huggingface
+
+<!-- TODO add link for pooling methods -->
+```python
+
+import torch
+from scipy.spatial.distance import cosine
+from transformers import AutoModel, AutoTokenizer
+
+# Import our pretrained model. 
+tokenizer = AutoTokenizer.from_pretrained("sosuke/ease-bert-base-multilingual-cased")
+model = AutoModel.from_pretrained("sosuke/ease-bert-base-multilingual-cased")
+
+# Set pooler (Please see here for other pooling methods).
+pooler = lambda last_hidden, att_mask: (last_hidden * att_mask.unsqueeze(-1)).sum(1) / att_mask.sum(-1).unsqueeze(-1)
+
+# Tokenize input texts.
+texts = [
+    "Ils se préparent pour un spectacle à l'école.",
+    "They are preparing for a show at school.",
+    "Two medical professionals in green look on at something."
+]
+inputs = tokenizer(texts, padding=True, truncation=True, return_tensors="pt")
+
+# Calculate cosine similarities
+cosine_sim_0_1 = 1 - cosine(embeddings[0], embeddings[1])
+cosine_sim_0_2 = 1 - cosine(embeddings[0], embeddings[2])
+
+print(f"Cosine similarity between {texts[0]} and {texts[1]} is {cosine_sim_0_1}")
+print(f"Cosine similarity between {texts[0]} and {texts[2]} is {cosine_sim_0_2}")
+```
+
 ## Installation
 
 <!-- Python 3.7.6 -->
