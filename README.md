@@ -1,5 +1,12 @@
 ## EASE: Entity-Aware Contrastive Learning of Sentence Embedding
 
+<!-- TODO add license -->
+<!-- TODO arxiv link -->
+<!-- [![Arxiv](https://img.shields.io/badge/arXiv-2204.10298-B21A1B)]() -->
+[![Hugging Face Models](https://img.shields.io/badge/%F0%9F%A4%97-Models-yellow)](https://huggingface.co/sosuke)
+[![Hugging Face Transformers](https://img.shields.io/badge/%F0%9F%A4%97-Transformers-pink?color=FF33CC)](https://github.com/huggingface/transformers)
+Authors:
+
 EASE is a novel method for learning sentence embeddings via contrastive learning between sentences and their related entities proposed in our paper EASE: Entity-Aware Contrastive Learning of Sentence Embedding.
 This repository contains the source code to train the model and evaluate it with downstream tasks.
 
@@ -9,6 +16,7 @@ This repository contains the source code to train the model and evaluate it with
 </p>
 
 ## Released Models
+[![Hugging Face Models](https://img.shields.io/badge/%F0%9F%A4%97-Models-yellow)](https://huggingface.co/sosuke)
 
 Our published models are listed as follows.
 You can use these models by using [HuggingFace's Transformers](https://github.com/huggingface/transformers).
@@ -57,8 +65,9 @@ print(f"Cosine similarity between {texts[0]} and {texts[1]} is {cosine_sim_0_1}"
 print(f"Cosine similarity between {texts[0]} and {texts[2]} is {cosine_sim_0_2}")
 ```
 
-## Installation
+## Setups
 
+[![Python](https://img.shields.io/badge/python-3.7.6-blue?logo=python&logoColor=FED643)](https://www.python.org/downloads/release/python-376/)
 <!-- Python 3.7.6 -->
 
 Run the following script to install the dependent libraries.
@@ -74,6 +83,8 @@ bash download_all.sh
 
 
 ## Evaluation
+
+<!-- TODO prepare for colab codes -->
 
 We provide evaluation code for sentence embeddings including Semantic Textual Similarity ([STS 2012-2016](https://aclanthology.org/S16-1081/), [STS Benchmark](https://aclanthology.org/S17-2001/), [SICK-elatedness](http://www.lrec-conf.org/proceedings/lrec2014/pdf/363_Paper.pdf), and [the extended version of STS 2017 dataset](https://aclanthology.org/2020.emnlp-main.365/)), Short Text Clustering ([Eight STC benchmarks](https://aclanthology.org/2021.emnlp-main.467/) and [MewsC-16](#mewsc-16)), Cross-lingual Parallel Matching ([Tatoeba](https://direct.mit.edu/tacl/article/doi/10.1162/tacl_a_00288/43523/Massively-Multilingual-Sentence-Embeddings-for)) and Cross-lingual Text Classification ([MLDoc](https://aclanthology.org/L18-1560/)).
 
