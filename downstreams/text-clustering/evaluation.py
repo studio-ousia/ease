@@ -116,7 +116,7 @@ def main():
     parser.add_argument(
         "--seed",
         type=int,
-        default=12,
+        default=42,
         help="seed for Kmeans",
     )
 
