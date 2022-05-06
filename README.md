@@ -28,8 +28,8 @@ You can use these models by using [HuggingFace's Transformers](https://github.co
 |  [sosuke/ease-bert-base-uncased](https://huggingface.co/sosuke/ease-bert-base-uncased) |   77.0 |  63.1    |
 | [sosuke/ease-roberta-base](https://huggingface.co/sosuke/ease-roberta-base) |  76.8 |  58.6   |
 |              **Multilingual Models**              | **Avg. mSTS** | **Avg. mSTC** |
-|  [sosuke/ease-bert-base-multilingual-cased](https://huggingface.co/princeton-nlp/sup-simcse-bert-large-uncased)  |   57.2  | 36.0 |
-|     [sosuke/ease-xlm-roberta-base](https://huggingface.co/sosuke/ease-xlm-roberta-base)     |   57.1 | 35.4 |
+|  [sosuke/ease-bert-base-multilingual-cased](https://huggingface.co/princeton-nlp/sup-simcse-bert-large-uncased)  |   57.2  | 35.2 |
+|     [sosuke/ease-xlm-roberta-base](https://huggingface.co/sosuke/ease-xlm-roberta-base)     |   57.1 | 36.7 |
 
 
 ## Use EASE with Huggingface
@@ -141,72 +141,28 @@ This dataset contains topic sentences from Wikinews articles in 13 categories an
 
 <!-- TODO link -->
 <!-- TODO reproduction code -->
+##### Statistics and Scores
 
-##### Statistics
+|              **Language**             | **Sentences** | **Label types** |**XLM-R<sub>base</sub>** |**EASE-XLM-R<sub>base</sub>** |
+|:--------:|--------:|--------:|--------:|--------:|
+| ar | 2,224 | 11 | 27.9 | 28.1
+| ca | 3,310 | 11 | 23.4 | 17.6
+| cs | 1,534 | 9 | 23.3 | 41.1
+| de | 6,398 | 8 | 31.1 | 39.3
+| en | 12,892 | 13 | 27.0 | 41.8
+| eo | 227 | 8 | 25.1 | 40.5
+| es | 6,415 | 11 | 20.2 | 38.3
+| fa | 773 | 9 | 35.1 | 42.0
+| fr | 10,697 | 13 | 25.4 | 35.0
+| ja | 1,984 | 12 | 44.1 | 45.8
+| ko | 344 | 10 | 24.1 | 33.7
+| pl | 7,247 | 11 | 24.9 | 41.8
+| pt | 8,921 | 11 | 38.4 | 32.4
+| ru | 1,406 | 12 | 19.4 | 34.3
+| sv | 584 | 7 | 29.8 | 29.8
+| tr | 459 | 7 | 29.6 | 45.3
+| Avg. |  |  | 28.1 | 36.7
 
-<table border=0><tr><td> 
-<table border>
-<tr>
-<th>Language </th><th> sentences </th><th> label types</th>
-</tr>
-<tr  align="right">
-<td>ar </td><td>2,224 </td><td>11 </td>
-</tr>
-<tr  align="right">
-<td>ca </td><td>3,310 </td><td>11 </td>
-</tr>
-<tr  align="right">
-<td>cs </td><td>1,534 </td><td>9 </td>
-</tr>
-<tr  align="right">
-<td>de </td><td>6,398 </td><td>8 </td>
-</tr>
-<tr  align="right">
-<td>en </td><td>12,892 </td><td>13 </td>
-</tr>
-<tr  align="right">
-<td>eo </td><td>227 </td><td>8 </td>
-</tr>
-<tr  align="right">
-<td>es </td><td>6,415 </td><td>11 </td>
-</tr>
-<tr  align="right">
-<td>fa </td><td> 773</td><td>9 </td>
-</tr>
-</table>
-</td>
-<td valign="top"> 
-<table border>
-<tr>
-<th>Language </th><th> sentences </th><th> label types</th>
-</tr>
-<tr  align="right">
-<td>fr </td><td>10,697 </td><td>13 </td>
-</tr>
-<tr  align="right">
-<td>ja </td><td>1,984 </td><td>12 </td>
-</tr>
-<tr  align="right">
-<td>ko </td><td>344 </td><td>10 </td>
-</tr>
-<tr  align="right">
-<td>pl </td><td>7,247 </td><td>11</td>
-</tr>
-<tr  align="right">
-<td>pt </td><td>8,921 </td><td>11 </td>
-</tr>
-<tr  align="right">
-<td>ru </td><td>1,406 </td><td>12 </td>
-</tr>
-<tr  align="right">
-<td>sv </td><td>584 </td><td>7 </td>
-</tr>
-<tr  align="right">
-<td>tr </td><td> 459</td><td>7 </td>
-</tr>
-
-</table>
-</td></tr></table> 
 
 ## Citation
 [TBA]
