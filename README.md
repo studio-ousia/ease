@@ -56,6 +56,11 @@ texts = [
 ]
 inputs = tokenizer(texts, padding=True, truncation=True, return_tensors="pt")
 
+# Get the embeddings
+with torch.no_grad():
+    last_hidden = model(**inputs, output_hidden_states=True, return_dict=True).last_hidden_state
+embeddings = pooler(last_hidden, inputs["attention_mask"])
+
 # Calculate cosine similarities
 cosine_sim_0_1 = 1 - cosine(embeddings[0], embeddings[1])
 cosine_sim_0_2 = 1 - cosine(embeddings[0], embeddings[2])
