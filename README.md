@@ -28,8 +28,8 @@ You can use these models by using [HuggingFace's Transformers](https://github.co
 |  [sosuke/ease-bert-base-uncased](https://huggingface.co/sosuke/ease-bert-base-uncased) |   77.0 |  63.1    |
 | [sosuke/ease-roberta-base](https://huggingface.co/sosuke/ease-roberta-base) |  76.8 |  58.6   |
 |              **Multilingual Models**              | **Avg. mSTS** | **Avg. mSTC** |
-|  [sosuke/ease-bert-base-multilingual-cased](https://huggingface.co/princeton-nlp/sup-simcse-bert-large-uncased)  |   57.2  | 35.2 |
-|     [sosuke/ease-xlm-roberta-base](https://huggingface.co/sosuke/ease-xlm-roberta-base)     |   57.1 | 36.7 |
+|  [sosuke/ease-bert-base-multilingual-cased](https://huggingface.co/princeton-nlp/sup-simcse-bert-large-uncased)  |   57.2  | 35.5 |
+|     [sosuke/ease-xlm-roberta-base](https://huggingface.co/sosuke/ease-xlm-roberta-base)     |   57.1 | 37.1 |
 
 
 ## Use EASE with Huggingface
@@ -152,7 +152,7 @@ This dataset contains topic sentences from Wikinews articles in 13 categories an
 | en | 12,892 | 13 | 27.0 | 41.8
 | eo | 227 | 8 | 25.1 | 40.5
 | es | 6,415 | 11 | 20.2 | 38.3
-| fa | 773 | 9 | 35.1 | 42.0
+| fa | 773 | 9 | 34.1 | 48.1
 | fr | 10,697 | 13 | 25.4 | 35.0
 | ja | 1,984 | 12 | 44.1 | 45.8
 | ko | 344 | 10 | 24.1 | 33.7
@@ -161,7 +161,7 @@ This dataset contains topic sentences from Wikinews articles in 13 categories an
 | ru | 1,406 | 12 | 19.4 | 34.3
 | sv | 584 | 7 | 29.8 | 29.8
 | tr | 459 | 7 | 29.6 | 45.3
-| Avg. |  |  | 28.1 | 36.7
+| Avg. |  |  | 28.0 | 37.1
 
 
 ## Citation
