@@ -19,3 +19,4 @@ morfessor
 coclust
 munkres
 pycountry
+sentencepiece
