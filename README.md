@@ -168,6 +168,7 @@ This dataset contains topic sentences from Wikinews articles in 13 categories an
 | tr | 459 | 7 | 29.6 | 45.3
 | Avg. |  |  | 28.0 | 37.1
 
+Note that the results are slightly different from those reported in this paper since we cleaned the MewsC-16 sentences better.
 
 ## Citation
 [TBA]
