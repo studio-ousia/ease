@@ -28,8 +28,8 @@ You can use these models by using [HuggingFace's Transformers](https://github.co
 |  [sosuke/ease-bert-base-uncased](https://huggingface.co/sosuke/ease-bert-base-uncased) |   77.0 |  63.1    |
 | [sosuke/ease-roberta-base](https://huggingface.co/sosuke/ease-roberta-base) |  76.8 |  58.6   |
 |              **Multilingual Models**              | **Avg. mSTS** | **Avg. mSTC** |
-|  [sosuke/ease-bert-base-multilingual-cased](https://huggingface.co/princeton-nlp/sup-simcse-bert-large-uncased)  |   57.2  | 35.5 |
-|     [sosuke/ease-xlm-roberta-base](https://huggingface.co/sosuke/ease-xlm-roberta-base)     |   57.1 | 37.1 |
+|  [sosuke/ease-bert-base-multilingual-cased](https://huggingface.co/princeton-nlp/sup-simcse-bert-large-uncased)  |   57.2  | 36.1 |
+|     [sosuke/ease-xlm-roberta-base](https://huggingface.co/sosuke/ease-xlm-roberta-base)     |   57.1 | 36.3 |
 
 
 ## Use EASE with Huggingface
@@ -150,23 +150,23 @@ This dataset contains topic sentences from Wikinews articles in 13 categories an
 
 |              **Language**             | **Sentences** | **Label types** |**XLM-R<sub>base</sub>** |**EASE-XLM-R<sub>base</sub>** |
 |:--------:|--------:|--------:|--------:|--------:|
-| ar | 2,224 | 11 | 27.9 | 28.1
-| ca | 3,310 | 11 | 23.4 | 17.6
-| cs | 1,534 | 9 | 23.3 | 41.1
-| de | 6,398 | 8 | 31.1 | 39.3
-| en | 12,892 | 13 | 27.0 | 41.8
-| eo | 227 | 8 | 25.1 | 40.5
-| es | 6,415 | 11 | 20.2 | 38.3
-| fa | 773 | 9 | 34.1 | 48.1
-| fr | 10,697 | 13 | 25.4 | 35.0
-| ja | 1,984 | 12 | 44.1 | 45.8
+| ar | 2,224 | 11 | 27.9 | 27.4
+| ca | 3,310 | 11 | 27.1 | 27.9
+| cs | 1,534 | 9 | 25.2 | 41.2
+| de | 6,398 | 8 | 30.5 | 39.5
+| en | 12,892 | 13 | 25.8 | 39.6
+| eo | 227 | 8 | 24.7 | 37.0
+| es | 6,415 | 11 | 20.8 | 38.2
+| fa | 773 | 9 | 37.2 | 41.5
+| fr | 10,697 | 13 | 25.3 | 33.3
+| ja | 1,984 | 12 | 44.0 | 47.6
 | ko | 344 | 10 | 24.1 | 33.7
-| pl | 7,247 | 11 | 24.9 | 41.8
-| pt | 8,921 | 11 | 38.4 | 32.4
-| ru | 1,406 | 12 | 19.4 | 34.3
-| sv | 584 | 7 | 29.8 | 29.8
-| tr | 459 | 7 | 29.6 | 45.3
-| Avg. |  |  | 28.0 | 37.1
+| pl | 7,247 | 11 | 28.8 | 39.9
+| pt | 8,921 | 11 | 27.4 | 32.9
+| ru | 1,406 | 12 | 20.1 | 27.2
+| sv | 584 | 7 | 30.1 | 29.8
+| tr | 459 | 7 | 30.7 | 44.9
+| Avg. |  |  | 28.1 | 36.3
 
 Note that the results are slightly different from those reported in the original paper since we further cleaned the data after the publication.
 
