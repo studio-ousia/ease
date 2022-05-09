@@ -1,14 +1,14 @@
 transformers==4.2.1
-scipy
 datasets==2.0.0
 pandas==1.1.5
 scikit-learn==0.22.2
 prettytable==2.1.0
-gradio
-torch
 setuptools==49.3.0
 comet_ml==3.23.0
 hydra-core==1.1.0
+torch
+scipy
+gradio
 omegaconf
 mlflow
 wikipedia2vec
@@ -19,3 +19,4 @@ morfessor
 coclust
 munkres
 pycountry
+sentencepiece

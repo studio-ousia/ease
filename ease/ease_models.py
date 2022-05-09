@@ -1,20 +1,24 @@
 import torch
+import torch.distributed as dist
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.distributed as dist
-
 import transformers
-from transformers import RobertaTokenizer
-from transformers.models.roberta.modeling_roberta import RobertaPreTrainedModel, RobertaModel, RobertaLMHead
-from transformers.models.bert.modeling_bert import BertPreTrainedModel, BertModel, BertLMPredictionHead
 from transformers.activations import gelu
-from transformers.file_utils import (
-    add_code_sample_docstrings,
-    add_start_docstrings,
-    add_start_docstrings_to_model_forward,
-    replace_return_docstrings,
+from transformers.modeling_outputs import (
+    BaseModelOutputWithPoolingAndCrossAttentions,
+    SequenceClassifierOutput,
 )
-from transformers.modeling_outputs import SequenceClassifierOutput, BaseModelOutputWithPoolingAndCrossAttentions
+from transformers.models.bert.modeling_bert import (
+    BertLMPredictionHead,
+    BertModel,
+    BertPreTrainedModel,
+)
+from transformers.models.roberta.modeling_roberta import (
+    RobertaLMHead,
+    RobertaModel,
+    RobertaPreTrainedModel,
+)
+
 
 class MLPLayer(nn.Module):
     """
@@ -32,12 +36,15 @@ class MLPLayer(nn.Module):
 
         return x
 
+
 class EntityMLPLayer(nn.Module):
     """
     Head for getting entity representations.
     """
 
-    def __init__(self, config, entity_dim, use_non_linear_transformation, activation="tanh"):
+    def __init__(
+        self, config, entity_dim, use_non_linear_transformation, activation="tanh"
+    ):
         super().__init__()
         self.dense = nn.Linear(entity_dim, config.hidden_size)
         self.dense2 = nn.Linear(config.hidden_size, config.hidden_size)
@@ -55,6 +62,7 @@ class EntityMLPLayer(nn.Module):
             x = self.dense2(x)
 
         return x
+
 
 class Similarity(nn.Module):
     """
@@ -79,29 +87,44 @@ class Pooler(nn.Module):
     'avg_top2': average of the last two layers.
     'avg_first_last': average of the first and the last layers.
     """
+
     def __init__(self, pooler_type):
         super().__init__()
         self.pooler_type = pooler_type
-        assert self.pooler_type in ["cls", "cls_before_pooler", "avg", "avg_top2", "avg_first_last"], "unrecognized pooling type %s" % self.pooler_type
+        assert self.pooler_type in [
+            "cls",
+            "cls_before_pooler",
+            "avg",
+            "avg_top2",
+            "avg_first_last",
+        ], (
+            "unrecognized pooling type %s" % self.pooler_type
+        )
 
     def forward(self, attention_mask, outputs):
         last_hidden = outputs.last_hidden_state
         pooler_output = outputs.pooler_output
         hidden_states = outputs.hidden_states
 
-        if self.pooler_type in ['cls_before_pooler', 'cls']:
+        if self.pooler_type in ["cls_before_pooler", "cls"]:
             return last_hidden[:, 0]
         elif self.pooler_type == "avg":
-            return ((last_hidden * attention_mask.unsqueeze(-1)).sum(1) / attention_mask.sum(-1).unsqueeze(-1))
+            return (last_hidden * attention_mask.unsqueeze(-1)).sum(
+                1
+            ) / attention_mask.sum(-1).unsqueeze(-1)
         elif self.pooler_type == "avg_first_last":
             first_hidden = hidden_states[0]
             last_hidden = hidden_states[-1]
-            pooled_result = ((first_hidden + last_hidden) / 2.0 * attention_mask.unsqueeze(-1)).sum(1) / attention_mask.sum(-1).unsqueeze(-1)
+            pooled_result = (
+                (first_hidden + last_hidden) / 2.0 * attention_mask.unsqueeze(-1)
+            ).sum(1) / attention_mask.sum(-1).unsqueeze(-1)
             return pooled_result
         elif self.pooler_type == "avg_top2":
             second_last_hidden = hidden_states[-2]
             last_hidden = hidden_states[-1]
-            pooled_result = ((last_hidden + second_last_hidden) / 2.0 * attention_mask.unsqueeze(-1)).sum(1) / attention_mask.sum(-1).unsqueeze(-1)
+            pooled_result = (
+                (last_hidden + second_last_hidden) / 2.0 * attention_mask.unsqueeze(-1)
+            ).sum(1) / attention_mask.sum(-1).unsqueeze(-1)
             return pooled_result
         else:
             raise NotImplementedError
@@ -116,7 +139,12 @@ def cl_init(cls, config):
     cls.mlp = MLPLayer(config)
     cls.simcse_sim = Similarity(temp=cls.model_args.simcse_temp)
     cls.ease_sim = Similarity(temp=cls.model_args.ease_temp)
-    cls.entity_transformation = EntityMLPLayer(config, cls.model_args.entity_emb_dim, cls.model_args.use_non_linear_transformation, cls.model_args.activation)
+    cls.entity_transformation = EntityMLPLayer(
+        config,
+        cls.model_args.entity_emb_dim,
+        cls.model_args.use_non_linear_transformation,
+        cls.model_args.activation,
+    )
 
     if cls.model_args.use_another_transformation_for_hn:
         cls.hn_entity_transformation = MLPLayer(config)
@@ -130,9 +158,9 @@ def cl_init(cls, config):
 
     cls.init_weights()
 
-## contrastive learning学習
 
-def cl_forward(cls,
+def cl_forward(
+    cls,
     encoder,
     input_ids=None,
     attention_mask=None,
@@ -159,10 +187,14 @@ def cl_forward(cls,
 
     mlm_outputs = None
     # Flatten input for encoding
-    input_ids = input_ids.view((-1, input_ids.size(-1))) # (bs * num_sent, len)
-    attention_mask = attention_mask.view((-1, attention_mask.size(-1))) # (bs * num_sent len)
+    input_ids = input_ids.view((-1, input_ids.size(-1)))  # (bs * num_sent, len)
+    attention_mask = attention_mask.view(
+        (-1, attention_mask.size(-1))
+    )  # (bs * num_sent len)
     if token_type_ids is not None:
-        token_type_ids = token_type_ids.view((-1, token_type_ids.size(-1))) # (bs * num_sent, len)
+        token_type_ids = token_type_ids.view(
+            (-1, token_type_ids.size(-1))
+        )  # (bs * num_sent, len)
 
     # Get raw embeddings
     outputs = encoder(
@@ -173,7 +205,9 @@ def cl_forward(cls,
         head_mask=head_mask,
         inputs_embeds=inputs_embeds,
         output_attentions=output_attentions,
-        output_hidden_states=True if cls.model_args.pooler_type in ['avg_top2', 'avg_first_last'] else False,
+        output_hidden_states=True
+        if cls.model_args.pooler_type in ["avg_top2", "avg_first_last"]
+        else False,
         return_dict=True,
     )
 
@@ -188,13 +222,17 @@ def cl_forward(cls,
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
             output_attentions=output_attentions,
-            output_hidden_states=True if cls.model_args.pooler_type in ['avg_top2', 'avg_first_last'] else False,
+            output_hidden_states=True
+            if cls.model_args.pooler_type in ["avg_top2", "avg_first_last"]
+            else False,
             return_dict=True,
         )
 
     # Pooling
     pooler_output = cls.pooler(attention_mask, outputs)
-    pooler_output = pooler_output.view((batch_size, num_sent, pooler_output.size(-1))) # (bs, num_sent, hidden)
+    pooler_output = pooler_output.view(
+        (batch_size, num_sent, pooler_output.size(-1))
+    )  # (bs, num_sent, hidden)
 
     # If using "cls", we add an extra MLP layer
     # (same as BERT's original implementation) over the representation.
@@ -202,7 +240,7 @@ def cl_forward(cls,
         pooler_output = cls.mlp(pooler_output)
 
     # Separate representation
-    z1, z2 = pooler_output[:,0], pooler_output[:,1]
+    z1, z2 = pooler_output[:, 0], pooler_output[:, 1]
 
     # Hard negative
     if num_sent == 3:
@@ -239,14 +277,12 @@ def cl_forward(cls,
         entity_embedding = cls.entity_transformation(entity_embedding)
 
     # ea cossim
-    ease_cos_sim = cls.ease_sim(
-        z1.unsqueeze(1), entity_embedding.transpose(0, 1)
-    )
+    ease_cos_sim = cls.ease_sim(z1.unsqueeze(1), entity_embedding.transpose(0, 1))
 
     if cls.model_args.use_equal_loss:
         ease_cos_sim2 = cls.ease_sim(z2.unsqueeze(1), entity_embedding.transpose(0, 1))
-        
-     # hard negativeのweight
+
+    # hard negativeのweight
     z3_weight = cls.model_args.hard_negative_weight
 
     # ea hard negative
@@ -259,8 +295,10 @@ def cl_forward(cls,
                 hn_entity_embedding = cls.entity_transformation(hn_entity_embedding)
 
             # ea hn cossim
-            ease_hn_cos_sim = cls.ease_sim(z1.unsqueeze(1), hn_entity_embedding.transpose(0, 1))
-            
+            ease_hn_cos_sim = cls.ease_sim(
+                z1.unsqueeze(1), hn_entity_embedding.transpose(0, 1)
+            )
+
             # weightを作成
             weights = torch.eye(ease_hn_cos_sim.size(0)).to(cls.device) * z3_weight
 
@@ -286,7 +324,13 @@ def cl_forward(cls,
         # Note that weights are actually logits of weights
         z3_weight = cls.model_args.hard_negative_weight
         weights = torch.tensor(
-            [[0.0] * (cos_sim.size(-1) - z1_z3_cos.size(-1)) + [0.0] * i + [z3_weight] + [0.0] * (z1_z3_cos.size(-1) - i - 1) for i in range(z1_z3_cos.size(-1))]
+            [
+                [0.0] * (cos_sim.size(-1) - z1_z3_cos.size(-1))
+                + [0.0] * i
+                + [z3_weight]
+                + [0.0] * (z1_z3_cos.size(-1) - i - 1)
+                for i in range(z1_z3_cos.size(-1))
+            ]
         ).to(cls.device)
         cos_sim = cos_sim + weights
 
@@ -308,14 +352,19 @@ def cl_forward(cls,
         ease_loss = ease_loss + ease_loss2
 
     # Calculate loss for EASE
-    loss = cls.model_args.simcse_loss_ratio * simcse_loss + cls.model_args.ease_loss_ratio * ease_loss
+    loss = (
+        cls.model_args.simcse_loss_ratio * simcse_loss
+        + cls.model_args.ease_loss_ratio * ease_loss
+    )
 
     # Calculate loss for MLM
     masked_lm_loss = None
     if mlm_outputs is not None and mlm_labels is not None:
         mlm_labels = mlm_labels.view(-1, mlm_labels.size(-1))
         prediction_scores = cls.lm_head(mlm_outputs.last_hidden_state)
-        masked_lm_loss = loss_fct(prediction_scores.view(-1, cls.config.vocab_size), mlm_labels.view(-1))
+        masked_lm_loss = loss_fct(
+            prediction_scores.view(-1, cls.config.vocab_size), mlm_labels.view(-1)
+        )
         loss = loss + cls.model_args.mlm_loss_ratio * masked_lm_loss
 
     if not return_dict:
@@ -328,12 +377,17 @@ def cl_forward(cls,
         hidden_states=outputs.hidden_states,
         attentions=outputs.attentions,
     )
-    sequence_classifier_output.simcse_loss = cls.model_args.simcse_loss_ratio * simcse_loss
+    sequence_classifier_output.simcse_loss = (
+        cls.model_args.simcse_loss_ratio * simcse_loss
+    )
     sequence_classifier_output.ease_loss = cls.model_args.ease_loss_ratio * ease_loss
     sequence_classifier_output.mlm_loss = None
     if masked_lm_loss is not None:
-        sequence_classifier_output.mlm_loss = cls.model_args.mlm_loss_ratio * masked_lm_loss
+        sequence_classifier_output.mlm_loss = (
+            cls.model_args.mlm_loss_ratio * masked_lm_loss
+        )
     return sequence_classifier_output
+
 
 ## Sentence embedding出力用
 def sentemb_forward(
@@ -361,12 +415,16 @@ def sentemb_forward(
         head_mask=head_mask,
         inputs_embeds=inputs_embeds,
         output_attentions=output_attentions,
-        output_hidden_states=True if cls.pooler_type in ['avg_top2', 'avg_first_last'] else False,
+        output_hidden_states=True
+        if cls.pooler_type in ["avg_top2", "avg_first_last"]
+        else False,
         return_dict=True,
     )
 
     pooler_output = cls.pooler(attention_mask, outputs)
-    if (cls.pooler_type == "cls" and not cls.model_args.mlp_only_train) or cls.model_args.use_mlp_forcibly:
+    if (
+        cls.pooler_type == "cls" and not cls.model_args.mlp_only_train
+    ) or cls.model_args.use_mlp_forcibly:
         pooler_output = cls.mlp(pooler_output)
 
     if not return_dict:
@@ -389,7 +447,14 @@ class BertForEACL(BertPreTrainedModel):
         self.lm_head = BertLMPredictionHead(config)
         cl_init(self, config)
 
-    def forward(self,
+    def init_entity_embedding(self, entity_embeddings):
+        self.entity_embedding.weight = nn.Parameter(
+            torch.FloatTensor(entity_embeddings)
+        )
+        self.entity_embedding.weight.requires_grad = True
+
+    def forward(
+        self,
         input_ids=None,
         attention_mask=None,
         token_type_ids=None,
@@ -404,10 +469,12 @@ class BertForEACL(BertPreTrainedModel):
         mlm_input_ids=None,
         mlm_labels=None,
         title_id=None,
-        hn_title_ids=None
+        hn_title_ids=None,
     ):
         if sent_emb:
-            return sentemb_forward(self, self.bert,
+            return sentemb_forward(
+                self,
+                self.bert,
                 input_ids=input_ids,
                 attention_mask=attention_mask,
                 token_type_ids=token_type_ids,
@@ -420,7 +487,9 @@ class BertForEACL(BertPreTrainedModel):
                 return_dict=return_dict,
             )
         else:
-            return cl_forward(self, self.bert,
+            return cl_forward(
+                self,
+                self.bert,
                 input_ids=input_ids,
                 attention_mask=attention_mask,
                 token_type_ids=token_type_ids,
@@ -434,9 +503,8 @@ class BertForEACL(BertPreTrainedModel):
                 mlm_input_ids=mlm_input_ids,
                 mlm_labels=mlm_labels,
                 title_id=title_id,
-                hn_title_ids=hn_title_ids
+                hn_title_ids=hn_title_ids,
             )
-
 
 
 class RobertaForEACL(RobertaPreTrainedModel):
@@ -447,10 +515,16 @@ class RobertaForEACL(RobertaPreTrainedModel):
         self.model_args = model_kargs["model_args"]
         self.roberta = RobertaModel(config)
         self.lm_head = RobertaLMHead(config)
-
         cl_init(self, config)
 
-    def forward(self,
+    def init_entity_embedding(self, entity_embeddings):
+        self.entity_embedding.weight = nn.Parameter(
+            torch.FloatTensor(entity_embeddings)
+        )
+        self.entity_embedding.weight.requires_grad = True
+
+    def forward(
+        self,
         input_ids=None,
         attention_mask=None,
         token_type_ids=None,
@@ -465,10 +539,12 @@ class RobertaForEACL(RobertaPreTrainedModel):
         mlm_input_ids=None,
         mlm_labels=None,
         title_id=None,
-        hn_title_ids=None
+        hn_title_ids=None,
     ):
         if sent_emb:
-            return sentemb_forward(self, self.roberta,
+            return sentemb_forward(
+                self,
+                self.roberta,
                 input_ids=input_ids,
                 attention_mask=attention_mask,
                 token_type_ids=token_type_ids,
@@ -481,7 +557,9 @@ class RobertaForEACL(RobertaPreTrainedModel):
                 return_dict=return_dict,
             )
         else:
-            return cl_forward(self, self.roberta,
+            return cl_forward(
+                self,
+                self.roberta,
                 input_ids=input_ids,
                 attention_mask=attention_mask,
                 token_type_ids=token_type_ids,
@@ -495,5 +573,5 @@ class RobertaForEACL(RobertaPreTrainedModel):
                 mlm_input_ids=mlm_input_ids,
                 mlm_labels=mlm_labels,
                 title_id=title_id,
-                hn_title_ids=hn_title_ids
+                hn_title_ids=hn_title_ids,
             )
