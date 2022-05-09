@@ -20,7 +20,6 @@ This repository contains the source code to train the model and evaluate it with
 Our published models are listed as follows.
 You can use these models by using [HuggingFace's Transformers](https://github.com/huggingface/transformers).
 
-<!-- huggingface libriryで使えるよ -->
 
 
 |              **Monolingual Models**             | **Avg. STS** | **Avg. STC** |
@@ -134,17 +133,14 @@ Please refer to each evaluation code for detailed descriptions of arguments.
 
 You can train an EASE model in a monolingual setting using English Wikipedia sentences or in a multilingual setting using Wikipedia sentences in 18 languages.
 
-We provide example trainig scripts for both monolingual ([train_monolingual_ease.sh](https://github.com/Sosuke115/EASE/blob/main/train_monolingual_ease.sh)) and multilingual ([train_multilingual_ease.sh](https://github.com/Sosuke115/EASE/blob/main/train_multilingual_ease.sh)) settings.
-<!-- TODO link -->
-
+We provide example trainig scripts for both monolingual ([train_monolingual_ease.sh](https://github.com/studio-ousia/ease/blob/main/train_monolingual_ease.sh)) and multilingual ([train_multilingual_ease.sh](https://github.com/studio-ousia/ease/blob/main/train_multilingual_ease.sh)) settings.
 
 
 ## MewsC-16
 
-We construct [MewsC-16](https://github.com/Sosuke115/EASE/tree/main/text-clustering/data/mewsc16) (**M**ultilingual Short Text **C**lustering Dataset for N**ews** in **16** languages) from Wikinews.
+We construct [MewsC-16](https://github.com/studio-ousia/ease/tree/main/downstreams/text-clustering/data/mewsc16) (**M**ultilingual Short Text **C**lustering Dataset for N**ews** in **16** languages) from Wikinews.
 This dataset contains topic sentences from Wikinews articles in 13 categories and 16 languages. More detailed information is available in our paper, Appendix E.
 
-<!-- TODO link -->
 <!-- TODO reproduction code -->
 ##### Statistics and Scores
 
