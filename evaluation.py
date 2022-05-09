@@ -363,13 +363,6 @@ def main():
                 alignments = []
                 uniformities = []
 
-                mlflow_writer.log_metric(
-                    f"{lang_name}-align", results[task][dataset]["align_loss"]
-                )
-                mlflow_writer.log_metric(
-                    f"{lang_name}-uniform", results[task][dataset]["uniform_loss"]
-                )
-
                 datasets = [
                     "STS.input.track5.en-en.txt",
                     "STS.input.track1.ar-ar.txt",
