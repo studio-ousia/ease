@@ -1,15 +1,13 @@
 ## EASE: Entity-Aware Contrastive Learning of Sentence Embedding
 
 <!-- TODO add license -->
-<!-- TODO arxiv link -->
-[![Arxiv](https://img.shields.io/badge/arXiv-2205.04260-B21A1B)](https://arxiv.org/abs/2205.04260)
 [![Hugging Face Transformers](https://img.shields.io/badge/%F0%9F%A4%97-Transformers-pink?color=FF33CC)](https://github.com/huggingface/transformers)
 [![Hugging Face Models](https://img.shields.io/badge/%F0%9F%A4%97-Models-yellow)](https://huggingface.co/sosuke)
+[![Arxiv](https://img.shields.io/badge/arXiv-2205.04260-B21A1B)](https://arxiv.org/abs/2205.04260)
 
 EASE is a novel method for learning sentence embeddings via contrastive learning between sentences and their related entities proposed in our paper [EASE: Entity-Aware Contrastive Learning of Sentence Embedding](https://arxiv.org/abs/2205.04260).
 This repository contains the source code to train the model and evaluate it with downstream tasks.
 
-<!-- TODO NAACL2022の記述 -->
 <p align="center">
 <img src="figure/ease.png" width="70%">
 </p>
@@ -84,7 +82,6 @@ Before training, please download the datasets for training and evaluation.
 ```bash
 bash download_all.sh
 ```
-<!-- TODO check download_all.sh -->
 
 
 ## Evaluation
