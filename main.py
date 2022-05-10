@@ -194,9 +194,7 @@ def main(cfg: DictConfig):
             "json", data_files=os.path.join(cwd, "data/ease-dataset-18-langs.json")
         )["train"]
     elif data_args.dataset_name_or_path == "test":
-        wikipedia_data = load_dataset(
-            "json", data_files=os.path.join(cwd, "data/ease-dataset-test.json")
-        )["train"]
+        wikipedia_data = load_dataset("sosuke/ease-dataset-test.json")["train"]
     else:
         # TODO load from your dataset
         raise NotImplementedError()
