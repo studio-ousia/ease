@@ -124,6 +124,8 @@ def main():
 
     args = parser.parse_args()
     print("model_path", args.model_name_or_path)
+    
+    batch_size = 128
 
     # mlflow
     mlflow_writer = get_mlflow_writer(args.experiment_name, "mlruns", OmegaConf.create({"eval_args": vars(args)}))
@@ -165,7 +167,6 @@ def main():
                 "WN-FS-tr",
             ]
         )
-    batch_size = 128
 
     results = []
 
@@ -227,7 +228,6 @@ def main():
                         / len(pred_labels[start_idx:end_idx])
                         * 100
                     )
-                    # acc = accuracy(labels[start_idx:end_idx], pred_labels[start_idx:end_idx]) * 100
                     scores.append("%.2f" % (acc))
                     mlflow_writer.log_metric(f"{dataset_key}-{lang}", acc)
                     datasets.append(f"{dataset_key}-{lang}")

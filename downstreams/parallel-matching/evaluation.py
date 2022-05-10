@@ -165,9 +165,11 @@ def main():
     for lang in langs:
         print(lang)
         sentence1, sentence2 = dataset[lang]
+        
+        # TODO batch process
 
-        source_embeddings = batcher(model, tokenizer, sentence1, args, device="cuda")
-        target_embeddings = batcher(model, tokenizer, sentence2, args, device="cuda")
+        source_embeddings = batcher(model, tokenizer, sentence1, args, device=device)
+        target_embeddings = batcher(model, tokenizer, sentence2, args, device=device)
 
         lang_to_en_result = (
             get_cos_sim_matrix(source_embeddings, target_embeddings).argmax(axis=1)
