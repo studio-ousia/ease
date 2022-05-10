@@ -2,11 +2,11 @@
 
 <!-- TODO add license -->
 <!-- TODO arxiv link -->
-<!-- [![Arxiv](https://img.shields.io/badge/arXiv-2204.10298-B21A1B)]() -->
+[![Arxiv](https://img.shields.io/badge/arXiv-2205.04260-B21A1B)](https://arxiv.org/abs/2205.04260)
 [![Hugging Face Transformers](https://img.shields.io/badge/%F0%9F%A4%97-Transformers-pink?color=FF33CC)](https://github.com/huggingface/transformers)
 [![Hugging Face Models](https://img.shields.io/badge/%F0%9F%A4%97-Models-yellow)](https://huggingface.co/sosuke)
 
-EASE is a novel method for learning sentence embeddings via contrastive learning between sentences and their related entities proposed in our paper EASE: Entity-Aware Contrastive Learning of Sentence Embedding.
+EASE is a novel method for learning sentence embeddings via contrastive learning between sentences and their related entities proposed in our paper [EASE: Entity-Aware Contrastive Learning of Sentence Embedding](https://arxiv.org/abs/2205.04260).
 This repository contains the source code to train the model and evaluate it with downstream tasks.
 
 <!-- TODO NAACL2022の記述 -->
@@ -33,7 +33,6 @@ You can use these models by using [HuggingFace's Transformers](https://github.co
 
 ## Use EASE with Huggingface
 
-<!-- TODO add link for pooling methods -->
 ```python
 
 import torch
@@ -44,7 +43,7 @@ from transformers import AutoModel, AutoTokenizer
 tokenizer = AutoTokenizer.from_pretrained("sosuke/ease-bert-base-multilingual-cased")
 model = AutoModel.from_pretrained("sosuke/ease-bert-base-multilingual-cased")
 
-# Set pooler (Please see here for other pooling methods).
+# Set pooler.
 pooler = lambda last_hidden, att_mask: (last_hidden * att_mask.unsqueeze(-1)).sum(1) / att_mask.sum(-1).unsqueeze(-1)
 
 # Tokenize input texts.
@@ -67,6 +66,9 @@ cosine_sim_0_2 = 1 - cosine(embeddings[0], embeddings[2])
 print(f"Cosine similarity between {texts[0]} and {texts[1]} is {cosine_sim_0_1}")
 print(f"Cosine similarity between {texts[0]} and {texts[2]} is {cosine_sim_0_2}")
 ```
+
+Please see [here](https://github.com/studio-ousia/ease/blob/main/ease/ease_models.py#L109) for other pooling methods.
+
 
 ## Setups
 
@@ -167,6 +169,4 @@ This dataset contains topic sentences from Wikinews articles in 13 categories an
 Note that the results are slightly different from those reported in the original paper since we further cleaned the data after the publication.
 
 ## Citation
-[TBA]
-
-<!-- TODO -->
+[![Arxiv](https://img.shields.io/badge/arXiv-2205.04260-B21A1B)](https://arxiv.org/abs/2205.04260)
