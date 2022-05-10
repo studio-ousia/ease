@@ -1,6 +1,6 @@
 *.ipynb
 *.sh
-data
+data/
 utils/__pycache__
 utils/.ipynb_checkpoints
 saved_models/

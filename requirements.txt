@@ -12,11 +12,7 @@ gradio
 omegaconf
 mlflow
 wikipedia2vec
-polyglot
-pyicu
-pycld2
-morfessor
-coclust
-munkres
 pycountry
 sentencepiece
+coclust
+munkres
