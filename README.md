@@ -170,3 +170,12 @@ Note that the results are slightly different from those reported in the original
 
 ## Citation
 [![Arxiv](https://img.shields.io/badge/arXiv-2205.04260-B21A1B)](https://arxiv.org/abs/2205.04260)
+
+```bibtex
+@inproceedings{nishikawa2022ease,
+    title="{EASE}: Entity-Aware Contrastive Learning of Sentence Embedding", 
+    author="Sosuke Nishikawa and Ryokan Ri and Ikuya Yamada and Yoshimasa Tsuruoka and Isao Echizen",
+    booktitle="Annual Conference of the North American Chapter of the Association for Computational Linguistics (NAACL)",
+    year="2022"
+}
+```
