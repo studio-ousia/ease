@@ -1,15 +1,13 @@
 ## EASE: Entity-Aware Contrastive Learning of Sentence Embedding
 
 <!-- TODO add license -->
-<!-- TODO arxiv link -->
-<!-- [![Arxiv](https://img.shields.io/badge/arXiv-2204.10298-B21A1B)]() -->
 [![Hugging Face Transformers](https://img.shields.io/badge/%F0%9F%A4%97-Transformers-pink?color=FF33CC)](https://github.com/huggingface/transformers)
 [![Hugging Face Models](https://img.shields.io/badge/%F0%9F%A4%97-Models-yellow)](https://huggingface.co/sosuke)
+[![Arxiv](https://img.shields.io/badge/arXiv-2205.04260-B21A1B)](https://arxiv.org/abs/2205.04260)
 
-EASE is a novel method for learning sentence embeddings via contrastive learning between sentences and their related entities proposed in our paper EASE: Entity-Aware Contrastive Learning of Sentence Embedding.
+EASE is a novel method for learning sentence embeddings via contrastive learning between sentences and their related entities proposed in our paper [EASE: Entity-Aware Contrastive Learning of Sentence Embedding](https://arxiv.org/abs/2205.04260).
 This repository contains the source code to train the model and evaluate it with downstream tasks.
 
-<!-- TODO NAACL2022の記述 -->
 <p align="center">
 <img src="figure/ease.png" width="70%">
 </p>
@@ -33,7 +31,6 @@ You can use these models by using [HuggingFace's Transformers](https://github.co
 
 ## Use EASE with Huggingface
 
-<!-- TODO add link for pooling methods -->
 ```python
 
 import torch
@@ -44,7 +41,7 @@ from transformers import AutoModel, AutoTokenizer
 tokenizer = AutoTokenizer.from_pretrained("sosuke/ease-bert-base-multilingual-cased")
 model = AutoModel.from_pretrained("sosuke/ease-bert-base-multilingual-cased")
 
-# Set pooler (Please see here for other pooling methods).
+# Set pooler.
 pooler = lambda last_hidden, att_mask: (last_hidden * att_mask.unsqueeze(-1)).sum(1) / att_mask.sum(-1).unsqueeze(-1)
 
 # Tokenize input texts.
@@ -68,6 +65,9 @@ print(f"Cosine similarity between {texts[0]} and {texts[1]} is {cosine_sim_0_1}"
 print(f"Cosine similarity between {texts[0]} and {texts[2]} is {cosine_sim_0_2}")
 ```
 
+Please see [here](https://github.com/studio-ousia/ease/blob/main/ease/ease_models.py#L109) for other pooling methods.
+
+
 ## Setups
 
 [![Python](https://img.shields.io/badge/python-3.7.6-blue?logo=python&logoColor=FED643)](https://www.python.org/downloads/release/python-376/)
@@ -82,7 +82,6 @@ Before training, please download the datasets for training and evaluation.
 ```bash
 bash download_all.sh
 ```
-<!-- TODO check download_all.sh -->
 
 
 ## Evaluation
@@ -167,6 +166,13 @@ This dataset contains topic sentences from Wikinews articles in 13 categories an
 Note that the results are slightly different from those reported in the original paper since we further cleaned the data after the publication.
 
 ## Citation
-[TBA]
+[![Arxiv](https://img.shields.io/badge/arXiv-2205.04260-B21A1B)](https://arxiv.org/abs/2205.04260)
 
-<!-- TODO -->
+```bibtex
+@inproceedings{nishikawa2022ease,
+    title="{EASE}: Entity-Aware Contrastive Learning of Sentence Embedding", 
+    author="Sosuke Nishikawa and Ryokan Ri and Ikuya Yamada and Yoshimasa Tsuruoka and Isao Echizen",
+    booktitle="Annual Conference of the North American Chapter of the Association for Computational Linguistics (NAACL)",
+    year="2022"
+}
+```
