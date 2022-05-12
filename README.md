@@ -25,7 +25,7 @@ You can use these models by using [HuggingFace's Transformers](https://github.co
 |  [sosuke/ease-bert-base-uncased](https://huggingface.co/sosuke/ease-bert-base-uncased) |   77.0 |  63.1    |
 | [sosuke/ease-roberta-base](https://huggingface.co/sosuke/ease-roberta-base) |  76.8 |  58.6   |
 |              **Multilingual Models**              | **Avg. mSTS** | **Avg. mSTC** |
-|  [sosuke/ease-bert-base-multilingual-cased](https://huggingface.co/princeton-nlp/sup-simcse-bert-large-uncased)  |   57.2  | 36.1 |
+|  [sosuke/ease-bert-base-multilingual-cased](https://huggingface.co/sosuke/ease-bert-base-multilingual-cased)  |   57.2  | 36.1 |
 |     [sosuke/ease-xlm-roberta-base](https://huggingface.co/sosuke/ease-xlm-roberta-base)     |   57.1 | 36.3 |
 
 
