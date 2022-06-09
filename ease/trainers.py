@@ -1,63 +1,39 @@
 import collections
-import importlib.util
-import json
 import math
 import os
-import re
 import sys
 import time
 import warnings
-from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 import torch
-import torch.nn as nn
 from packaging import version
 from torch.utils.data.dataloader import DataLoader
 from torch.utils.data.dataset import Dataset
 from torch.utils.data.distributed import DistributedSampler
-from torch.utils.data.sampler import RandomSampler, SequentialSampler
+from torch.utils.data.sampler import RandomSampler
 from transformers import Trainer
-from transformers.data.data_collator import (
-    DataCollator,
-    DataCollatorWithPadding,
-    default_data_collator,
-)
 from transformers.file_utils import (
     WEIGHTS_NAME,
     is_apex_available,
     is_datasets_available,
-    is_in_notebook,
     is_torch_tpu_available,
 )
 from transformers.modeling_utils import PreTrainedModel
 from transformers.trainer_callback import (
-    CallbackHandler,
-    DefaultFlowCallback,
-    PrinterCallback,
-    ProgressCallback,
-    TrainerCallback,
-    TrainerControl,
     TrainerState,
 )
 from transformers.trainer_pt_utils import (
-    SequentialDistributedSampler,
     get_tpu_sampler,
     reissue_pt_warnings,
 )
 from transformers.trainer_utils import (
     PREFIX_CHECKPOINT_DIR,
-    BestRun,
-    EvalPrediction,
     HPSearchBackend,
-    PredictionOutput,
     TrainOutput,
-    default_compute_objective,
-    default_hp_space,
     set_seed,
     speed_metrics,
 )
-from transformers.training_args import ParallelMode, TrainingArguments
 from transformers.utils import logging
 
 if is_torch_tpu_available():
@@ -75,9 +51,7 @@ if version.parse(torch.__version__) >= version.parse("1.6"):
 if is_datasets_available():
     import datasets
 
-import copy
 
-from transformers.optimization import Adafactor, AdamW, get_scheduler
 from transformers.trainer import _model_unwrap
 
 # Set PATHs
@@ -86,7 +60,6 @@ PATH_TO_DATA = os.path.join(PATH_TO_SENTEVAL, "data")
 
 # Import SentEval
 sys.path.insert(0, PATH_TO_SENTEVAL)
-from datetime import datetime
 
 import numpy as np
 import senteval
@@ -96,6 +69,9 @@ logger = logging.get_logger(__name__)
 
 
 class CLTrainer(Trainer):
+    """
+    The code here is mainly provided by SimCSE.
+    """
     def evaluate(
         self,
         eval_dataset: Optional[Dataset] = None,
