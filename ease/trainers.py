@@ -69,6 +69,9 @@ logger = logging.get_logger(__name__)
 
 
 class CLTrainer(Trainer):
+    """
+    The code here is mainly provided by SimCSE.
+    """
     def evaluate(
         self,
         eval_dataset: Optional[Dataset] = None,

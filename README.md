@@ -7,6 +7,7 @@
 
 EASE is a novel method for learning sentence embeddings via contrastive learning between sentences and their related entities proposed in our paper [EASE: Entity-Aware Contrastive Learning of Sentence Embedding](https://arxiv.org/abs/2205.04260).
 This repository contains the source code to train the model and evaluate it with downstream tasks.
+Our code is mainly based on that of [SimCSE](https://github.com/princeton-nlp/SimCSE).
 
 <p align="center">
 <img src="figure/ease.png" width="70%">
