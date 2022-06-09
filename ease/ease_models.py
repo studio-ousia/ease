@@ -181,7 +181,7 @@ def cl_forward(
     
     """
     The main difference between ours and SimCSE's original implementation is that
-    we also use entity contrastive learning loss between sentences and their related entities.
+    we also use our novel entity contrastive learning loss between sentences and their related entities.
     """
     return_dict = return_dict if return_dict is not None else cls.config.use_return_dict
     ori_input_ids = input_ids
